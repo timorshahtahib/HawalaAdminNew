@@ -102,7 +102,7 @@ export default {
     methods: {
         // select(date) {
         //     this.transaction_date = date.toString();
-.0
+
 
         // },
 
