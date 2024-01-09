@@ -347,29 +347,7 @@ class TransactionController extends Controller
             ->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')
             ->get();
        
-        // $searchTerm = $request->input('query');
-
-        // $transactions = Transaction::query()
-        //     ->whereHas('customer', function ($query) use ($searchTerm) {
-        //         $query->where('name', 'like', '%' . $searchTerm . '%');
-        //     })
-        //     ->orWhereHas('financeAccount', function ($query) use ($searchTerm) {
-        //         $query->where('account_name', 'like', '%' . $searchTerm . '%');
-        //     })
-        //     ->orWhereHas('tr_currency', function ($query) use ($searchTerm) {
-        //         $query->where('name', 'like', '%' . $searchTerm . '%');
-        //     });
-        //    if($sea){
-        //     $transactions->orWhere('amount',  'like', '%' . $searchTerm . '%');
-        //    }
-
-            
-        //     ->orWhere('amount_equal',  'like', '%' . $searchTerm . '%')
-        //     ->orWhere('currency_equal',  'like', '%' . $searchTerm . '%')
-        //     ->orWhere('currency_rate',  'like', '%' . $searchTerm . '%')
-            
-        //     ->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')
-        //     ->get();
+        
        
         return response()->json($transactions);
     }

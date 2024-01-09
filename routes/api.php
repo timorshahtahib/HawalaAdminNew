@@ -91,7 +91,18 @@ Route::get('/bankdetails/{id}',[ReportFinanceController::class, 'getBanksTransac
 Route::post('/filterBankTransactions',[ReportFinanceController::class, 'filterBankTransactions']);
 
 
-// Exchange Controller
+// Exchange Buy Controller
 Route::apiResource('/exchange',ExchangeController::class);
 Route::post('/getexchangeforedit',[ExchangeController::class,'getExchangeforEdit']);
 Route::post('/updateexchange',[ExchangeController::class,'updateBuyExchangeTransaction']);
+Route::post('/deleteexchange',[ExchangeController::class,'deleteBuyExchange']);
+
+
+Route::post('/salestore',[ExchangeController::class,'saleStoreExchange']);
+Route::post('/getexchangesaleforedit',[ExchangeController::class,'getExchangeSaleforEdit']);
+Route::post('/updatesaleexchange',[ExchangeController::class,'updateSaleExchange']);
+Route::post('/deleteexchangesale',[ExchangeController::class,'deleteSaleExchange']);
+
+
+
+

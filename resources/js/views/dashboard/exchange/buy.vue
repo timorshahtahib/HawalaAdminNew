@@ -261,22 +261,17 @@ export default {
             }
         },
         async submiteditBuyTransaction() {
-            // console.log("Submit edit transaction", this.editSelectedCustomer.id);
+            
             const response = await axios.post(`/api/updateexchange`, {
-                // id: this.editTransaction[0].id,
                 rasid_id: this.rasid_id,
                 rasid_amount: this.edit_buy_amount,
                 rasid_currency: this.edit_buy_currency_model,
                 rasid_bank_acount_id: this.edit_rasid_selectedDakhl,
 
-
                 bord_id:this.bord_id,
                 bord_amount: this.edit_pay_amount,
                 bord_currency: this.edit_pay_currency_Model,
                 bord_bank_acount_id: this.edit_pay_selectedDakhl,
-              
-
-
 
                 currency_rate: this.edit_currency_rate,
                 date: this.edit_buy_date,
@@ -304,30 +299,31 @@ export default {
                     this.transactions.push(response.data.new_data);
                     this.showModal = false;
                     this.showalert(response.data.message, "success", "success");
-
-                    // console.log(response.data);
                 }
             }
-            //  console.log("Successfully updated", this.editTransaction);
+         
 
         },
 
-        async deleteTransaction(id) {
+        async deleteBuyExchange(id) {
             if (!window.confirm('آیا میخواهید که رسید حذف شود؟')) {
                 return;
             } else {
                 try {
-                    const response = await axios.delete(`/api/transaction/${id}`);
-                    // this.transactions = response.data;
+                    const response = await axios.post(`/api/deleteexchange`,{
+                        id:id,
+                    });
+                   
+
                     if (response.status === 204) {
-                        // this.transactions.push(response.data.new_data)
+
                         this.showalert(' با موفقیت حذف شد!', 'success', 'success');
                         this.getTransaction();
 
                     }
 
                 } catch (error) {
-                    this.showalert(' با موفقیت حذف نشد!', 'error', 'error');
+                    this.showalert(error.message, 'error', 'error');
                 }
             }
         },
@@ -655,9 +651,11 @@ export default {
                                             </td>
 
                                             <td>{{transaction?.id}}</td>
-                                            <!-- <td v-if="transaction.customer!=null">{{ transaction.customer?.name}}</td> -->
-                                            <!-- <td v-else>{{ transaction.finance_account?.account_name}}</td> -->
-                                            <td>{{transaction.rasid_bord}}</td>
+                                            <td>
+                                                <span class="badge  font-size-12" :class="transaction.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">
+                                                    {{transaction.rasid_bord}}
+                                                    </span>
+                                            </td>
                                             <td>{{transaction.transaction_type}}</td>
                                             <td>{{transaction.check_number}}</td>
                                             <td>{{transaction.amount}}</td>
@@ -674,7 +672,7 @@ export default {
                                                 </button>
 
                                                 <button class="btn btn-xs">
-                                                    <i class="fas fa-trash-alt text-danger me-1" @click="deleteTransaction(transaction.id)"></i>
+                                                    <i class="fas fa-trash-alt text-danger me-1" @click="deleteBuyExchange(transaction.id)"></i>
                                                 </button>
 
                                             </td>
