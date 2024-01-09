@@ -17,6 +17,7 @@ export default {
         PageHeader,
         DatePicker,
         vSelect,
+
     },
     data() {
         return {
