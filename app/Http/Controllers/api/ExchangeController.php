@@ -29,6 +29,20 @@ class ExchangeController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+    public function getTransfer()
+    {
+        try {
+            $transaction = Transaction::where('status', '=', '1')->where('transaction_type','transfer')->orWhere('transaction_type','commission')->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')->get();
+
+            if ($transaction->isEmpty()) {
+                return response()->json(['error' => 'Transaction not found'], 404);
+            }
+            return response()->json($transaction);
+        }
+        catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
     // for generating hawal id 
     public static function new_check_number()
     {
@@ -568,5 +582,142 @@ class ExchangeController extends Controller
 
             
         
+    }
+
+
+
+    public function storeTranferTransactions(Request $request){
+        $check_number = $this->new_check_number();
+        $validator =Validator::make($request->all(),[
+            'transfer_amount'=>'required',
+            'currency'=>'required|exists:currency,id',
+            'source_bank_acount_id'=>'required|exists:finance_account,id',
+            'destination_bank_acount_id'=>'required|exists:finance_account,id',
+            // commission
+            'commission_bank_acount_id'=>'nullable|exists:finance_account,id',
+            // 
+            "commission"=>"required",
+            "commission_amount"=>"nullable",
+            "commission_currency"=>'nullable',
+            "date"=>'required',
+            'desc'=>'nullable'
+        ]);
+        // dd($request->all());
+        if(!$validator->passes()){
+            return response()->json([
+                'status'=>false,
+                'error'=>$validator->errors()->toArray(),
+            ]);
+        }else{
+        
+            DB::beginTransaction();
+            try{
+                ////transaction chek number generate
+                $check_number = TransactionController::new_check_number();
+
+                $source_transaction_values = [
+                    'rasid_bord'=> 'bord',
+                    'transaction_type'=>'transfer',
+                    'amount'=>$request->transfer_amount,
+                    'currency'=>$request->currency,
+                    'finance_acount_id'=>26,
+                    'bank_acount_id'=>$request->source_bank_acount_id,
+                    'desc'=>$request->desc,
+                    'date'=>$request->date,
+                    'check_number'=>$check_number,
+                    
+                ];
+             
+                $source_transaction_id= Transaction::insertGetId($source_transaction_values);
+
+                $check_number2 = TransactionController::new_check_number();
+
+                $destination_transaction_values = [
+                    'rasid_bord'=> 'rasid',
+                    'transaction_type'=>'transfer',
+                    'amount'=>$request->transfer_amount,
+                    'currency'=>$request->currency,
+                    'finance_acount_id'=>26,
+                    'bank_acount_id'=>$request->destination_bank_acount_id,
+                    'desc'=>$request->desc,
+                    'date'=>$request->date,
+                    'check_number'=>$check_number2,
+                    
+                ];
+
+                $destination_tansaction_id = Transaction::insertGetId($destination_transaction_values);
+
+              
+
+                
+                $output_data3=[];
+                $commission_transaction=0;
+                if($request->commission==="darad"){
+                    $check_number3 = TransactionController::new_check_number();
+                    $commission_transaction_values = [
+                        'rasid_bord'=> 'bord',
+                        'transaction_type'=>'commission',
+                        'amount'=>$request->commission_amount,
+                        'currency'=>$request->commission_currency,
+                        'finance_acount_id'=>26,
+                        'bank_acount_id'=>$request->commission_bank_acount_id,
+                        'desc'=>$request->desc,
+                        'date'=>$request->date,
+                        'check_number'=>$check_number3,
+                        
+                    ];
+                    $commission_transaction = Transaction::insertGetId($commission_transaction_values);
+                    $output_data3 = Transaction::where('id',$commission_transaction)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
+
+                }
+               
+                if($source_transaction_id && $destination_tansaction_id ){
+
+                    $update_values1 = [
+                        'order_id'=>$destination_tansaction_id,
+                    ];
+                    $update_values2 = [
+                        'order_id'=>$source_transaction_id,
+                    ];
+                    
+
+                    if($commission_transaction>0){
+                        // for comision 
+                        Transaction::where('id',$commission_transaction)->update($update_values1);
+                    }
+                    Transaction::where('id',$source_transaction_id)->update($update_values1);
+                    Transaction::where('id',$destination_tansaction_id)->update($update_values2);
+
+                 
+                 
+                    $output_data = Transaction::where('id',$source_transaction_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
+                    $output_data2 = Transaction::where('id',$destination_tansaction_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
+
+                    DB::commit();
+                    return  response()->json([
+                        'status'=>true,
+                        'new_data1'=>$output_data,
+                        'new_data2'=>$output_data2,
+                        'new_data3'=>$output_data3,
+                        'message'=>'عملیات انجام شد',
+                    ]);
+
+                }else{
+                    DB::rollback();
+                    return  response()->json([
+                        'status'=>false,
+                        'message'=>'عملیات انجام نشد',
+                    ]);
+                }
+
+            }catch(Throwable $e){
+                DB::rollback();
+                return  response()->json([
+                    'status'=>false,
+                    'message'=>$e->getMessage(),
+                ]);
+            }
+
+        }
     }
 }

@@ -92,6 +92,13 @@ const routes = [{
         component: () =>
             import ('../views/dashboard/exchange/sale.vue')
     },
+    {
+        path: '/exchange/transfer',
+        name: 'transfer',
+        meta: { authRequired: true, title: 'Transfer' },
+        component: () =>
+            import ('../views/dashboard/exchange/transfer.vue')
+    },
 
     {
         path: '/auth/login-1',

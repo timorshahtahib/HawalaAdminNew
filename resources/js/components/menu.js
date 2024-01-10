@@ -116,6 +116,13 @@ export const menuItems = [{
                 parentId: 2,
 
             },
+            {
+                id: 8,
+                label: "انتقال",
+                link: "/exchange/transfer",
+                parentId: 2,
+
+            },
 
 
 
