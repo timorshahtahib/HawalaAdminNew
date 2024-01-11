@@ -108,6 +108,7 @@ Route::post('/deleteexchangesale',[ExchangeController::class,'deleteSaleExchange
 Route::get('/gettransfers',[ExchangeController::class, 'getTransfer']);
 
 Route::post('/storetransfer',[ExchangeController::class,'storeTranferTransactions']);
+Route::post('/gettransferforedit',[ExchangeController::class,'getTransferforEdit']);
 
 
 

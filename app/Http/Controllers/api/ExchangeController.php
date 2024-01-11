@@ -720,4 +720,48 @@ class ExchangeController extends Controller
 
         }
     }
+
+
+
+
+
+
+    public function getTransferforEdit(Request $request)
+    {
+        $tr_type=$request->rasid_bord;
+        $id=$request->id;
+                
+        try {
+
+            if($tr_type ==='rasid'){
+                $rasid_transfer = Transaction::where('status', '=', '1')->where('id',$id)->where('transaction_type','transfer')->orWhere('transaction_type','commission')
+                ->where('rasid_bord','rasid')
+                ->with(['financeAccount','customer','tr_currency','bank_account'])->first();
+       
+                $bord_transfer = Transaction::where('status', '=', '1')->where('id',$rasid_transfer->order_id)->where('transaction_type','transfer')
+                ->where('rasid_bord','bord')
+                ->with(['financeAccount','customer','tr_currency','bank_account'])->first();
+                $commission_transafer = Transaction::where('status', '=', '1')->where('id',$rasid_transfer->order_id)->where('transaction_type','commission')->orWhere('transaction_type','commission')
+                ->where('rasid_bord','bord')
+                ->with(['financeAccount','customer','tr_currency','bank_account'])->first();
+                return response()->json(['bord'=>$bord_transfer,'rasid'=>$rasid_transfer,'commissiom'=>$commission_transafer]);
+           }
+              else if($tr_type ==='bord'){
+                   $bord_transaction = Transaction::where('status', '=', '1')->where('id',$id)->where('transaction_type','transfer')->orWhere('transaction_type','commission')
+                   ->where('rasid_bord','bord')
+                   ->with(['financeAccount','customer','tr_currency','bank_account'])->first();
+                   $rasid_transfer = Transaction::where('status', '=', '1')->where('id',$bord_transaction->order_id)->where('transaction_type','transfer')->orWhere('transaction_type','commission')
+                   ->where('rasid_bord','rasid')
+                   ->with(['financeAccount','customer','tr_currency','bank_account'])->first();
+                   $commission_transfer = Transaction::where('status', '=', '1')->where('id',$bord_transaction->order_id)->where('transaction_type','transfer')->orWhere('transaction_type','commission')
+                   ->where('rasid_bord','rasid')
+                   ->with(['financeAccount','customer','tr_currency','bank_account'])->first();
+                   return response()->json(['bord'=>$bord_transaction,'rasid'=>$rasid_transfer,'commission'=>$commission_transfer]);
+               }
+        }
+        catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+         
+    }
 }

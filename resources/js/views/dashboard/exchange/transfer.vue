@@ -34,17 +34,11 @@ export default {
             transfer_amount: 0,
             transfer_currency_model: '',
             commission:'darad',
-            currency_rate: 0.00,
-            rasid_currency_Model: '',
             commission_currency_model: '',
-          
-            // rasid_selectedDakhl: '',
             transfer_date: null,
             transfer_desc: '',
-              // Dakhl V-Model and arrays
-              banks: [],
-              currencies: [],
-            // show transaction in the table
+            // banks: [],
+            currencies: [],
             transfers: [],
             source_selectedDakhl: '',
             destination_Dakhl: '',
@@ -52,28 +46,28 @@ export default {
             sourcebanks: [],
             destinationbanks: [],
             commissionbanks: [],
-
-            // edit buy
+            
+          //    for edit
+         
             edit_transfer_amount: 0,
-            edit_source_selectedDakhl: '',
-            edit_sale_currency_model: '',
-            edit_rasid_banks: [],
-            edit_rasid_amount: '',
-            edit_currency_rate: 0.00,
-            edit_rasid_currency_Model: '',
-            edit_rasid_selectedDakhl: '',
-            edit_rasid_banks: [],
-            edit_sale_date: null,
-            edit_edit_rasid_desc: '',
-            edit_bord_banks:[],
+            edit_transfer_currency_model: '', 
+            edit_commission:'darad',
+            edit_commission_currency_model: '',
+            edit_transfer_date: null,
+            edit_transfer_desc: '',
+            edit_banks: [],      
             edit_currencies:[],
-
+            edit_source_selectedDakhl: '',
+            edit_destination_Dakhl: '',
+            edit_commission_selectedDakhl:'',
+            edit_sourcebanks: [],
+            edit_destinationbanks: [],
+            edit_commissionbanks: [],
+            edit_commission_amount:'',
             rasid_id :0,
             bord_id: 0,
-            // Currency V-Model and arrays
+            commmission_id: 0,
                 
-
-            // for setting the current date
             errors: {},
 
         };
@@ -89,15 +83,13 @@ export default {
         //   this is for getting the jalali date value 
         select(date) {
             this.transfer_date = date.toString();
-
         },
-        edit_select(date) {
-            this.edit_sale_date = date.toString();
-        },
+    
 
         openModaledit() {
             this.showModal = true;
-            this.get_edite_Currency();
+            this.get_edit_Currency();
+            
         },
         closeModal() {
             this.showModal = false;
@@ -121,7 +113,6 @@ export default {
             try {
                 await axios.get('/api/currencies').then((response) => {
                         this.currencies = response.data.currencies;
-                        // console.log(this.currencies);
 
                     })
                     .catch((error) => {
@@ -132,26 +123,10 @@ export default {
                 console.error('Error fetching data: ', error.message);
             }
         },
-        async get_edite_Currency() {
-            try {
-                await axios.get('/api/currencies').then((response) => {
-                        this.edit_currencies = response.data.currencies;
-                        // console.log(this.currencies);
-
-                    })
-                    .catch((error) => {
-                        console.error('Error fetching currencies:', error);
-                    });
-
-            } catch (error) {
-                console.error('Error fetching data: ', error.message);
-            }
-        },
+     
         // for adding new Transaction  
         async storeTransferTransaction() {
 
-                console.log('tag',this.source_selectedDakhl,this.destination_Dakhl,this.commission_selectedDakhl)
-            
             try {
                 const response = await axios.post('/api/storetransfer', {
                     transfer_amount: this.transfer_amount,
@@ -168,7 +143,7 @@ export default {
 
                 if (response.data != null) {
 
-                    console.log("in data!=null", response.data);
+                    // console.log("in data!=null", response.data);
                     if (response.data.status === false) {
 
                         if (response.data.message != null) {
@@ -207,116 +182,135 @@ export default {
 
         },
         change_transfer_currency() {
-            this.getBanks(this.transfer_currency_model);
+            this.getBanksByCID(this.transfer_currency_model);
         },
         change_commission_currency() {
             // this.getBanks(this.commission_currency_model);
             this.getBanksByCIDforComision(this.commission_currency_model);
         },
+   
+        async getBanksByCID(id) {
+            try {
+                const response = await axios.get('/api/getbankbyid/' + id);
+                this.sourcebanks = response.data.banks;
+                
+                this.destinationbanks = response.data.banks;
+                this.commissionbanks = response.data.banks;
 
-        // edit_Change_currency() {
-        //     this.get_edit_rasid_bank(this.edit_rasid_currency_model);
-        // },
+                this.source_selectedDakhl = this.sourcebanks[0].id;
+                this.destination_Dakhl = this.destinationbanks[0].id;
+                // this.commission_selectedDakhl = this.commissionbanks[0].id;
+              
+                // console.log("selected Dakhl", this.selectedDakhl);
 
-        change_transfer_currency() {
-            this.getBanksByCID(this.transfer_currency_model);
-            // this.getBanksByCID(this.commission_currency_model);
-        },
-
-        edit_change_rasidcurrency() {
-            this.edit_getBanksByCID(this.edit_sale_currency_model);
-        },
-
-        async edit_sale_func(id,type) {
-            const response = await axios.post(`/api/getexchangesaleforedit/`,{id: id,rasid_bord:type});
-            let rasid_list = response.data.rasid;
-            let bord_list = response.data.bord;
-            this.openModaledit();
-            this.rasid_id=rasid_list.id;
-            this.bord_id=bord_list.id;
-
-            this.get_edit_bord_bank(bord_list.currency,bord_list.bank_acount_id);
-            this.get_edit_rasid_bank(rasid_list.currency,rasid_list.bank_acount_id);
-            this.edit_transfer_amount = bord_list.amount;
-            this.edit_sale_currency_model = bord_list.currency;
-            this.edit_edit_rasid_desc = rasid_list.desc;
-            this.edit_currency_rate = bord_list.currency_rate;
-            this.edit_rasid_amount = rasid_list.amount;
-            this.edit_rasid_currency_Model = rasid_list.currency;
-            this.edit_rasid_desc= bord_list.desc;
-            this.edit_sale_date = bord_list.date;
+            } catch (error) {
+                console.log(error.message);
+            }
         },
      
-        async get_edit_bord_bank(curency_id,bank_id) {
+        async getBanksByCIDforComision(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + curency_id);
-                this.edit_bord_banks = response.data.banks;
-                // console.log("this.edit_bord_banks",this.edit_bord_banks);
-                this.edit_source_selectedDakhl = this.edit_bord_banks.length > 0 ?
-            this.edit_bord_banks.find(bank => bank.id === bank_id).id:
-            '';
-
+                const response = await axios.get('/api/getbankbyid/' + id);
+                this.commissionbanks = response.data.banks;
+                this.commission_selectedDakhl = this.commissionbanks[0].id;
             } catch (error) {
                 console.log(error.message);
             }
         },
-        async get_edit_rasid_bank(curency_id,bank_id) {
+
+        // for edit
+        async get_edit_Currency() {
             try {
-                const response = await axios.get('/api/getbankbyid/' + curency_id);
-                this.edit_rasid_banks = response.data.banks;
-                // this.edit_rasid_selectedDakhl = this.edit_rasid_banks[0].id;
-               this.edit_rasid_selectedDakhl = this.edit_rasid_banks.length > 0 ? 
-               this.edit_rasid_banks.find(banks => banks.id == bank_id).id:'';
-                // console.log("get_edit_bord_bank this.edit_rasid_selectedDakhl",this.edit_rasid_selectedDakhl);
+                await axios.get('/api/currencies').then((response) => {
+                        this.edit_currencies = response.data.currencies;
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching currencies:', error);
+                    });
+
+            } catch (error) {
+                console.error('Error fetching data: ', error.message);
+            }
+        },
+   
+        edit_change_transfer_currency() {
+            this.edit_getBanksByCID(this.edit_transfer_currency_model);
+        },
+        edit_change_commission_currency() {
+            this.edit_getBanksByCIDforComision(this.edit_commission_currency_model);
+        },
+ 
+        async edit_getBanksByCID(id) {
+            try {
+                const response = await axios.get('/api/getbankbyid/' + id);
+                this.edit_sourcebanks = response.data.banks;
+                this.edit_destinationbanks = response.data.banks;
+                this.edit_commissionbanks = response.data.banks;
+
+                this.edit_source_selectedDakhl = this.edit_sourcebanks[0].id;
+                this.edit_destination_Dakhl = this.edit_destinationbanks[0].id;
+            } catch (error) {
+                console.log(error.message);
+            }
+        },
+     
+        async edit_getBanksByCIDforComision(id) {
+            try {
+                const response = await axios.get('/api/getbankbyid/' + id);
+                this.edit_commissionbanks = response.data.banks;
              
-                
+              
 
             } catch (error) {
                 console.log(error.message);
             }
         },
-        async submiteditBuyTransaction() {
+
+    
+ 
+        async edit_transfer_func(id,type) {
+            const response = await axios.post(`/api/gettransferforedit/`,{id: id,rasid_bord:type});  
             
-            const response = await axios.post(`/api/updateexchange`, {
-                rasid_id: this.rasid_id,
-                rasid_amount: this.edit_transfer_amount,
-                rasid_currency: this.edit_sale_currency_model,
-                rasid_bank_acount_id: this.edit_source_selectedDakhl,
+            let rasid_list = response.data.rasid;
+            let bord_list = response.data.bord;
+            let commission_list = response.data.commission;
+            this.openModaledit();
+            
+            this.rasid_id=rasid_list.id;
+            this.bord_id=bord_list.id;
+            console.log("rasid_list",rasid_list);
+            console.log("bord_list",bord_list);
+            console.log("commission_list",commission_list);
+            // this.commmission_id=commission_list.id;
 
-                bord_id:this.bord_id,
-                bord_amount: this.edit_rasid_amount,
-                bord_currency: this.edit_rasid_currency_Model,
-                bord_bank_acount_id: this.edit_rasid_selectedDakhl,
+            this.edit_transfer_amount = bord_list.amount;
+            this.edit_transfer_currency_model = bord_list.currency;
+            this.edit_getBanksByCID(this.edit_transfer_currency_model)
+            this.edit_source_selectedDakhl = bord_list.bank_acount_id;
+            this.edit_commission_currency_model=commission_list.currency;
+            this.edit_commission_amount = commission_list.amount;
+            // this.edit_commission = commission_list.commission;
+            this.edit_getBanksByCIDforComision(this.edit_commission_currency_model)
+            this.edit_transfer_date = bord_list.date;
+            this.edit_transfer_desc = bord_list.desc;
+            const commission1 = document.getElementById('commission');
+            const nocommission = document.getElementById('nocommission');
 
-                currency_rate: this.edit_currency_rate,
-                date: this.edit_sale_date,
-                desc: this.edit_edit_rasid_desc,
-              
-            });
-            console.log(response.data);
 
-            if (response.data != null) {
-                // console.log("in data!=null");
-                if (response.data.status === false) {
-
-                    if (response.data.message != null) {
-                       
-                        this.showalert(response.data.message, "error", "error!");
+                    if (commission_list.commission) {
+                        commission1.checked = true;
+                        nocommission.checked = false;
+                        console.log("Commission darad");
                     } else {
-                        this.errors = response.data.error;
+                        commission1.checked = false;
+                        nocommission.checked = true;
+                        console.log("Commission nadarad");
                     }
-
-                } else {
-
-                    this.errors = {};
-                    this.transfers.push(response.data.new_data);
-                    this.showModal = false;
-                    this.showalert(response.data.message, "success", "success");
-                }
-            }
-         
-
+            
         },
+     
+      
+      
 
         async deleteSaleExchange(id) {
             if (!window.confirm('آیا میخواهید که رسید حذف شود؟')) {
@@ -339,58 +333,8 @@ export default {
                 }
             }
         },
-        async getBanks(id) {
-            try {
-                const response = await axios.get('/api/getbankbyid/' + id);
-                this.banks = response.data.banks;
-                // this.rasid_selectedDakhl = this.banks[0].id;
-                // console.log("selected Dakhl", this.selectedDakhl);
-
-            } catch (error) {
-                console.log(error.message);
-            }
-        },
-        async getBanksByCID(id) {
-            try {
-                const response = await axios.get('/api/getbankbyid/' + id);
-                this.sourcebanks = response.data.banks;
-                
-                this.destinationbanks = response.data.banks;
-                this.commissionbanks = response.data.banks;
-
-                this.source_selectedDakhl = this.sourcebanks[0].id;
-                this.destination_Dakhl = this.destinationbanks[0].id;
-                // this.commission_selectedDakhl = this.commissionbanks[0].id;
-              
-                // console.log("selected Dakhl", this.selectedDakhl);
-
-            } catch (error) {
-                console.log(error.message);
-            }
-        },
-        async getBanksByCIDforComision(id) {
-            try {
-                const response = await axios.get('/api/getbankbyid/' + id);
-                this.commissionbanks = response.data.banks;
-             
-                this.commission_selectedDakhl = this.commissionbanks[0].id;
-              
-
-            } catch (error) {
-                console.log(error.message);
-            }
-        },
-        // async edit_getBanksByCID(id) {
-        //     try {
-        //         const response = await axios.get('/api/getbankbyid/' + id);
-        //         this.edit_sourcebanks = response.data.banks;
-        //         this.edit_transfer_selectedDakhl = this.sourcebanks[0].id;
-        //         // console.log("selected Dakhl", this.selectedDakhl);
-
-        //     } catch (error) {
-        //         console.log(error.message);
-        //     }
-        // },
+     
+      
         async searchData() {
             const response = await axios.post('/api/searchtransaction', {
                 query: this.searchQuery
@@ -408,16 +352,144 @@ export default {
     <PageHeader :title="title" :items="items" />
     <div class="row">
         <div class="col-xl-4">
+             <!-- edit modal start -->
+             <div class="col-sm-8">
+                <div class="text-sm-end">
+                    <b-modal v-model="showModal" title="ویرایش انتقال" title-class="text-black font-18" body-class="p-3" hide-footer>
+                        <form id="category_insert" autocomplete="on" class="form-horizontal form-label-left" @submit.prevent="editSubmitTransfer">
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6 col-xs-12">
+                                        <label for="supplier">واحد پول انتقالی:</label>
+                                        <select class="form-control form-control-lg select2 required" v-model="edit_transfer_currency_model" @change="edit_change_transfer_currency" required>
+                                            <option disabled selected> واحد</option>
+                                            <option v-for="currency in edit_currencies" :key="currency.id" :value="currency.id">{{currency.name}} {{currency.sign}}</option>
+                                        </select>
+                                        <span class="text-danger error-text currency_error"></span>
+                                    </div>
+
+                                    <div class="col-sm-6 col-xs-12">
+                                        <label for="name"> مقدار پول انتقالی:‌</label>
+                                        <input type="number" id="edit_transfer_amount" v-model="edit_transfer_amount" class="form-control required">
+                                        <span class="text-danger error-text transfer_amount_error"></span>
+                                    </div>
+
+                                </div>
+                                <div class="col-sm-12 col-xs-12">
+                                    <label for="supplier">انتخاب دخل انتقالی :
+                                    </label>
+                                    <select class="form-control form-control-lg select2 required" v-model="edit_source_selectedDakhl" style="width: 100%;">
+                                        <option disabled selected>ابتدا واحد پول را انتخاب کنید.</option>
+                                        <option v-for="bank in edit_sourcebanks" :key="bank.id" :value="bank.id">{{bank.account_name}}</option>
+
+                                    </select>
+                                    <span class="text-danger error-text dakhl_error"></span>
+                                </div>
+                                <div class="col-sm-12 col-xs-12">
+                                    <label for="supplier">انتخاب دخل مقصد :
+                                    </label>
+                                    <select class="form-control form-control-lg select2 required" v-model="edit_destination_Dakhl" style="width: 100%;">
+                                        <option disabled selected>ابتدا واحد پول را انتخاب کنید.</option>
+                                        <option v-for="bank in edit_destinationbanks" :key="bank.id" :value="bank.id">{{bank.account_name}}</option>
+
+                                    </select>
+                                    <span class="text-danger error-text dakhl_error"></span>
+                                </div>
+                                <div class="row mt-3 ">
+                                    <div class="col-sm-12">
+                                    <span class="">
+                                       <label for="Commission" class="mx-1">کمیشن دارد:‌</label>
+                                       <input
+                                       class="form-check-input"
+                                       type="radio"
+                                       id="Commission" v-model="edit_commission"
+                                       value="darad"
+                                       name="Commission"
+                                     />
+                                    </span>
+                                      <span>
+                                     <label for="Commission" class="mx-1">کمیشن ندارد:‌</label>
+                                     <input
+                                     class="form-check-input"
+                                     type="radio"
+                                     id="nocommission" v-model="edit_commission"
+                                     name="Commission"
+                                     value="nadarad"
+                                   />
+                               </span>
+                                   </div>
+                           </div>
+
+                           
+                                <div class="row">
+                                    <div class="col-sm-6 col-xs-12">
+                                        <label for="supplier">واحد پول کمیشن:</label>
+                                        <select class="form-control form-control-lg select2 required" v-model="edit_commission_currency_model" @change="edit_change_commission_currency" >
+                                            <option disabled selected> واحد</option>
+                                            <option v-for="currency in edit_currencies" :key="currency.id" :value="currency.id">{{currency.name}} {{currency.sign}}</option>
+                                        </select>
+                                        <span class="text-danger error-text currency_error"></span>
+                                    </div>
+                                        <div class="col-sm-6 col-xs-12">
+                                            <label for="name">مقدار پول کمیشن :‌</label>
+                                            <input type="number" id="commission_amount" v-model="edit_commission_amount" class="form-control">
+                                            <span class="text-danger error-text amount_error"></span>
+                                        </div>
+                                </div>
+                               
+
+                                <!-- commission bank -->
+                                <div class="col-sm-12 col-xs-12">
+                                    <label for="supplier">انتخاب دخل کمیشن :
+                                    </label>
+                                    <select class="form-control form-control-lg select2 " v-model="edit_commission_selectedDakhl" style="width: 100%;">
+                                        <option disabled selected>ابتدا واحد پول را انتخاب کنید.</option>
+                                        <option v-for="bank in edit_commissionbanks" :key="bank.id" :value="bank.id">{{bank.account_name}}</option>
+                                    </select>
+                                  
+                                    <span class="text-danger error-text dakhl_error"></span>
+                                </div>
+                                <!-- commission bank -->
+
+                                <div class="col-sm-12 col-xs-12 p-0">
+                                    <label for="factore_date">تاریخ :
+                                    </label>
+                                    <div class="input-group ">
+                                        <!-- @alireza-ab/vue3-persian-datepicker -->
+                                        <date-picker @select="edit_select" mode="single" type="date" locale="fa" :column="1" required>
+                                        </date-picker>
+                                    </div>
+                                    <span class="text-danger error-text afrad_error" v-if="errors.date">{{errors.date[0]}}</span>
+                                    <span class="text-center">{{edit_transfer_date}}</span>
+                                </div>
+                                <!-- </div> -->
+
+                                <div class="col-sm-12 col-xs-12" style="padding-right:0px!important">
+                                    <br>
+
+                                    <textarea id="disc" class="form-control" autocomplete="on" v-model="edit_transfer_desc" rows="4" placeholder="توضیحات"></textarea>
+                                    <span class="text-danger error-text disc_error"></span>
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                <div class="text-end pt-2 mt-1 g-2 mb-2">
+                                    <b-button type="submit" variant="primary" class="ms-1 ml-2">آپدیت</b-button>
+                                </div>
+                            </div>
+                        </form>
+                    </b-modal>
+                </div>
+            </div>
+               <!-- edit modal end -->
             <div class="card">
-
-
                 <div class="card-body">
                     <h4 class="card-title mb-2 p-2 text-white text-center font-size-18" style="background-color: #3498db;">انتقال :</h4>
                     <span class="border-bottom w-100 font-size-16">
                         انتقال پول 
                     </span>
                     <div>
-
                         <form id="category_insert" autocomplete="on" class="form-horizontal form-label-left" @submit.prevent="storeTransferTransaction">
 
                             <div class="form-group">
@@ -430,13 +502,13 @@ export default {
                                         </select>
                                         <span class="text-danger error-text currency_error"></span>
                                     </div>
-
+                            
                                     <div class="col-sm-6 col-xs-12">
                                         <label for="name"> مقدار پول انتقالی:‌</label>
                                         <input type="number" id="transfer_amount" v-model="transfer_amount" class="form-control required">
                                         <span class="text-danger error-text transfer_amount_error"></span>
                                     </div>
-
+                            
                                 </div>
                                 <div class="col-sm-12 col-xs-12">
                                     <label for="supplier">انتخاب دخل انتقالی :
@@ -444,7 +516,7 @@ export default {
                                     <select class="form-control form-control-lg select2 required" v-model="source_selectedDakhl" style="width: 100%;">
                                         <option disabled selected>ابتدا واحد پول را انتخاب کنید.</option>
                                         <option v-for="bank in sourcebanks" :key="bank.id" :value="bank.id">{{bank.account_name}}</option>
-
+                            
                                     </select>
                                     <span class="text-danger error-text dakhl_error"></span>
                                 </div>
@@ -454,7 +526,7 @@ export default {
                                     <select class="form-control form-control-lg select2 required" v-model="destination_Dakhl" style="width: 100%;">
                                         <option disabled selected>ابتدا واحد پول را انتخاب کنید.</option>
                                         <option v-for="bank in destinationbanks" :key="bank.id" :value="bank.id">{{bank.account_name}}</option>
-
+                            
                                     </select>
                                     <span class="text-danger error-text dakhl_error"></span>
                                 </div>
@@ -482,9 +554,9 @@ export default {
                                    />
                                </span>
                                    </div>
-                           </div>
-
-                           
+                            </div>
+                            
+                            
                                 <div class="row">
                                     <div class="col-sm-6 col-xs-12">
                                         <label for="supplier">واحد پول کمیشن:</label>
@@ -501,7 +573,7 @@ export default {
                                         </div>
                                 </div>
                                
-
+                            
                                 <!-- commission bank -->
                                 <div class="col-sm-12 col-xs-12">
                                     <label for="supplier">انتخاب دخل کمیشن :
@@ -509,12 +581,12 @@ export default {
                                     <select class="form-control form-control-lg select2 " v-model="commission_selectedDakhl" style="width: 100%;">
                                         <option disabled selected>ابتدا واحد پول را انتخاب کنید.</option>
                                         <option v-for="bank in commissionbanks" :key="bank.id" :value="bank.id">{{bank.account_name}}</option>
-
+                            
                                     </select>
                                     <span class="text-danger error-text dakhl_error"></span>
                                 </div>
                                 <!-- commission bank -->
-
+                            
                                 <div class="col-sm-12 col-xs-12 p-0">
                                     <label for="factore_date">تاریخ :
                                     </label>
@@ -526,21 +598,22 @@ export default {
                                     <span class="text-danger error-text afrad_error" v-if="errors.date">{{errors.date[0]}}</span>
                                 </div>
                                 <!-- </div> -->
-
+                            
                                 <div class="col-sm-12 col-xs-12" style="padding-right:0px!important">
                                     <br>
-
+                            
                                     <textarea id="disc" class="form-control" autocomplete="on" v-model="transfer_desc" rows="4" placeholder="توضیحات"></textarea>
                                     <span class="text-danger error-text disc_error"></span>
                                 </div>
-
+                            
                             </div>
                             <div class="form-group">
                                 <div class="text-end pt-2 mt-1 g-2 mb-2">
                                     <b-button type="submit" variant="primary" class="ms-1 ml-2">ساختن</b-button>
                                 </div>
                             </div>
-                        </form>
+                            </form>
+                     
                     </div>
                 </div>
             </div>
@@ -569,7 +642,6 @@ export default {
                                 <table class="table table-centered table-nowrap">
                                     <thead>
                                         <tr>
-                                            <th class="text-center">#</th>
                                             <th class="text-center">آیدی</th>
                                             <th class="text-center">رسید برد</th>
                                             <th class="text-center">ترانزکشن تایپ</th>
@@ -585,13 +657,7 @@ export default {
                                     </thead>
                                     <tbody>
                                         <tr v-for="transaction in transfers" :key="transaction?.id">
-                                            <td>
-                                                <div class="form-check font-size-16">
-                                                    <input :id="`customCheck${transaction?.id}`" type="checkbox" class="form-check-input" />
-                                                    <label class="form-check-label" :for="`customCheck${transaction?.id}`">&nbsp;</label>
-                                                </div>
-                                            </td>
-
+                        
                                             <td>{{transaction?.id}}</td>
 
                                             <td>
@@ -613,7 +679,7 @@ export default {
 
                                                 <button class="btn btn-xs">
                                                     <i class="fas fa-pencil-alt text-success me-1" 
-                                                    @click="edit_sale_func(transaction.id,transaction.rasid_bord)"></i>
+                                                    @click="edit_transfer_func(transaction.id,transaction.rasid_bord)"></i>
                                                 </button>
 
                                                 <button class="btn btn-xs">
