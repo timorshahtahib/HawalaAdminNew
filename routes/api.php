@@ -109,6 +109,8 @@ Route::get('/gettransfers',[ExchangeController::class, 'getTransfer']);
 
 Route::post('/storetransfer',[ExchangeController::class,'storeTranferTransactions']);
 Route::post('/gettransferforedit',[ExchangeController::class,'getTransferforEdit']);
+Route::post('/updateTransferTransaction',[ExchangeController::class,'updateTransferTransaction']);
+Route::post('/deletetransfer',[ExchangeController::class,'deleteTransfer']);
 
 
 

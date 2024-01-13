@@ -177,6 +177,7 @@ export default {
                         this.transactions.push(response.data.new_data2);
 
                         this.errors = {}
+                        this.showModal=false;
                         this.buy_currency_model = '';
                         this.pay_selectedDakhl = '';
                         this.buy_amount = 0;

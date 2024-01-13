@@ -647,9 +647,6 @@ class ExchangeController extends Controller
 
                 $destination_tansaction_id = Transaction::insertGetId($destination_transaction_values);
 
-              
-
-                
                 $output_data3=[];
                 $commission_transaction=0;
                 if($request->commission==="darad"){
@@ -693,14 +690,17 @@ class ExchangeController extends Controller
                     $output_data = Transaction::where('id',$source_transaction_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
                     $output_data2 = Transaction::where('id',$destination_tansaction_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
 
-                    DB::commit();
-                    return  response()->json([
-                        'status'=>true,
-                        'new_data1'=>$output_data,
-                        'new_data2'=>$output_data2,
-                        'new_data3'=>$output_data3,
-                        'message'=>'عملیات انجام شد',
-                    ]);
+                      
+                  
+                        DB::commit();
+                        return  response()->json([
+                            'status'=>true,
+                            'new_data1'=>$output_data,
+                            'new_data2'=>$output_data2,
+                            'new_data3'=>$output_data3,
+                            'message'=>'عملیات انجام شد',
+                        ]);
+                    
 
                 }else{
                     DB::rollback();
@@ -763,5 +763,153 @@ class ExchangeController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
          
+    }
+
+
+
+    public function updateTransferTransaction(Request $request){
+        $validator =Validator::make($request->all(),[
+            'transfer_amount'=>'required',
+            'currency'=>'required|exists:currency,id',
+            'source_bank_acount_id'=>'required|exists:finance_account,id',
+            'destination_bank_acount_id'=>'required|exists:finance_account,id',
+            // commission
+            'commission_bank_acount_id'=>'nullable|exists:finance_account,id',
+            // 
+            "commission"=>"nullable",
+            "commission_amount"=>"nullable",
+            "commission_currency"=>'nullable',
+            "date"=>'required',
+            'desc'=>'nullable'
+        ]);
+        // dd($request->all());
+        if(!$validator->passes()){
+            return response()->json([
+                'status'=>false,
+                'error'=>$validator->errors()->toArray(),
+            ]);
+        }else{
+        
+            DB::beginTransaction();
+          
+            try {
+               
+            $source_transaction_values = [
+                'rasid_bord'=> 'bord',
+                'transaction_type'=>'transfer',
+                'amount'=>$request->transfer_amount,
+                'currency'=>$request->currency,
+                'finance_acount_id'=>26,
+                'bank_acount_id'=>$request->source_bank_acount_id,
+                'desc'=>$request->desc,
+                'date'=>$request->date
+            ];
+         
+            $destination_transaction_values = [
+                'rasid_bord'=> 'rasid',
+                'transaction_type'=>'transfer',
+                'amount'=>$request->transfer_amount,
+                'currency'=>$request->currency,
+                'finance_acount_id'=>26,
+                'bank_acount_id'=>$request->destination_bank_acount_id,
+                'desc'=>$request->desc,
+                'date'=>$request->date,  
+            ];
+
+            $output_data3=[];
+            $commission_id=$request->commmission_id;
+            if($request->commission==='darad'){
+                $commission_transaction_values = [
+                    'rasid_bord'=> 'bord',
+                    'transaction_type'=>'commission',
+                    'amount'=>$request->commission_amount,
+                    'currency'=>$request->commission_currency,
+                    'finance_acount_id'=>26,
+                    'bank_acount_id'=>$request->commission_bank_acount_id,
+                    'desc'=>$request->desc,
+                    'date'=>$request->date,
+                ];
+                $tr_commission= Transaction::where('id',$commission_id)->update($commission_transaction_values);
+                $output_data3 = Transaction::where('id',$commission_id)->
+                with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
+                
+            }
+           
+          
+            $tr_rasid= Transaction::where('id',$request->rasid_id)->update($source_transaction_values);
+            $tr_bord= Transaction::where('id',$request->bord_id)->update($destination_transaction_values);
+          
+        
+           
+            if($tr_rasid && $tr_bord){
+
+                $output_data = Transaction::where('id',$request->rasid_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
+                $output_data2 = Transaction::where('id',$request->bord_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
+                DB::commit();
+                return  response()->json([
+                    'status'=>true,
+                    'rasid'=>$output_data,
+                    'bord'=>$output_data2,
+                    'commission'=>$output_data3,
+                    'message'=>'عملیات انجام شد',
+                ]);
+                }else{
+                        DB::rollback();
+                        return  response()->json([
+                            'status'=>false,
+                            'message'=>'عملیات انجام نشد',
+                        ]);
+                
+                }
+            } catch (Throwable $e) {
+                DB::rollback();
+                return  response()->json([
+                    'status'=>false,
+                    'message'=>$e->getMessage(),
+                ]);
+            }
+                    
+
+            
+
+        }
+    
+    }
+
+    public function deleteTransfer(Request $request)
+    {
+        DB::beginTransaction();
+            
+            try {
+              
+                $id=$request->id;
+                $transfer_tr1= Transaction::where('status', '=', '1')->where('transaction_type','transfer')->where('id',$id)->first();
+                $transfer_tr2= Transaction::where('status', '=', '1')->where('transaction_type','transfer')->where('order_id',$id)->first();
+                $commissionTransaction= Transaction::where('status', '=', '1')->where('transaction_type','commission')->where('order_id',$id)->first();
+
+                // if ($request->) {
+
+                    
+                    // }
+                    $transfer_tr1->update(['status'=>0]);
+                    $transfer_tr2->update(['status'=>0]);
+                    $commissionTransaction->update(['status'=>0]);
+ 
+            
+                DB::commit();
+            return  response()->json([
+                        'status'=>true,
+                        'message'=>'عملیات انجام شد',
+                    ],204);
+            } catch (Throwable $e) {
+                DB::rollback();
+                return response()->json([
+                    'status' => false,
+                    'message' => $e->getMessage(),
+                ]);
+            }
+
+            
+        
     }
 }
