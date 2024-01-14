@@ -32,7 +32,9 @@ class ExchangeController extends Controller
     public function getTransfer()
     {
         try {
-            $transaction = Transaction::where('status', '=', '1')->where('transaction_type','transfer')->orWhere('transaction_type','commission')->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')->get();
+            $transaction = Transaction::where('status', '=', '1')->where('transaction_type','transfer')
+            ->orWhere('transaction_type','commission')
+            ->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')->get();
 
             if ($transaction->isEmpty()) {
                 return response()->json(['error' => 'Transaction not found'], 404);
@@ -908,8 +910,34 @@ class ExchangeController extends Controller
                     'message' => $e->getMessage(),
                 ]);
             }
+    }
+    public function searchTransfers(Request $request){
+    
+           try {
+               $searchTerm = $request->input('query');
+               $query=Transaction::query()  ->where('status', '=', '1')
+               ->where('transaction_type', 'transfer')->orWhere('transaction_type','commission');
 
+            if($searchTerm){
+                $query->where(function ($query) use ($searchTerm) {
+                    $query->where('check_number', $searchTerm)
+                        ->orWhere('rasid_bord', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('amount', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('ref_id', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('desc', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('date', $searchTerm);
+                });
+            }
+            $transfer = $query
+            ->with(['financeAccount', 'customer', 'tr_currency', 'bank_account'])
+            ->get();
+            if ($transfer->isEmpty()) {
+                return response()->json(['error' => 'Transaction not found'], 404);
+            }
+            return response()->json($transfer);
+           } catch (Throwable $th) {
             
-        
+           }
+    
     }
 }

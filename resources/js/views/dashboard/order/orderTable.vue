@@ -14,7 +14,7 @@
         <table class="table table-centered table-nowrap">
           <thead>
             <tr>
-                <th scope="col">#</th>
+                <!-- <th scope="col">#</th> -->
                 <th>آیدی</th>
                 <th>آیدی مشتری</th>
                 <th>آیدی ترانزکشن</th>
@@ -46,12 +46,7 @@
           </thead>
           <tbody>
         <tr v-for="order in orders" :key="order.id">
-            <td>
-                <div class="form-check font-size-16">
-                  <input :id="`customCheck${order.id}`" type="checkbox" class="form-check-input" />
-                  <label class="form-check-label" :for="`customCheck${order.id}`">&nbsp;</label>
-                </div>
-              </td>
+          
               <td>{{ order.id }}</td>
               <td>{{ order.customer_id }}</td>
               <td>{{ order.transaction_id  }}</td>
@@ -84,14 +79,7 @@
                 </span>
               </td>
               <td>
-                <!-- <b-dropdown class="card-drop" variant="white" right toggle-class="p-0" menu-class="dropdown-menu-end">
-                    <template v-slot:button-content>
-                        <i class="mdi mdi-dots-horizontal font-size-18"></i>
-                    </template> -->
-
-                    <!-- <b-dropdown-item>
-                        <i class="fas fa-pencil-alt text-success me-1" @click="editOrder(order.id)"></i> Edit
-                    </b-dropdown-item> -->
+           
 
                     <button class="btn btn-xs">
                         <i class="fas fa-trash-alt text-danger me-1" @click="deleteOrder(order.id)"></i>

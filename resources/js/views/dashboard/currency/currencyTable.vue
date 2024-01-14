@@ -63,10 +63,7 @@
         <tbody>
             <tr v-for="currency in currencies" :key="currency.id">
                 <td>
-                    <div class="form-check font-size-16">
-                        <input :id="`customCheck${currency.id}`" type="checkbox" class="form-check-input" />
-                        <label class="form-check-label" :for="`customCheck${currency.id}`">&nbsp;</label>
-                    </div>
+                   {{ currency.id }}
                 </td>
                 <td>{{ currency.name }}</td>
                 <td>{{ currency.sign }}</td>

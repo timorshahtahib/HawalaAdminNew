@@ -395,16 +395,16 @@ export default {
                 } catch (error) {
                     this.showalert(error.message, 'error', 'error');
                 }
+
             }
         },
 
         async searchData() {
-            const response = await axios.post('/api/searchtransaction', {
+            const response = await axios.post('/api/searchtransfer', {
                 query: this.searchQuery
             });
-
             this.transfers = response.data;
-            console.log(this.transfers);
+        
         },
     },
 };
@@ -664,7 +664,7 @@ export default {
                         <div class="search-box me-2 mb-2 d-inline-block">
 
                             <div class="position-relative">
-                                <input type="text" class="form-control" placeholder="جستجوی مشتری..." @input="searchData" />
+                                <input type="text" class="form-control" v-model="searchQuery" placeholder="جستجوی مشتری..." @input="searchData" />
                                 <i class="bx bx-search-alt search-icon"></i>
                             </div>
                         </div>

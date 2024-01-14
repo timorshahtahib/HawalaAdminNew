@@ -196,18 +196,38 @@ class FinanceAccountController extends Controller
 
 
     public function searchFinanceAccount(Request $request){
-        $query=$request->input('query');
+
+        try {
         $searchTerm = $request->input('query');
-          $financeAccount =FinanceAccount::query()
-          ->Where('account_name',  'like', '%' . $searchTerm . '%')
-          ->orWhere('type',  'like', '%' . $searchTerm . '%')
-          ->orWhere('currency',  'like', '%' . $searchTerm . '%')
-          ->orWhere('description',  'like', '%' . $searchTerm . '%')
-          ->orWhere('user_id',  'like', '%' . $searchTerm . '%')
-          ->orWhere('account',  'like', '%' . $searchTerm . '%')->with(['finance_currency'])
-          ->get();
+          $query=FinanceAccount::query()->where('status', '=', '1')
+          ->with(['finance_currency']);
+            
+          if($searchTerm){
+            $query->where(function ($query) use ($searchTerm) {
+                $query->where('account_name', $searchTerm)
+                    ->orWhere('type', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('currency', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('user_id', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('account', $searchTerm)
+                   ->with(['finance_currency'])->get();
+            });
+
+          }
+          $expense = $query
+          ->with(['finance_currency'])->get();
+          if ($expense->isEmpty()) {
+            return response()->json([]);
+        }
           
-          return response()->json($financeAccount);
+          return response()->json($expense);
+        } catch (Throwable $e) {
+            return response()->json(['message'=>$e->getMessage()]);
+        }
+        
+
+
+
 }
     
 }

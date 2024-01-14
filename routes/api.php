@@ -111,6 +111,7 @@ Route::post('/storetransfer',[ExchangeController::class,'storeTranferTransaction
 Route::post('/gettransferforedit',[ExchangeController::class,'getTransferforEdit']);
 Route::post('/updateTransferTransaction',[ExchangeController::class,'updateTransferTransaction']);
 Route::post('/deletetransfer',[ExchangeController::class,'deleteTransfer']);
+Route::post('/searchtransfer',[ExchangeController::class,'searchTransfers']);
 
 
 

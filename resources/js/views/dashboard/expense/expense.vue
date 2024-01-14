@@ -122,13 +122,7 @@ export default {
                 console.log(error.message);
             }
         },
-        async searchData() {
-            const response = await axios.post('/api/searchexpense', {
-                query: this.searchQuery
-            });
-
-            this.ExpenseList = response.data;
-        },
+     
         prevPage() {
             if (this.offset > 0) {
                 this.offset -= this.limit;
@@ -193,11 +187,7 @@ export default {
 
                 this.editselectedDakhl = this.editselectedDakhls.length > 0 ? this.editselectedDakhls.find(bank => bank.id == editselectedDakhls[0].id).id : '';
 
-                // this.selectedCurrency = this.gettedFinanceCurrencyId;
-                // console.log("updateEdidteCC", this.editExpenseCurrecies);
-                // this.editfinmodel = this.editFinanceAccounts.length > 0 ? this.editFinanceAccounts.find(currency => currency.id == id).id : '';
-                // console.log("editfinmodel", this.editfinmodel);
-
+          
             } catch (error) {
                 console.log(error.message);
             }
@@ -251,7 +241,7 @@ export default {
                         }
 
                     } else {
-                        // console.log("else true");
+                       
 
                         this.errors = {};
                         this.getAccounts();
@@ -259,19 +249,17 @@ export default {
                         this.type = null
                         this.amount = null
                         this.currency = null,
-                            this.amount_equal = null,
-                            this.currency_equal = null,
-                            this.date = null,
-                            this.transaction_id = null,
-                            this.finance_acount_id = null,
-                            this.user_id = null,
-                            this.ref_type = null,
-                            this.state = null,
-                            this.desc = null
-                        this.showalert(response.data.message, "success", "1توجه!");
+                        this.amount_equal = null,
+                        this.currency_equal = null,
+                        this.date = null,
+                        this.transaction_id = null,
+                        this.finance_acount_id = null,
+                        this.user_id = null,
+                        this.ref_type = null,
+                        this.state = null,
+                        this.desc = null
+                        this.showalert(response.data.message, "success", "موفقانه ساخته شد");
                     }
-                    // this.$router.push('/transaction');
-                    // window.location.reload();
 
                 }
 
@@ -281,8 +269,7 @@ export default {
 
         },
         async submitEditedForm(id) {
-            //  console.log("submating form id",this.editExpenseExpenseCurrencyModel);
-            //  console.log("submating form  expence",this.newExpense);
+
             try {
                 const response = await axios.post('/api/updateExpense', {
                     id: this.newExpense.id,
@@ -293,9 +280,7 @@ export default {
                     bank_id: this.editselectedDakhl,
                     desc: this.editDesc,
                 });
-                // console.log("in submit edit file:",response);
-                // console.log('lkjdscsakjd',response);
-
+    
                 if (response.data != null) {
 
                     // console.log("in data!=null");
@@ -348,6 +333,14 @@ export default {
                     this.showalert('ترانزکشن با موفقیت حذف نشد!', 'ادامه دهید', 'error');
                 }
             }
+        },
+
+        async searchData() {
+            const response = await axios.post('/api/searchexpense', {
+                query: this.searchQuery
+            });
+
+            this.ExpenseList = response.data;
         },
     },
 };
@@ -548,7 +541,7 @@ export default {
                                 <table class="table table-centered table-nowrap">
                                     <thead>
                                         <tr>
-                                            <th class="text-center">#</th>
+                                            <th>آیدی</th>
                                             <th class="text-center">تاریخ</th>
                                             <th class="text-center">حساب</th>
                                             <th class="text-center">نوع</th>
@@ -563,16 +556,10 @@ export default {
                                     </thead>
                                     <tbody>
                                         <tr v-for="expenesel in ExpenseList" :key="expenesel.id" style="text-center">
-                                            <td>
-                                                <div class="form-check font-size-16">
-                                                    <input :id="`customCheck${expenesel.id}`" type="checkbox" class="form-check-input" />
-                                                    <label class="form-check-label" :for="`customCheck${expenesel.id}`">&nbsp;</label>
-                                                </div>
-                                            </td>
-
+                                        
                                             <td>{{expenesel.id}}</td>
                                             <td>{{expenesel.date}}</td>
-                                            <td>{{expenesel.expense_acount.account_name}}</td>
+                                            <td>{{expenesel.expense_acount?.account_name}}</td>
                                             <td>{{expenesel.type ? "مصرف" :""}}</td>
                                             <td>{{expenesel.amount}}</td>
                                             <td>{{expenesel.expense_currency.name}}</td>

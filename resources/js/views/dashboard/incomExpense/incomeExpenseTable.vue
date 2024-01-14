@@ -107,7 +107,6 @@
     <table class="table table-centered table-nowrap">
         <thead>
             <tr>
-                <th scope="col">#</th>
                 <th scope="col">آیدی</th>
                 <th scope="col">نوعیت</th>
                 <th scope="col">مقدار</th>
@@ -127,12 +126,7 @@
         </thead>
         <tbody>
             <tr v-for="IncomeExpense in IncomeExpenses" :key="IncomeExpense.id">
-                <td>
-                    <div class="form-check font-size-16">
-                        <input :id="`customCheck${IncomeExpense.id}`" type="checkbox" class="form-check-input" />
-                        <label class="form-check-label" :for="`customCheck${IncomeExpense.id}`">&nbsp;</label>
-                    </div>
-                </td>
+           
                 <td>{{ IncomeExpense.id }}</td>
                 <td>{{ IncomeExpense.type }}</td>
                 <td>{{ IncomeExpense.amount }}</td>
