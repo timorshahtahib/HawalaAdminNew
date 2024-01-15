@@ -15,27 +15,24 @@ class CustomerController extends Controller
     public function index(Request $request)
     {
         try {
-            $limit = $request->has('limit') ? $request->limit :10;
-            $offset = $request->has('offset') ? $request->offset : 0;
+            $limit = $request->has('limit') ? $request->limit : 10;
     
-            $customer = Customer::where('status', '=', '1')->orderBy('id', 'desc')->limit($limit)->offset($offset)->get();
-            
-            // $customer = Customer::where('status', '=', '1')->with(['financeAccount','transactions','incomeExpense','currency'])->orderBy('id','desc')->get();
+            $customers = Customer::where('status', '=', '1')
+                ->orderBy('id', 'desc')
+                ->paginate($limit);
     
-            if ($customer->isEmpty()) {
-                return response()->json(['error' => 'Customer not found!'], 404);
+            if ($customers->isEmpty()) {
+                return response()->json([]);
             }
     
-            $total_count = Customer::where('status', '=', '1')->count();
-            $total_pages = ceil($total_count / $limit);
+            $totalPages = $customers->lastPage();
     
-            return response()->json(['customers' => $customer, 'total_pages' => $total_pages]);
-        } 
-        catch (Exception $e) {
+            return response()->json(['customers' => $customers, 'total_pages' => $totalPages]);
+        } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
+    
  
     public function store(Request $request)
     {

@@ -1,15 +1,14 @@
 <template>
-    <div class="col-sm-4 bg-red" style="
+<div class="col-sm-4 bg-red" style="
     margin-top: -52px;
 ">
-        <div class="search-box me-2 mb-2 d-inline-block">
-            <div class="position-relative">
-                <input type="text" class="form-control" v-model="searchQuery" 
-                placeholder="جستجوی مشتری..." @input="searchData"/>
-                <i class="bx bx-search-alt search-icon"></i>
-            </div>
+    <div class="search-box me-2 mb-2 d-inline-block">
+        <div class="position-relative">
+            <input type="text" class="form-control" v-model="searchQuery" placeholder="جستجوی مشتری..." @input="searchData" />
+            <i class="bx bx-search-alt search-icon"></i>
         </div>
     </div>
+</div>
 <!-- edit modal start -->
 <div class="col-sm-8">
     <div class="text-sm-end">
@@ -71,12 +70,12 @@
 </div>
 <!-- edit modal end -->
 
-<div class="table-responsive">
-  
-    <table class="table table-centered table-nowrap" >
+<div class="table-responsive" v-if="customers.length">
+
+    <table class="table table-centered table-nowrap">
         <thead>
             <tr>
-                <th scope="col">#</th>
+                <th scope="col">آیدی</th>
                 <th scope="col">نام</th>
                 <th scope="col">نام خانواگی</th>
                 <th scope="col">شماره مسلسل مشتری</th>
@@ -90,79 +89,64 @@
         <tbody>
             <tr v-for="customer in customers" :key="customer.id" style="text-center">
                 <td>
-                    <div class="form-check font-size-16">
-                        <input :id="`customCheck${customer.id}`" type="checkbox" class="form-check-input" />
-                        <label class="form-check-label" :for="`customCheck${customer.id}`">&nbsp;</label>
-                    </div>
+                    {{ customer.id }}
                 </td>
                 <td>{{ customer.name }}</td>
-            <td>
-              <p class="mb-1">{{ customer.last_name }}</p>
-            </td>
-            <td>{{ customer.cu_number }}</td>
-            <td>{{ customer.phone }}</td>
-            <td>{{ customer.desc }}</td>
-             <td>
-                <router-link  class="btn btn-xs btn-primary" :to="`/dashboard/customer/${customer.id}`">پروفایل</router-link>
-             </td>
-             <td>
-                <!-- <span class="badge bg-success font-size-12"> -->
+                <td>
+                    <p class="mb-1">{{ customer.last_name }}</p>
+                </td>
+                <td>{{ customer.cu_number }}</td>
+                <td>{{ customer.phone }}</td>
+                <td>{{ customer.desc }}</td>
+                <td>
+                    <router-link class="btn btn-xs btn-primary" :to="`/dashboard/customer/${customer.id}`">پروفایل</router-link>
+                </td>
+                <td>
+                    <!-- <span class="badge bg-success font-size-12"> -->
                     <span class="badge  font-size-12" :class="customer.status === 0 ? 'bg-warning' :'bg-primary'">
-                  <i class="mdi mdi-star me-1"></i>
-                  {{ customer.status }}
-                </span>
-              </td>
-              
-              <td>
-                <button class="btn btn-xs">
-                    <i class="fas fa-pencil-alt text-success me-1" @click="editCustomer(customer.id)"></i>
-                  </button>
-  
-                  <button class="btn btn-xs">
-                    <i class="fas fa-trash-alt text-danger me-1" @click="deleteCustomer(customer.id)"></i>
-                  
-               </button>
-              </td> 
+                        <i class="mdi mdi-star me-1"></i>
+                        {{ customer.status }}
+                    </span>
+                </td>
+
+                <td>
+                    <button class="btn btn-xs">
+                        <i class="fas fa-pencil-alt text-success me-1" @click="editCustomer(customer.id)"></i>
+                    </button>
+
+                    <button class="btn btn-xs">
+                        <i class="fas fa-trash-alt text-danger me-1" @click="deleteCustomer(customer.id)"></i>
+
+                    </button>
+                </td>
 
             </tr>
         </tbody>
     </table>
 
-
-<ul class="pagination pagination-rounded justify-content-end mb-2">
-    <li class="page-item disabled">
-        <a class="page-link" href="javascript: void(0);" aria-label="Previous">
-            <i class="mdi mdi-chevron-left"></i>
-        </a>
-    </li>
-    <li class="page-item active">
-        <a class="page-link" href="javascript: void(0);">1</a>
-    </li>
-    <li class="page-item">
-        <a class="page-link" href="javascript: void(0);">2</a>
-    </li>
-    <li class="page-item">
-        <a class="page-link" href="javascript: void(0);">3</a>
-    </li>
-    <li class="page-item">
-        <a class="page-link" href="javascript: void(0);">4</a>
-    </li>
-    <li class="page-item">
-        <a class="page-link" href="javascript: void(0);">5</a>
-    </li>
-    <li class="page-item">
-        <a class="page-link" href="javascript: void(0);" aria-label="Next">
-            <i class="mdi mdi-chevron-right"></i>
-        </a>
-    </li>
-</ul>
+    <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
+        <li class="page-item">
+            <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
+                <i class="mdi mdi-chevron-left"></i>
+            </a>
+        </li>
+        <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
+            <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
+                <i class="mdi mdi-chevron-right"></i>
+            </a>
+        </li>
+    </ul>
 </div>
-<!-- <div class="text-center font-size-20">
-    نتیجه مورد نظر یافت نشد!
-  </div> -->
+<h3 class="text-center" v-else>{{ notFoundMessage }}</h3>
 </template>
 
 <script>
+import {
+    ref
+} from 'vue';
 import axios from 'axios';
 import Swal from 'sweetalert2'
 export default {
@@ -172,6 +156,7 @@ export default {
             showModal: false,
             customers: [],
             searchQuery: null,
+            notFoundMessage: '',
             // edit modal
             editname: '',
             editLastName: '',
@@ -181,6 +166,12 @@ export default {
             editImage: null,
             editAddress: '',
             editDesc: '',
+
+            // pagination
+            currentPage: 1,
+            totalPages: 1,
+            limit: 10,
+            
         }
     },
     mounted() {
@@ -189,24 +180,24 @@ export default {
 
     methods: {
 
-        async getCustomers() {
+        async getCustomers(page = 1) {
             try {
-                await axios.get('/api/customer', {
-                        params: {
-                            limit: this.limit,
-                            offset: this.offset,
-                        },
-                    }).then((response) => {
-                        this.customers = response.data.customers;
-                        this.total_pages = response.data.total_pages;
-                        //    console.log("customers response",response.data);
-                    })
-                    .catch((error) => {
-                        console.error('Error fetching customers:', error);
-                    });
-
+                const response = await axios.get(`/api/customer?page=${page}&limit=${this.limit}`);
+                this.customers = response.data.customers.data;
+                this.totalPages = response.data.customers.last_page;
+                this.currentPage = page; // Update the current page
             } catch (error) {
-                console.error('Error fetching data: ', error.message);
+                console.error('Error fetching customers:', error);
+            }
+        },
+        prevPage() {
+            if (this.currentPage > 1) {
+                this.getCustomers(this.currentPage - 1); // Update the page parameter
+            }
+        },
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.getCustomers(this.currentPage + 1); // Update the page parameter
             }
         },
         editHandleFileChange(event) {
@@ -250,8 +241,6 @@ export default {
                 name: this.editname,
                 last_name: this.editLastName,
                 phone: this.editPhone,
-                // username: this.editUsername,
-                // password: this.editPassword,
                 image: this.ediPhoto,
                 address: this.editAddress,
                 desc: this.editDesc,
@@ -289,7 +278,6 @@ export default {
 
             this.showModal = false;
             this.getCustomers();
-          
 
         },
         async deleteCustomer(id) {
@@ -309,16 +297,28 @@ export default {
                 }
             }
         },
-
         async searchData() {
-            const response = await axios.post('/api/searchCustomer', {
-                query: this.searchQuery
-            });
-           
-            if(response.data.length){
-                this.customers = response.data;
+            try {
+                const response = await axios.post('/api/searchCustomer', {
+                    query: this.searchQuery
+                });
+
+                if (response.data.length) {
+                    this.customers = response.data;
+                } else {
+                    // No results found
+                    this.customers = [];
+                    // You can set a message or perform other actions to notify the user
+                    this.notFoundMessage = 'نتیجه مورد نظر یافت نشد.';
+                }
+            } catch (error) {
+                // Handle the error, e.g., display an error message
+                console.error('Error fetching data:', error);
+                // Set an appropriate error message for the user
+                this.errorMessage = 'Error fetching data. Please try again.';
             }
         },
+
         customerValidation(field) {
             if (field === 'name') {
                 if (this.name === '') {

@@ -45,7 +45,7 @@
                                                 <div class="col-sm-12 col-md-6 col-lg-6">
                                                     <div class="mb-3">
                                                         <label for="password">رمز عبور</label>
-                                                        <input id="password" v-model="password" type="text" class="form-control" placeholder="رمز خود را وارکنید" required/>
+                                                        <input id="password" v-model="password" type="password" class="form-control" placeholder="رمز خود را وارکنید" required/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -152,6 +152,14 @@ export default {
         },
         closeModal(){
             this.showModal=false;
+            this.name = '';
+            this.last_name = '';
+            this.phone = '';
+            this.username = '';
+            this.password = '';
+            this.image = null;
+            this.address = '';
+            this.desc = '';
         },
         handleFileChange(event) {
             const img = event.target.files[0];
@@ -195,17 +203,16 @@ export default {
 
                         }
                     } else {
-                        // console.log("response.data.new_data",response.data.new_data);
-                        // this.customers.push(response.data.new_data);
+
                         this.errors = {};
-                        this.name = null;
-                        this.last_name = null;
-                        this.phone = null;
-                        this.username = null;
-                        this.password = null;
+                        this.name = '';
+                        this.last_name = '';
+                        this.phone = '';
+                        this.username = '';
+                        this.password = '';
                         this.image = null;
-                        this.address = null;
-                        this.desc = null;
+                        this.address = '';
+                        this.desc = '';
                         this.showModal = false;
                        
                         this.showalert("مشتری با موفقیت ثبت شد!", 'success', 'success');

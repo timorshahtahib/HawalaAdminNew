@@ -10,7 +10,8 @@ import ar from '../../images/flags/arabic.png';
 
 import logoDarkLg from '../../images/logo-dark.png';
 import logoDarkSm from '../../images/logo.svg';
-import logoLightLg from '../../images/logo-light.png';
+
+import asialogo from '../../images/mycustom/Asiatelecomlogo.png';
 import logoLightSm from '../../images/logo-light.svg';
 
 import avatar1 from '../../images/users/avatar-1.jpg';
@@ -32,7 +33,7 @@ import megamenu from '../../images/megamenu-img.png';
 export default {
   data() {
     return {
-      logoDarkLg, logoDarkSm, logoLightLg, logoLightSm, avatar1, avatar3, avatar4, github, bitbucket, dribbble, dropbox, mail_chimp, slack, megamenu,
+      logoDarkLg, logoDarkSm, asialogo, logoLightSm, avatar1, avatar3, avatar4, github, bitbucket, dribbble, dropbox, mail_chimp, slack, megamenu,
       languages: [
         {
           flag: us,
@@ -140,8 +141,9 @@ export default {
             <span class="logo-sm">
               <img :src="logoLightSm" alt height="22" />
             </span>
-            <span class="logo-lg">
-              <img :src="logoLightLg" alt height="19" />
+            <span class="logo-lg text-white">
+              <!-- Asia admin panel -->
+              <img :src="asialogo" alt height="110" />
             </span>
           </router-link>
         </div>

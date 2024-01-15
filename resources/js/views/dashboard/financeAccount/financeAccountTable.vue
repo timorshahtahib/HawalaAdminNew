@@ -29,7 +29,7 @@
                         <div class="col-sm-12 col-md-6 col-lg-6">
                             <div class="mb-3">
                                 <label class="form-control-label px-3">نوعیت حساب<span class="text-danger">*</span></label>
-                                <select v-model="editType" class="form-control form-control-lg">
+                                <select v-model="editType" class="form-control form-control-lg" required>
                                     <option value="asset">Assets</option>
                                     <option value="equity">equity</option>
                                     <option value="liablity">liablity</option>
@@ -83,7 +83,7 @@
     <table class="table table-centered table-nowrap">
         <thead>
             <tr>
-             <th>#</th>
+             <th>آیدی</th>
              <th>نام حساب</th>
              <th>نوعیت</th>
              <th>پول</th>
@@ -94,13 +94,8 @@
         </thead>
         <tbody>
          <tr v-for="financeAccount in financeAccounts" :key="financeAccount.id">
-             <td>
-                 <div class="form-check font-size-16">
-                   <input :id="`customCheck${financeAccount.id}`" type="checkbox" class="form-check-input" />
-                   <label class="form-check-label" :for="`customCheck${financeAccount.id}`">&nbsp;</label>
-                 </div>
-               </td>
-               <!-- <td>{{ financeAccount.id }}</td> -->
+        
+               <td>{{ financeAccount.id }}</td>
                <td>{{ financeAccount.account_name }}</td>
                <td>{{ financeAccount.type }}</td>
                <td>{{ financeAccount.finance_currency?.name }}</td>
@@ -125,35 +120,23 @@
             </tbody>
      
     </table>
-    <!-- <span class="font-bold font-size-20 text-center" v-if="this.searchQuery.length=== 0 ">چیزی یافت نشد!</span> -->
+    
 
-<ul class="pagination pagination-rounded justify-content-end mb-2">
-    <li class="page-item disabled">
-        <a class="page-link" href="javascript: void(0);" aria-label="Previous">
-            <i class="mdi mdi-chevron-left"></i>
-        </a>
-    </li>
-    <li class="page-item active">
-        <a class="page-link" href="javascript: void(0);">1</a>
-    </li>
-    <li class="page-item">
-        <a class="page-link" href="javascript: void(0);">2</a>
-    </li>
-    <li class="page-item">
-        <a class="page-link" href="javascript: void(0);">3</a>
-    </li>
-    <li class="page-item">
-        <a class="page-link" href="javascript: void(0);">4</a>
-    </li>
-    <li class="page-item">
-        <a class="page-link" href="javascript: void(0);">5</a>
-    </li>
-    <li class="page-item">
-        <a class="page-link" href="javascript: void(0);" aria-label="Next">
-            <i class="mdi mdi-chevron-right"></i>
-        </a>
-    </li>
-</ul>
+    <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
+        <li class="page-item">
+            <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
+                <i class="mdi mdi-chevron-left"></i>
+            </a>
+        </li>
+        <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
+            <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
+                <i class="mdi mdi-chevron-right"></i>
+            </a>
+        </li>
+    </ul>
 </div>
 <div v-else class="text-center font-size-20">
     نتیجه مورد نظر یافت نشد!
@@ -178,8 +161,11 @@ export default {
             editDescription: '',
             editAccountType: '',
             errors: {},
-            limit:10,
-            offset:0,
+           
+            // pagination
+            currentPage: 1,
+            totalPages: 1,
+            limit: 10,
         }
     },
    
@@ -189,31 +175,41 @@ export default {
 
     methods: {
 
-        async getFinanceAccount() {
+        async getFinanceAccount(page = 1) {
             try {
-                await axios.get('/api/finance_account', {
-                        params: {
-                            limit: this.limit,
-                            offset: this.offset,
-                        },
-                    }).then((response) => {
-                        this.financeAccounts = response.data.financeAccounts;
-                        this.total_pages = response.data.total_pages;
-
-                    })
-                    .catch((error) => {
-                        console.error('Error fetching financeAccount:', error);
-                    });
+                const response = await axios.get(`/api/finance_account?page=${page}&limit=${this.limit}`);
+                this.financeAccounts = response.data.financeAccounts.data;
+                this.totalPages = response.data.financeAccounts.last_page;
+                this.currentPage = page; // Update the current page
             } catch (error) {
-                console.error('Error fetching data: ', error.message);
+                console.error('Error fetching finance Account:', error);
+            }
+        },
+        prevPage() {
+            if (this.currentPage > 1) {
+                this.getCustomers(this.currentPage - 1); // Update the page parameter
+            }
+        },
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.getCustomers(this.currentPage + 1); // Update the page parameter
+            }
+        },
+        prevPage() {
+            if (this.currentPage > 1) {
+                this.getFinanceAccount(this.currentPage - 1); // Update the page parameter
+            }
+        },
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.getFinanceAccount(this.currentPage + 1); // Update the page parameter
             }
         },
         async getcurrencies() {
             try {
                 await axios.get('/api/currencies').then((response) => {
                         this.currencies = response.data.currencies;
-                        // console.log('tag', response.data.currencies)
-                        // this.currency=this.currencies[0].id
+                    
                     })
                     .catch((error) => {
                         console.error('Error fetching currencies:', error);
@@ -225,10 +221,9 @@ export default {
         },
 
         openEditModal() {
-
             this.showModal = true;
             this.getcurrencies();
-            //    console.log("open edit modal");
+
         },
         closeModal() {
             this.showModal = false;
@@ -244,11 +239,13 @@ export default {
         async editfinanceAccount(id) {
             // console.log("editfinanceAccount id:",id);
             const response = await axios.get(`/api/finance_account/${id}`);
+            console.log("finance Account response",response.data);
             this.editFinance = response.data;
+
             this.openEditModal(this.editFinance);
             this.editAccountName = this.editFinance.account_name;
             this.editType = this.editFinance.type
-            this.editCurrency = this.editFinance.currency
+            this.editCurrency = this.editFinance.finance_currency.currency
             this.editDescription = this.editFinance.description
             this.editAccountType = this.editFinance.account
             //    console.log("inside editFinanceomer ", this.editDesc);

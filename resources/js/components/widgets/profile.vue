@@ -21,7 +21,7 @@ export default {
         <div class="col-7">
           <div class="text-primary p-3">
             <h5 class="text-primary">Welcome Back !</h5>
-            <p>Skote Dashboard</p>
+            <p>Asia admin panel</p>
           </div>
         </div>
         <div class="col-5 align-self-end">

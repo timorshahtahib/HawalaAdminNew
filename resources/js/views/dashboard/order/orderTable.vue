@@ -90,33 +90,21 @@
             </tr>
           </tbody>
         </table>
-        <ul class="pagination pagination-rounded justify-content-end mb-2">
-            <li class="page-item disabled">
-              <a class="page-link" href="javascript: void(0);" aria-label="Previous">
-                <i class="mdi mdi-chevron-left"></i>
+        <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
+          <li class="page-item">
+              <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
+                  <i class="mdi mdi-chevron-left"></i>
               </a>
-            </li>
-            <li class="page-item active">
-              <a class="page-link" href="javascript: void(0);">1</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="javascript: void(0);">2</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="javascript: void(0);">3</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="javascript: void(0);">4</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="javascript: void(0);">5</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="javascript: void(0);" aria-label="Next">
-                <i class="mdi mdi-chevron-right"></i>
+          </li>
+          <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
+              <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
+          </li>
+          <li class="page-item">
+              <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
+                  <i class="mdi mdi-chevron-right"></i>
               </a>
-            </li>
-          </ul>
+          </li>
+      </ul>
       </div>
       <div v-else class="text-center font-size-20">
         نتیجه مورد نظر یافت نشد!
@@ -133,8 +121,10 @@ export default {
         return {
             orders:[],
             searchQuery:'',
-            offset: 0,
-            total_pages: 0,
+              // pagination
+              currentPage: 1,
+            totalPages: 1,
+            limit: 10,
         } 
     },
     mounted() {
@@ -151,16 +141,26 @@ export default {
             })
         },
       // shwos the table content
-      async getOrders() {
+      async getOrders(page = 1) {
           try {
-            const response = await axios.get('/api/orders', { params: { limit: this.limit,offset: this.offset}});
-            this.orders= response.data.orders;
-            this.total_pages = response.data.total_pages;
-          } catch (error) {
-            console.error('Error fetching data: ', error.message);
-          }
+                const response = await axios.get(`/api/orders?page=${page}&limit=${this.limit}`);
+                this.orders = response.data.orders.data;
+                this.totalPages = response.data.orders.last_page;
+                this.currentPage = page; // Update the current page
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+            }
         },
-
+        prevPage() {
+            if (this.currentPage > 1) {
+                this.getOrders(this.currentPage - 1); // Update the page parameter
+            }
+        },
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.getOrders(this.currentPage + 1); // Update the page parameter
+            }
+        },
         openEditModal() {
             this.showModal = true;
             console.log("openEditModal",this.editCust);

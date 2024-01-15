@@ -25,22 +25,22 @@ class FinanceAccountController extends Controller
      {
         try {
             $limit = $request->has('limit') ? $request->limit : 10;
-            $offset = $request->has('offset') ? $request->offset : 0;
     
-            $financeAccount = FinanceAccount::where('status', '=', '1')->with(['finance_currency'])->orderBy('id', 'desc')->limit($limit)->offset($offset)->get();
+            $financeAccount = FinanceAccount::where('status', '=', '1')->with(['finance_currency'])
+                ->orderBy('id', 'desc')
+                ->paginate($limit);
     
             if ($financeAccount->isEmpty()) {
-                return response()->json(['error' => 'FinanceAccount not found!'], 404);
+                return response()->json([]);
             }
     
-            $total_count = FinanceAccount::where('status', '=', '1')->count();
-            $total_pages = ceil($total_count / $limit);
+            $totalPages = $financeAccount->lastPage();
     
-            return response()->json(['financeAccounts' => $financeAccount, 'total_pages' => $total_pages]);
-        } 
-        catch (Exception $e) {
+            return response()->json(['financeAccounts' => $financeAccount, 'total_pages' => $totalPages]);
+        } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+
      }
      
     /**
@@ -132,17 +132,25 @@ class FinanceAccountController extends Controller
      */
     public function update(Request $request,FinanceAccount $financeAccount)
     {
-        // $validated =$request->validate([
-        //     'id'=>'required|20',
-        //     'acount_name' => 'required|max:50',
-        //     'type' => 'reqiured|in:asset,equity,liablity',
-        //     'currency'=>'nullable|20',
-        //     'desc' => 'nullable',
-        //     'user_id' => 'required|20',
-        //     'status'=>'required|max:20',
-        // ]);
+        $validator = Validator::make($request->all(), [
+            'account_name' => 'required|max:50',
+            'type' => 'in:asset,equity,liablity',
+            'currency'=>'nullable|max:20',
+            'description' => '',
+            'user_id' => '',
+            'status'=>'',
+            'account'=>''
+    ]);
+  
+    if(!$validator->passes()){
+        return response()->json([
+            'error'=>$validator->errors()->toArray(),
+        ]);
+    }else{
         $financeAccount->update($request->all());
         return response()->json($financeAccount,201);
+
+    }
     }
 
     /**
@@ -199,7 +207,7 @@ class FinanceAccountController extends Controller
 
         try {
         $searchTerm = $request->input('query');
-          $query=FinanceAccount::query()->where('status', '=', '1')
+          $query=FinanceAccount::query()->where('status', '=', '1')->orderBy('id', 'desc')
           ->with(['finance_currency']);
             
           if($searchTerm){

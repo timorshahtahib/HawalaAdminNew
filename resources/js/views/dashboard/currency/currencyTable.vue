@@ -74,52 +74,34 @@
                     </span>
                 </td>
                 <td>
-                  <b-dropdown class="card-drop" variant="white" right toggle-class="p-0" menu-class="dropdown-menu-end">
-                    <template v-slot:button-content>
-                        <i class="mdi mdi-dots-horizontal font-size-18"></i>
-                    </template>
+                    <button class="btn btn-xs">
+                        <i class="fas fa-pencil-alt text-success me-1" @click="editCurrencyFunction(currency.id)"></i>
+                    </button>
 
-                    <b-dropdown-item>
-                        <i class="fas fa-pencil-alt text-success me-1" @click="editCurrencyFunction(currency.id)"></i> Edit
-                    </b-dropdown-item>
+                    <button class="btn btn-xs">
+                        <i class="fas fa-trash-alt text-danger me-1" @click="deleteCurrency(currency.id)"></i>
 
-                    <b-dropdown-item>
-                        <i class="fas fa-trash-alt text-danger me-1" @click="deleteCurrency(currency.id)"></i> Delete
-                    </b-dropdown-item>
-                </b-dropdown>
+                    </button>
                 </td>
             </tr>
         </tbody>
     </table>
 
-
-<ul class="pagination pagination-rounded justify-content-end mb-2">
-    <li class="page-item disabled">
-        <a class="page-link" href="javascript: void(0);" aria-label="Previous">
-            <i class="mdi mdi-chevron-left"></i>
-        </a>
-    </li>
-    <li class="page-item active">
-        <a class="page-link" href="javascript: void(0);">1</a>
-    </li>
-    <li class="page-item">
-        <a class="page-link" href="javascript: void(0);">2</a>
-    </li>
-    <li class="page-item">
-        <a class="page-link" href="javascript: void(0);">3</a>
-    </li>
-    <li class="page-item">
-        <a class="page-link" href="javascript: void(0);">4</a>
-    </li>
-    <li class="page-item">
-        <a class="page-link" href="javascript: void(0);">5</a>
-    </li>
-    <li class="page-item">
-        <a class="page-link" href="javascript: void(0);" aria-label="Next">
-            <i class="mdi mdi-chevron-right"></i>
-        </a>
-    </li>
-</ul>
+    <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
+        <li class="page-item">
+            <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
+                <i class="mdi mdi-chevron-left"></i>
+            </a>
+        </li>
+        <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
+            <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
+                <i class="mdi mdi-chevron-right"></i>
+            </a>
+        </li>
+    </ul>
 </div>
 <div v-else class="text-center font-size-20">
     نتیجه مورد نظر یافت نشد!
@@ -142,6 +124,10 @@ export default {
             editCurrencySign: '',
             editCurrencySignError: '',
             errors: {},
+               // pagination
+               currentPage: 1,
+            totalPages: 1,
+            limit: 10,
         }
     },
     mounted() {
@@ -161,23 +147,26 @@ export default {
         closeModal() {
             this.showModal = false;
         },
-        async getCurrencies() {
+        async getCurrencies(page = 1) {
             try {
-                await axios.get('/api/currencies', {
-                        params: {
-                            limit: this.limit,
-                            offset: this.offset,
-                        },
-                    }).then((response) => {
-                        this.currencies = response.data.currencies;
-                        this.total_pages = response.data.total_pages;
-                    })
-                    .catch((error) => {
-                        console.error('Error fetching customers:', error);
-                    });
-
+                const response = await axios.get(`/api/currencies?page=${page}&limit=${this.limit}`);
+                this.currencies = response.data.currencies.data;
+                this.totalPages = response.data.currencies.last_page;
+                console.log("Currency",response.data);
+                this.currentPage = page; // Update the current page
             } catch (error) {
-                console.error('Error fetching data: ', error.message);
+                console.error('Error fetching Currency:', error);
+            }
+
+        },
+        prevPage() {
+            if (this.currentPage > 1) {
+                this.getCurrencies(this.currentPage - 1); // Update the page parameter
+            }
+        },
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.getCurrencies(this.currentPage + 1); // Update the page parameter
             }
         },
         openEditModal() {

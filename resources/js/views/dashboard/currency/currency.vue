@@ -147,6 +147,8 @@ export default {
                           <b-button variant="danger" @click="showModal = false">بستن</b-button>
                           <b-button type="submit" variant="success" class="ms-1 ml-2">ساختن</b-button>
                       </div>
+
+                      
                     </form>
                   </b-modal>
                 </div>

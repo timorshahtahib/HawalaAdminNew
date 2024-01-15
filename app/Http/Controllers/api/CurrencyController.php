@@ -17,20 +17,19 @@ class CurrencyController extends Controller
     {
         try {
             $limit = $request->has('limit') ? $request->limit : 10;
-            $offset = $request->has('offset') ? $request->offset : 0;
     
-            $currency = Currency::where('status', '=', '1')->orderBy('id', 'desc')->limit($limit)->offset($offset)->get();
+            $currency = Currency::where('status', '=', '1')
+                ->orderBy('id', 'desc')
+                ->paginate($limit);
     
             if ($currency->isEmpty()) {
-                return response()->json(['error' => 'currency not found!'], 404);
+                return response()->json([]);
             }
     
-            $total_count = Currency::where('status', '=', '1')->count();
-            $total_pages = ceil($total_count / $limit);
+            $totalPages = $currency->lastPage();
     
-            return response()->json(['currencies' => $currency, 'total_pages' => $total_pages]);
-        } 
-        catch (Exception $e) {
+            return response()->json(['currencies' => $currency, 'total_pages' => $totalPages]);
+        } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     
@@ -92,10 +91,27 @@ class CurrencyController extends Controller
      */
     public function update(Request $request,Currency $currency)
     {
-        // $validated =$request->validate([
-        //     'name' => 'required|max:20',
-        //     'sign' => 'nullable | 1',
-        // ]);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:20|unique:currency,name,id ',
+            'sign' => 'required|max:10|unique:currency,sign,id',
+
+        ],
+        [
+            'name.required' =>'نام ضروری است',
+            'name.unique'=>'نام واحد پولی از قبل موجود است',
+            'sign.required'=>'نشان واحد ضروری است',
+            'sign.unique'=>'نشان واحد از قبل موجود است',
+
+        ]
+    
+    );
+
+        if(!$validator->passes()){
+            return response()->json([
+                'status'=>false,
+                'error'=>$validator->errors()->toArray(),
+            ]);
+        }
         $currency->update($request->all());
         return response()->json($currency,201);
     }

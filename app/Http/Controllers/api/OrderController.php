@@ -16,21 +16,19 @@ class OrderController extends Controller
     {
         try {
             $limit = $request->has('limit') ? $request->limit : 10;
-            $offset = $request->has('offset') ? $request->offset : 0;
     
-            $order = OrderModel::where('status', '=', '1')->orderBy('id', 'desc')->limit($limit)->offset($offset)->get();
-
+            $order = OrderModel::where('status', '=', '1')
+                ->orderBy('id', 'desc')
+                ->paginate($limit);
     
             if ($order->isEmpty()) {
-                return response()->json(['error' => 'order not found!'], 404);
+                return response()->json([]);
             }
     
-            $total_count = OrderModel::where('status', '=', '1')->count();
-            $total_pages = ceil($total_count / $limit);
+            $totalPages = $order->lastPage();
     
-            return response()->json(['orders' => $order, 'total_pages' => $total_pages]);
-        } 
-        catch (Exception $e) {
+            return response()->json(['orders' => $order, 'total_pages' => $totalPages]);
+        } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
