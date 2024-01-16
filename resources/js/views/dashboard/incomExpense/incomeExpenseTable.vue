@@ -133,8 +133,13 @@
                 <td>{{ IncomeExpense.finance_acount_id }}</td>
                 <td>{{ IncomeExpense.user_id }}</td>
                 <td>{{ IncomeExpense.ref_type }}</td>
-                <td>{{ IncomeExpense.state }}</td>
-
+               
+                <td>
+                    <span class="badge  font-size-12" :class="IncomeExpense.state === 'payed' ? 
+                    'bg-success': IncomeExpense.state === 'unpaid'?  'bg-danger' : 'bg-warning'">
+                    {{ IncomeExpense.state }}
+                </span>
+               </td>
                 <td>
                     <span class="badge  font-size-12" :class="IncomeExpense.status === 0 ? 'bg-warning' :'bg-primary'">
                         <i class="mdi mdi-star me-1"></i>

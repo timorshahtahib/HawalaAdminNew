@@ -653,7 +653,11 @@ export default {
                                             <td>{{transaction?.id}}</td>
                                             <td v-if="transaction.customer!=null">{{ transaction.customer?.name}}</td>
                                             <td v-else>{{ transaction.finance_account?.account_name}}</td>
-                                            <td>{{transaction.rasid_bord}}</td>
+                                            <td>
+                                                <span class="badge  font-size-12" :class="transaction.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">
+                                                {{transaction.rasid_bord}}
+                                            </span>
+                                        </td>
                                             <td>{{transaction.check_number}}</td>
                                             <td>{{transaction.amount}}</td>
                                             <td>{{transaction.tr_currency.name}}</td>

@@ -182,10 +182,10 @@ class TransactionController extends Controller
     public function show($id)
     {
         try {
-            $transaction = Transaction::where('id','=',$id)->where('status', '=', '1')->with(['financeAccount','customer','tr_currency','bank_account'])->get();;
+            $transaction = Transaction::where('id','=',$id)->where('status', '=', '1')->with(['financeAccount','customer','tr_currency','bank_account'])->get();
 
             if ($transaction->isEmpty()) {
-                return response()->json(['error' => 'Transaction not found'], 404);
+                return response()->json([]);
             }
             return response()->json($transaction);
         }
@@ -374,10 +374,12 @@ class TransactionController extends Controller
     }
 
     public function getSearchTransactions(Request $request) {
+        
         try {
             $searchTerm = $request->input('query');
     
-            $transaction = Transaction::query()->where('status', '=', '1')->where(function ($query) {
+            $transaction = Transaction::query()->where('status', '=', '1')->where
+            (function ($query) {
                 $query->where('rasid_bord', 'rasid')->orWhere('rasid_bord', 'bord');
             });
     
@@ -395,7 +397,8 @@ class TransactionController extends Controller
                     ->orWhere('amount', 'like', '%' . $searchTerm . '%')
                     ->orWhere('amount_equal', 'like', '%' . $searchTerm . '%')
                     ->orWhere('currency_equal', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('currency_rate', 'like', '%' . $searchTerm . '%');
+                    ->orWhere('currency_rate', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('desc', 'like', '%' . $searchTerm . '%');
                 });
             }
     

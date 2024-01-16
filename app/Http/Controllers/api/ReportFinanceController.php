@@ -31,11 +31,25 @@ class ReportFinanceController extends Controller
         }
 
 
-        public function getBanksTransaction($id){
-            $bankTransaction = Transaction::where('bank_acount_id',$id)->where('status',1)->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')->get();
-            
-            return response()->json(['banksTransaction'=>$bankTransaction]);
+        public function getBanksTransaction(Request $request){
+            $id= $request->id;
+        try {
+            $limit = $request->has('limit') ? $request->limit : 10;
+            $id= $request->id;
+            $bankTransaction = Transaction::where('status', '=', '1')->where('bank_acount_id',$id)
+            ->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')
+            ->paginate($limit);
+
+            if ($bankTransaction->isEmpty()) {
+                return response()->json(['error' => 'Transaction not found'], 404);
+            }
+            $total_pages= $bankTransaction->lastPage();
+            return response()->json(['banksTransaction' =>$bankTransaction,'total_pages'=>$total_pages]);
         }
+        catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 
 
         public function filterBankTransactions(Request $request) {
