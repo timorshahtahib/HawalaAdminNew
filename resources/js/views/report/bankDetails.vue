@@ -71,23 +71,9 @@ export default {
             // Equals v-model
             equalcurrencyModel: '',
 
-            // for edit
+        
 
-            edit_rasid_bord: '',
-            // edit amount
-            editAmount: "",
-            editCurrency_rate: '',
-            editEqual_amount: '',
-            editDesc: '',
-            editDate: '',
-            editDateString: '',
-            editCurrencyModel: '',
-            editSelectedDakhl: '',
-            editbanks: [],
-            editSelectedCustomer: null,
-            editCustomer: [],
-            editEqualcurrencyModel: '',
-            edit_currencies:[],
+        
               // pagination
               currentPage: 1,
             totalPages: 1,
@@ -137,23 +123,11 @@ export default {
             this.selectedCustomer = customer.name;
             // console.log("Customerseleted", this.selectedCustomer);
         },
-
-        openModaledit() {
-            this.showModal = true;
-            this.edit_getCurrency();
-        },
-        closeModal() {
-            this.showModal = false;
-        },
-     
-
         // for calculating the Equal to input type
         calculateEqualAmount() {
             this.equal_amount = this.amount / this.currency_rate;
         },
-        editCalculateEqualAmount() {
-            this.editEqual_amount = this.editAmount / this.editCurrency_rate;
-        },
+  
         // for showing the showalert modal
         showalert(title, icon, confirmButtonText) {
             Swal.fire({
@@ -187,28 +161,13 @@ export default {
                 console.error('Error fetching data: ', error.message);
             }
         },
-        async edit_getCurrency() {
-            try {
-                await axios.get('/api/currencies').then((response) => {
-                        this.edit_currencies = response.data.currencies.data;
-                    })
-                    .catch((error) => {
-                        console.error('Error fetching currencies:', error);
-                    });
-
-            } catch (error) {
-                console.error('Error fetching data: ', error.message);
-            }
-        },
-        // for adding new Transaction
+  
 
         change_currency() {
             this.getBanks(this.currencyModel);
         },
 
-        editChange_currency() {
-            this.getBanksForEdit(this.editCurrencyModel);
-        },
+
 
         async getTransaction(page=1) {
             let d= this.$route.params.id
@@ -236,113 +195,7 @@ export default {
             this.transactions = response.data;
         },
 
-        async editTransactionFunc(id) {
-            const response = await axios.get(`/api/transaction/${id}`);
-            this.editTransaction = response.data;
-            this.openModaledit();
-            // console.log("this.editTransaction",this.editTransaction);
-            this.edit_rasid_bord = this.editTransaction[0].rasid_bord;
-            console.log("this.edit_rasid_bord",this.edit_rasid_bord);
-            this.editAmount = this.editTransaction[0].amount;
-            this.editCurrency_rate = this.editTransaction[0].currency_rate;
-            this.editEqual_amount = this.editTransaction[0].amount_equal;
-            this.editDesc = this.editTransaction[0].desc;
-            this.editDate = this.editTransaction[0].date;
-            this.editCurrencyModel = this.editTransaction[0].currency;
-            this.editEqualcurrencyModel = this.editTransaction[0].currency_equal;
-            this.getBanksForEdit(this.editCurrencyModel)
-            this.getCustomerForEdit(this.editTransaction[0].ref_id);
-
-
-        },
-        async submitEditTransaction() {
-            // console.log("Submit edit transaction", this.editSelectedCustomer.id);
-            const response = await axios.post(`/api/updateTransaction/${id}`, {
-                id: this.editTransaction[0].id,
-                rasid_bord: this.editasid_bord,
-                transaction_type: this.editasid_bord,
-                ref_id: this.editSelectedCustomer.id,
-                amount: this.editAmount,
-                currency: this.editCurrencyModel,
-                amount_equal: this.editEqual_amount,
-                currency_equal: this.editEqualcurrencyModel,
-                currency_rate: this.editCurrency_rate,
-                bank_acount_id: this.editSelectedDakhl,
-                date: this.editDate,
-                desc: this.editDesc,
-                user_id: 1,
-            });
-
-
-            if (response.data != null) {
-
-                // console.log("in data!=null");
-                if (response.data.status === false) {
-
-                    if (response.data.message != null) {
-                        this.showalert(response.data.message, "error", "error!");
-                    } else {
-                        this.errors = response.data.error;
-
-                    }
-
-                } else {
-                    // console.log("else true");
-
-                    this.errors = {};
-                    this.transactions.push(response.data.new_data);
-                    this.showModal=false;
-                    this.showalert(response.data.message, "success", "success");
-
-                    // console.log(response.data);
-                }
-            }
-            //  console.log("Successfully updated", this.editTransaction);
-
-        },
-
-        async getBanksForEdit(id) {
-            try {
-                const response = await axios.get('/api/getbankbyid/' + id);
-                this.editbanks = response.data.banks;
-                // console.log("getNBanks",this.editbanks);
-                this.editSelectedDakhl = this.editbanks[0].id;
-
-            } catch (error) {
-                console.log(error.message);
-            }
-        },
-        async getCustomerForEdit(id) {
-            // console.log("getCustomerForEdit",id);
-            try {
-                const response = await axios.get('/api/customer');
-                this.editCustomer = response.data.customers;
-                this.editSelectedCustomer = this.editCustomer.length > 0 ? this.editCustomer.find(custom => custom.id === id) : '';
-                // console.log(this.editCustomer.length > 0 ? this.editCustomer.find(custom => custom.id === id).name : '');
-
-            } catch (error) {
-                console.log(error.message);
-            }
-        },
-        async deleteTransaction(id) {
-            if (!window.confirm('آیا میخواهید که رسید برد حذف شود؟')) {
-                return;
-            } else {
-                try {
-                    const response = await axios.delete(`/api/transaction/${id}`);
-                    // this.transactions = response.data;
-                    if (response.status === 204) {
-                        // this.transactions.push(response.data.new_data)
-                        this.showalert(' با موفقیت حذف شد!', 'success', 'success');
-                        this.getTransaction($route.params.id);
-
-                    }
-
-                } catch (error) {
-                    this.showalert(' با موفقیت حذف نشد!', 'error', 'error');
-                }
-            }
-        },
+   
         async getBanks(id) {
             try {
                 const response = await axios.get('/api/getbankbyid/' + id);
@@ -416,117 +269,6 @@ export default {
         <div class="col-xl-4">
             <div class="card">
 
-                <!-- edit modal start -->
-                <div class="col-sm-8">
-                    <div class="text-sm-end">
-                        <b-modal v-model="showModal" title="ویرایش خرج و مخارج" title-class="text-black font-18" body-class="p-3" hide-footer>
-                            <b-alert v-model="isError" class="mb-4" variant="danger" dismissible>{{ this.formError
-                }}</b-alert>
-                <form @submit.prevent="submitEditedForm">
-                    <div class="row flex justify-between">
-                        <div class="row flex justify-between">
-                                <div class="col-sm-12 col-xs-12">
-                                    <label for="supplier">نوعیت:
-                                    </label>
-                                    <select class="form-control form-control-lg  required" v-model="edit_rasid_bord" required>
-                                        <option disabled value="">ابتدا نوعیت را انتخاب کنید.</option>
-                                        <option value="rasid">رسید</option>
-                                        <option value="bord">برد</option>
-                                    </select>
-                                    <span class="text-danger error-text currency_error"></span>
-                                </div>
-                            </div>
-                    
-                            <div class="col-sm-12 col-xs-12">
-
-                                <label for="supplier">انتخاب شخص / حساب :
-                                </label>
-
-                                <div>
-                                        <v-select v-model="editSelectedCustomer" :options="editCustomer" label="name" placeholder="مشتری مورد نظر خود را سرچ کنید" class="searchCustomer" />
-                                   
-                                </div>
-
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 col-sm-12 col-lg-6">
-                                    <div class="mb-3">
-                                        <label class="form-control-label px-3">واحد پولی</label>
-                                        <select v-model="editCurrencyModel" class="form-control" required>
-                                            <option v-for="curr in edit_currencies" :key="curr.id" :value="curr.id">{{curr.name}} {{curr.sign}}</option>
-        
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-sm-12 col-md-6 col-lg-6">
-                                    <div class="mb-3">
-                                        <label class="form-control-label px-3">مقدار</label>
-                                        <input type="text" id="editAmount" v-model="editAmount" placeholder="مقدار..." class="form-control" required>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-12 col-xs-12">
-                                <label for="supplier">انتخاب دخل :
-                                </label>
-                                <select class="form-control form-control-lg select2 required" v-model="editSelectedDakhl">
-                                    <option disabled selected>ابتدا واحد پول را انتخاب کنید.</option>
-                                    <option v-for="editbank in editbanks" :key="editbank.id" :value="editbank.id">{{editbank.account_name}}</option>
-                                </select>
-                                <span class="text-danger error-text dakhl_error"></span>
-                            </div>
-                        <div class="row flex justify-between">
-                         
-                            <div class="col-md-6 col-sm-12 col-lg-6">
-                                <div class="mb-3">
-                                    <label class="form-control-label px-3">مقدار معادل</label>
-                                    <input type="text" id="editAmount_equal" v-model="editAmount_equal" placeholder="مقدار معادل..." class="form-control" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row flex justify-between">
-                            <div class="col-md-6 col-sm-12 col-lg-6">
-                                <div class="mb-3">
-                                    <label class="form-control-label px-3">حالت</label>
-                                    <select v-model="editState" class="form-control" required>
-                                        <option value="pending">Pending</option>
-                                        <option value="payed">Payed</option>
-                                        <option value="unpaid">Unpaid</option>
-                                    </select>
-                                </div>
-                            </div>
-    
-                            <div class="col-sm-6 col-xs-12">
-                                <label for="factore_date">تاریخ :
-                                </label>
-                                <div class="input-group ">
-                                    <!-- persian data picker -->
-                                    <date-picker @select="edit_select" mode="single" type="date" locale="fa" :column="1" required>
-                                    </date-picker>
-                                    <span class="text-center">{{editDate}}</span>
-                                </div>
-                                <span class="text-danger error-text afrad_error" v-if="errors.date">{{errors.date[0]}}</span>
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-sm-12 col-lg-12">
-                            <div class="mb-3">
-                                <label class="form-control-label px-3">توضیحات</label>
-                                <textarea v-model="editDesc" id="desc" cols="30" rows="4" class="form-control"></textarea>
-                            </div>
-                        </div>
-                     
-                    </div>
-    
-                    <div class="text-end pt-5 mt-1 g-2">
-                        <b-button variant="danger" @click="closeModal">بستن</b-button>
-                        <b-button type="submit" variant="success" class="ms-1 ml-2">آپدیت</b-button>
-                    </div>
-                </form>
-                        </b-modal>
-                    </div>
-                </div>
-                <!-- edit modal end -->
-
-
             </div>
         </div>
         <!-- end col -->
@@ -563,7 +305,7 @@ export default {
                                             <th class="text-center">دخل</th>
                                             <th class="text-center">تفصیلات</th>
                                             <th class="text-center">توسط</th>
-                                            <th class="text-center">عملیه</th>
+                                         
 
                                         </tr>
                                     </thead>
@@ -590,18 +332,7 @@ export default {
                                             <td>{{transaction.desc}}</td>
                                             <td>{{transaction.user_id}}</td>
 
-                                            <td>
-
-                                                <button class="btn btn-xs">
-                                                    <i class="fas fa-pencil-alt text-success me-1" @click="editTransactionFunc(transaction.id)"></i>
-                                                 
-                                                </button>
-
-                                                <button class="btn btn-xs">
-                                                    <i class="fas fa-trash-alt text-danger me-1" @click="deleteTransaction(transaction.id)"></i>
-                                                </button>
-
-                                            </td>
+                                        
 
                                         </tr>
                                     </tbody>

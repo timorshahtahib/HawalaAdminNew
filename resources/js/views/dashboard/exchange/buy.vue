@@ -508,7 +508,7 @@ export default {
                                         <label for="supplier">واحد پول خرید:</label>
                                         <select class="form-control form-control-lg select2 required" v-model="buy_currency_model" @change="change_rasidcurrency">
                                             <option disabled selected> واحد</option>
-                                            <option v-for="currency in currencies" :key="currency.id" :value="currency.id">{{currency.name}} {{currency.sign}}</option>
+                                            <option v-for="currency in currencies" :key="currency?.id" :value="currency?.id">{{currency.name}} {{currency.sign}}</option>
                                         </select>
                                         <span class="text-danger error-text currency_error"></span>
                                     </div>
