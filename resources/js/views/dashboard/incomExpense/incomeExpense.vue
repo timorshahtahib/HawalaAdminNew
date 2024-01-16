@@ -55,8 +55,8 @@ export default {
     methods: {
 
         select(date) {
-       this.date = date.toString();
-          },
+            this.date = date.toString();
+        },
         openModal() {
             this.getCurrencies();
             this.type = "expense"
@@ -81,27 +81,56 @@ export default {
         // eslint-disable-next-line no-unused-vars
         async submitForm() {
             try {
-                
-                const response =  await axios.post('/api/income_expense',{
+                const response = await axios.post('/api/income_expense', {
                     type: this.type,
                     amount: this.amount,
                     currency: this.currency,
                     amount_equal: this.amount_equal,
-                    currency_equal: this.currency_equal,
+                    // currency_equal: this.currency_equal,
                     date: this.date,
-                    // transaction_id: this.transaction_id,
                     transaction_id: 4,
-                    // finance_acount_id: this.finance_acount_id,
                     finance_acount_id: 2,
-                    // user_id: this.user_id,
                     user_id: 1,
-                    // ref_type: this.ref_type,
                     ref_type: 6,
                     state: this.state,
                     desc: this.desc,
                 })
 
-               console.log("response ",response.data);
+                if (response.data != null) {
+
+                    // console.log("in data!=null");
+                    if (response.data.status === false) {
+
+                        if (response.data.message != null) {
+                            this.showalert(response.data.message, "error", "error!");
+                        } else {
+                            this.errors = response.data.error;
+
+                        }
+
+                    } else {
+
+                        // this.transactions.push(response.data.IncomeExpenses);
+
+                        this.errors = {}
+                        this.type='';
+                        this.amount='';
+                        this.currency='';
+                        this.amount_equal='';
+                        this.currency_equal='';
+                        this.date= null;
+                        this.transaction_id='';
+                        this.finance_acount_id='';
+                        this.user_id='';
+                        this.ref_type='';
+                        this.state='';
+                        this.desc='';
+                        this.showModal=false;
+                        this.showalert(response.data.message, "success", "success");
+
+                    }
+
+                }
             } catch (error) {
                 console.error(error.message);
             }
@@ -111,7 +140,7 @@ export default {
         async getCurrencies() {
             try {
                 const response = await axios.get('/api/currencies');
-                this.currencies = response.data.currencies;
+                this.currencies = response.data.currencies.data;
             } catch (error) {
                 console.log(error.message);
             }
@@ -131,7 +160,7 @@ export default {
             <div class="card">
                 <div class="card-body">
                     <div class="row mb-2">
-                    
+
                         <div class="col-sm-12">
                             <div class="text-sm-end">
                                 <button type="button" class="btn btn-success btn-rounded mb-2 me-2" @click="openModal">
@@ -147,7 +176,6 @@ export default {
 
                                                     <div class="mb-3">
                                                         <label class="form-control-label px-3">نوعیت</label>
-                                                        <!-- <input type="text" id="type" v-bind="type" class="form-control" placeholder="نوعیت...."> -->
                                                         <select v-model="type" id="" class="form-control" required>
                                                             <option value="expense">مصرف</option>
                                                             <option value="income">درآمد</option>
@@ -168,14 +196,14 @@ export default {
                                                         <label class="form-control-label px-3">واحد پولی</label>
                                                         <select v-model="currency" class="form-control" required>
                                                             <option v-for="curr in currencies" :key="curr.id" :value="curr.id">{{curr.name}} {{curr.sign}}</option>
-                                                    
+
                                                         </select>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6 col-sm-12 col-lg-6">
                                                     <div class="mb-3">
                                                         <label class="form-control-label px-3">مقدار معادل</label>
-                                                        <input type="text" id="currency_equal" v-model="currency_equal" placeholder="مقدار معادل..." class="form-control" required>
+                                                        <input type="text" id="currency_equal" v-model="amount_equal" placeholder="مقدار معادل..." class="form-control" required>
                                                     </div>
                                                 </div>
                                             </div>
@@ -209,13 +237,6 @@ export default {
                                                     <textarea v-model="desc" id="desc" cols="30" rows="4" class="form-control"></textarea>
                                                 </div>
                                             </div>
-                                            <div class="col-12">
-                                                <div class="mb-3">
-                                                    <label for="address">آدرس</label>
-                                                    <textarea v-model="address" id="address" cols="30" rows="4" class="form-control" placeholder="آدرس خود را وارد کنید"></textarea>
-                                                </div>
-                                            </div>
-
                                         </div>
 
                                         <div class="text-end pt-5 mt-1 g-2">

@@ -40,13 +40,10 @@ export default {
             ExpenseList: [],
 
             // for persian datepicker
-            // rasid_date: new Date().toISOString().slice(0, 10),
             rasid_date: "",
             errors: {},
-
+            // pagination
             limit: 10,
-            offset: 0,
-
             currentPage: 1,
             totalPages: 0,
 
@@ -104,35 +101,27 @@ export default {
         },
 
         // showing data in the table
-        async showExpenses() {
+        async showExpenses(page = 1) {
+
             try {
-                await axios.get('/api/showExpenses', {
-                        params: {
-                            limit: this.limit,
-                            offset: this.offset,
-                        },
-                    }).then((response) => {
-                        this.ExpenseList = response.data.expenses;
-                        this.total_pages = response.data.total_pages;
-                    })
-                    .catch((error) => {
-                        console.error('Error fetching customers:', error);
-                    });
+                const response = await axios.get(`/api/showExpenses?page=${page}&limit=${this.limit}`);
+                this.ExpenseList = response.data.expenses.data;
+                this.totalPages = response.data.total_pages;
+                this.currentPage = page; // Update the current page
             } catch (error) {
-                console.log(error.message);
+                console.error('Error fetching IncomeExpenses:', error);
             }
+         
         },
      
         prevPage() {
-            if (this.offset > 0) {
-                this.offset -= this.limit;
-                this.showExpenses();
+            if (this.currentPage > 1) {
+                this.showExpenses(this.currentPage - 1); // Update the page parameter
             }
         },
         nextPage() {
-            if (this.offset + this.limit < this.limit * this.total_pages) {
-                this.offset += this.limit;
-                this.showExpenses();
+            if (this.currentPage < this.totalPages) {
+                this.showExpenses(this.currentPage + 1); // Update the page parameter
             }
         },
 
@@ -149,13 +138,14 @@ export default {
             try {
                 const response = await axios.get('/api/expenses');
                 this.financeAccounts = response.data.financeAccounts;
+                // console.log("this.financeAccounts",this.financeAccounts);
             } catch (error) {
                 console.log(error.message);
             }
         },
+     
         // for getting the id in modal
         getAccountForEdit(id) {
-            // console.log("In getAccountForEidt: ",id);
 
             axios.get('/api/expenses')
                 .then(response => {
@@ -341,6 +331,7 @@ export default {
             });
 
             this.ExpenseList = response.data;
+            console.log("this.ExpenseList",this.ExpenseList);
         },
     },
 };
@@ -529,7 +520,7 @@ export default {
                     <div class="col-sm-4">
                         <div class="search-box me-2 mb-2 d-inline-block">
                             <div class="position-relative">
-                                <input type="text" class="form-control" placeholder="جستجوی مشتری..." @input="searchData"/>
+                                <input type="text" v-model="searchQuery" class="form-control" placeholder="جستجوی خرج..." @input="searchData"/>
                                 <i class="bx bx-search-alt search-icon"></i>
                             </div>
                         </div>
@@ -537,7 +528,7 @@ export default {
                     <div class="row">
                         <div class="col-sm-12 ">
 
-                            <div class="table-responsive" v-if="ExpenseList.length >0">
+                            <div class="table-responsive" v-if="ExpenseList.length">
                                 <table class="table table-centered table-nowrap">
                                     <thead>
                                         <tr>
@@ -563,7 +554,7 @@ export default {
                                             <td>{{expenesel.type ? "مصرف" :""}}</td>
                                             <td>{{expenesel.amount}}</td>
                                             <td>{{expenesel.expense_currency.name}}</td>
-                                            <td>{{expenesel.expense_bank.account_name}}</td>
+                                            <td>{{expenesel.expense_bank?.account_name}}</td>
                                             <td>{{expenesel.desc}}</td>
                                             <td>{{expenesel.user_id}}</td>
 
@@ -584,33 +575,21 @@ export default {
                                     </tbody>
                                 </table>
                             
-                            <ul class="pagination pagination-rounded justify-content-end mb-2">
-                                <li class="page-item disabled">
-                                    <a class="page-link" href="javascript: void(0);" aria-label="Previous">
-                                        <i class="mdi mdi-chevron-left"></i>
-                                    </a>
-                                </li>
-                                <li class="page-item active">
-                                    <a class="page-link" href="javascript: void(0);">1</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="javascript: void(0);">2</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="javascript: void(0);">3</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="javascript: void(0);">4</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="javascript: void(0);">5</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="javascript: void(0);" aria-label="Next">
-                                        <i class="mdi mdi-chevron-right"></i>
-                                    </a>
-                                </li>
-                            </ul>
+                                <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
+                                    <li class="page-item">
+                                        <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
+                                            <i class="mdi mdi-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                    <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
+                                        <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
+                                            <i class="mdi mdi-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                </ul>
                         </div>
                             <div v-else class="text-center font-size-20">
                                 نتیجه مورد نظر یافت نشد!

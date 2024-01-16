@@ -51,7 +51,7 @@ Route::post('/searchorder', [OrderController::class, 'searchOrder']);
 
 Route::apiResource('users',UserController::class);
 
-Route::get('/financeAccWithCurrency/{id}',[IncomeExpController::class, 'getFinanceAccWithCur']);
+Route::get('/financeAccWithCurrency/{id}',[IncomeExpController::class, 'getFinanceAccountByCurrencyId']);
 Route::post('/deleteExpense',[IncomeExpController::class, 'deleteExpense']);
 Route::post('/searchincomexpenses', [IncomeExpController::class, 'searchIncomeExpensesFunc']);
 

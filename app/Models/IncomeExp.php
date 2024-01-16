@@ -39,4 +39,9 @@ class IncomeExp extends Model
     {
         return $this->belongsTo(Customer::class,'ref_type');
     }
+
+    public function customer_expense()
+    {
+        return $this->belongsTo(Customer::class);
+    }
 }

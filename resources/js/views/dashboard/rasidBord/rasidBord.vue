@@ -82,11 +82,16 @@ export default {
             editCurrencyModel: '',
             editSelectedDakhl: '',
             editbanks: [],
-            editSelectedCustomer: null,
-            editCustomer: [],
+            editSelectedCustomer: '',
+            editCustomers: [],
             editEqualcurrencyModel: '',
 
             newExpense: [],
+
+             // pagination
+             currentPage: 1,
+            totalPages: 1,
+            limit: 10,
 
         };
     },
@@ -107,7 +112,23 @@ export default {
         editSelect(date) {
             this.editDate = date.toString();
         },
+        async getTransaction(page=1) {
+            const response = await axios.get(`/api/transaction?page=${page}&limit=${this.limit}`);
+            this.transactions = response.data.transactions.data;
+            this.totalPages = response.data.transactions.last_page;
+            this.currentPage = page; // Update the current page
 
+        },
+        prevPage() {
+            if (this.currentPage > 1) {
+                this.getTransaction(this.currentPage - 1); // Update the page parameter
+            }
+        },
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.getTransaction(this.currentPage + 1); // Update the page parameter
+            }
+        },
         updateSelectedCustomer(customer) {
             this.selectedCustomer = customer.name;
             // console.log("Customerseleted", this.selectedCustomer);
@@ -119,7 +140,7 @@ export default {
         closeModal() {
             this.showModal = false;
         },
-        // showing data in the table
+      
 
         // for calculating the Equal to input type
         calculateEqualAmount() {
@@ -140,8 +161,7 @@ export default {
         async getCustomers() {
             try {
                 const response = await axios.get('/api/customer');
-                this.customers = response.data.customers;
-
+                this.customers = response.data.customers.data;
             } catch (error) {
                 console.error('Error fetching data: ', error.message);
             }
@@ -149,8 +169,8 @@ export default {
         async getCurrency() {
             try {
                 await axios.get('/api/currencies').then((response) => {
-                        this.currencies = response.data.currencies;
-                        // console.log(this.currencies);
+                        this.currencies = response.data.currencies.data;
+                       ;
 
                     })
                     .catch((error) => {
@@ -227,18 +247,14 @@ export default {
             this.getBanksForEdit(this.editCurrencyModel);
         },
 
-        async getTransaction() {
-            const response = await axios.get('/api/transaction');
-            this.transactions = response.data;
-
-        },
+    
         async searchData() {
-            const response = await axios.post('/api/searchtransaction', {
+            const response = await axios.post('/api/searchtransactions', {
                 query: this.searchQuery
             });
-
             this.transactions = response.data;
-            console.log(this.transactions);
+    
+            
         },
 
         async editTransactionFunc(id) {
@@ -256,11 +272,12 @@ export default {
             this.getBanksForEdit(this.editCurrencyModel)
             this.getCustomerForEdit(this.editTransaction[0].ref_id);
 
+            //  console.log("this.editTransaction", this.editTransaction);
 
         },
         async submitEditTransaction() {
-            // console.log("Submit edit transaction", this.editSelectedCustomer.id);
-            const response = await axios.post(`/api/updateTransaction/${id}`, {
+            let id = this.editTransaction[0].id;
+            const response = await axios.post(`/api/updateTransaction`, {
                 id: this.editTransaction[0].id,
                 rasid_bord: this.editasid_bord,
                 transaction_type: this.editasid_bord,
@@ -316,13 +333,12 @@ export default {
             }
         },
         async getCustomerForEdit(id) {
-            // console.log("getCustomerForEdit",id);
+        
             try {
                 const response = await axios.get('/api/customer');
-                this.editCustomer = response.data.customers;
-                this.editSelectedCustomer = this.editCustomer.length > 0 ? this.editCustomer.find(custom => custom.id === id) : '';
-                // console.log(this.editCustomer.length > 0 ? this.editCustomer.find(custom => custom.id === id).name : '');
-
+                this.editCustomers = response.data.customers.data;
+                this.editSelectedCustomer = this.editCustomers.length > 0 ? this.editCustomers.find(custom => custom.id === id) : '';
+                
             } catch (error) {
                 console.log(error.message);
             }
@@ -375,7 +391,7 @@ export default {
                             <b-alert v-model="isError" class="mb-4" variant="danger" dismissible>{{ this.formError
         }}</b-alert>
 
-                            <form id="category_insert" autocomplete="on" class="form-horizontal form-label-left" @submit.prevent="storeTransaction">
+                            <form id="category_insert"  class="form-horizontal form-label-left" @submit.prevent="submitEditTransaction">
 
                                 <div class="form-group">
                                     <div class="col-sm-12 col-xs-12">
@@ -396,7 +412,7 @@ export default {
                                         <div>
 
                                             <div>
-                                                <v-select v-model="editSelectedCustomer" :options="editCustomer" label="name" placeholder="مشتری مورد نظر خود را سرچ کنید" class="searchCustomer" />
+                                                <v-select v-model="editSelectedCustomer" :options="editCustomers" label="name" placeholder="مشتری مورد نظر خود را سرچ کنید" class="searchCustomer" />
                                             </div>
                                         </div>
 
@@ -446,7 +462,7 @@ export default {
                                             <span class="text-danger error-text afrad_error" v-if="errors.date">{{errors.date[0]}}</span>
                                         </div>
                                     </div>
-                                    <!-- <label>رسید به حساب مشتری :‌ </label> -->
+                                 
                                     <div class="row">
                                         <div class="col-sm-4 col-xs-12">
                                             <label for="supplier">واحد پول رسید:</label>
@@ -473,7 +489,7 @@ export default {
                                 </div>
                                 <div class="text-end pt-5 mt-1 g-2">
                                     <b-button variant="danger" @click="closeModal">بستن</b-button>
-                                    <b-button type="submit" variant="success" class="ms-1 ml-2">ساختن</b-button>
+                                    <b-button type="submit" variant="success" class="ms-1 ml-2">آپدیت</b-button>
                                 </div>
                             </form>
 
@@ -606,7 +622,7 @@ export default {
                         <div class="search-box me-2 mb-2 d-inline-block">
 
                             <div class="position-relative">
-                                <input type="text" class="form-control" placeholder="جستجوی مشتری..." @input="searchData" />
+                                <input type="text" class="form-control" v-model="searchQuery" placeholder="جستجوی مشتری..." @input="searchData" />
                                 <i class="bx bx-search-alt search-icon"></i>
                             </div>
                         </div>
@@ -614,11 +630,10 @@ export default {
                     <div class="row">
                         <div class="col-sm-12 ">
 
-                            <div class="table-responsive" v-if="transactions.length > 0">
+                            <div class="table-responsive" v-if="transactions.length">
                                 <table class="table table-centered table-nowrap">
                                     <thead>
                                         <tr>
-                                            <th class="text-center">#</th>
                                             <th class="text-center">آیدی</th>
                                             <th class="text-center">نام مشتری</th>
                                             <th class="text-center">رسید برد</th>
@@ -634,13 +649,7 @@ export default {
                                     </thead>
                                     <tbody>
                                         <tr v-for="transaction in transactions" :key="transaction?.id">
-                                            <td>
-                                                <div class="form-check font-size-16">
-                                                    <input :id="`customCheck${transaction?.id}`" type="checkbox" class="form-check-input" />
-                                                    <label class="form-check-label" :for="`customCheck${transaction?.id}`">&nbsp;</label>
-                                                </div>
-                                            </td>
-
+                                    
                                             <td>{{transaction?.id}}</td>
                                             <td v-if="transaction.customer!=null">{{ transaction.customer?.name}}</td>
                                             <td v-else>{{ transaction.finance_account?.account_name}}</td>
@@ -672,29 +681,17 @@ export default {
                                     </tbody>
                                 </table>
 
-                                <ul class="pagination pagination-rounded justify-content-end mb-2">
-                                    <li class="page-item disabled">
-                                        <a class="page-link" href="javascript: void(0);" aria-label="Previous">
+                                <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
+                                    <li class="page-item">
+                                        <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
                                             <i class="mdi mdi-chevron-left"></i>
                                         </a>
                                     </li>
-                                    <li class="page-item active">
-                                        <a class="page-link" href="javascript: void(0);">1</a>
+                                    <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
+                                        <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
                                     </li>
                                     <li class="page-item">
-                                        <a class="page-link" href="javascript: void(0);">2</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="javascript: void(0);">3</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="javascript: void(0);">4</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="javascript: void(0);">5</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="javascript: void(0);" aria-label="Next">
+                                        <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
                                             <i class="mdi mdi-chevron-right"></i>
                                         </a>
                                     </li>

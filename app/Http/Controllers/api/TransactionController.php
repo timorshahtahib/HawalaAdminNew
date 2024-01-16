@@ -35,19 +35,25 @@ class TransactionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $transaction = Transaction::where('status', '=', '1')->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')->get();
+            $limit = $request->has('limit') ? $request->limit : 10;
+
+            $transaction = Transaction::where('status', '=', '1')
+            ->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')
+            ->paginate($limit);
 
             if ($transaction->isEmpty()) {
                 return response()->json(['error' => 'Transaction not found'], 404);
             }
-            return response()->json($transaction);
+            $total_pages= $transaction->lastPage();
+            return response()->json(['transactions' =>$transaction,'total_pages'=>$transaction]);
         }
         catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+      
     }
 
     // select all transaction that have the ref_id = customer id in the profile page
@@ -211,8 +217,52 @@ class TransactionController extends Controller
             'status'=>'',
 
         ]);
-        $transaction->update($request->all());
-        return response()->json($transaction,201);
+        if(!$validator->passes()){
+            return response()->json([
+                'status'=>false,
+                'error'=>$validator->errors()->toArray(),
+            ]);
+        }
+        else{
+            DB::beginTransaction();
+            $transaction_values = [
+                'rasid_bord'=> $request->rasid_bord,
+                'amount'=>$request->amount,
+                'currency'=>$request->currency,
+                'bank_acount_id'=>$request->bank_id,
+                'amount_equal'=>$request->amount_equal,
+                'currency_equal'=>$request->currency_equal,
+                'currency_rate'=>$request->currency_rate,
+                'ref_id'=>$request->ref_id,
+                // 'user_id'=>Auth::user()->id,
+                'user_id'=>1,
+                'desc'=>$request->desc,
+                'date'=>$request->date,
+            
+            ];
+            $transaction_update = Transaction::where('id',$request->id)->update($transaction_values);
+            if($transaction_update){
+              
+                $output_data = Transaction::where('id',$request->id)->with(['financeAccount','customer','tr_currency','bank_account'])->first();
+
+                DB::commit();
+                return  response()->json([
+                    'status'=>true,
+                    'new_data'=>$output_data,
+                    'message'=>'اطلاعات موفقانه آپدیت شد.',
+                ]);
+
+            }else{
+                DB::rollback();
+                return  response()->json([
+                    'status'=>false,
+                    'message'=>'عملیات انجام نشد',
+                ]);
+            }
+            // $transaction->update($request->all());
+            
+        }
+
     }
 
     public function updateTransaction(Request $request){
@@ -323,35 +373,46 @@ class TransactionController extends Controller
         return response()->json(['message' => 'Transaction deleted successfully', 'data' => $transaction], 204);
     }
 
-    public function getSearchTransactions(Request $request){
-        $query=$request->input('query');
-        $transaction = Transaction::where('amount','LIKE','%'.$query.'%')->with(['financeAccount','customer','tr_currency'])->get();
-        $searchTerm = $request->input('query');
-
-        $transactions = Transaction::query()
-            ->whereHas('customer', function ($query) use ($searchTerm) {
-                $query->where('name', 'like', '%' . $searchTerm . '%');
-            })
-            ->orWhereHas('financeAccount', function ($query) use ($searchTerm) {
-                $query->where('account_name', 'like', '%' . $searchTerm . '%');
-            })
-            ->orWhereHas('tr_currency', function ($query) use ($searchTerm) {
-                $query->where('name', 'like', '%' . $searchTerm . '%');
-            })
-           
-            ->orWhere('amount',  'like', '%' . $searchTerm . '%')
-            ->orWhere('amount_equal',  'like', '%' . $searchTerm . '%')
-            ->orWhere('currency_equal',  'like', '%' . $searchTerm . '%')
-            ->orWhere('currency_rate',  'like', '%' . $searchTerm . '%')
-            
-            ->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')
-            ->get();
-       
-        
-       
-        return response()->json($transactions);
+    public function getSearchTransactions(Request $request) {
+        try {
+            $searchTerm = $request->input('query');
+    
+            $transaction = Transaction::query()->where('status', '=', '1')->where(function ($query) {
+                $query->where('rasid_bord', 'rasid')->orWhere('rasid_bord', 'bord');
+            });
+    
+            if ($searchTerm) {
+                $transaction->where(function ($query) use ($searchTerm) {
+                    $query->whereHas('customer', function ($query) use ($searchTerm) {
+                        $query->where('name', 'like', '%' . $searchTerm . '%');
+                    })
+                    ->orWhereHas('financeAccount', function ($query) use ($searchTerm) {
+                        $query->where('account_name', 'like', '%' . $searchTerm . '%');
+                    })
+                    ->orWhereHas('tr_currency', function ($query) use ($searchTerm) {
+                        $query->where('name', 'like', '%' . $searchTerm . '%');
+                    })
+                    ->orWhere('amount', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('amount_equal', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('currency_equal', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('currency_rate', 'like', '%' . $searchTerm . '%');
+                });
+            }
+    
+            $transactions = $transaction->with(['financeAccount', 'customer', 'tr_currency', 'bank_account'])
+                ->orderBy('id', 'desc')
+                ->get();
+    
+            if ($transactions->isEmpty()) {
+                return response()->json([]);
+            }
+    
+            return response()->json($transactions);
+        } catch (Throwable $e) {
+            return response()->json(['message' => $e->getMessage()]);
+        }
     }
-
+    
 
     public function getCustomerInfoSearch(Request $request,$id){
         $query=$request->input('query');

@@ -5,7 +5,7 @@
         <div class="search-box me-2 mb-2 d-inline-block">
             <div class="position-relative">
                 <input type="text" class="form-control" v-model="searchQuery" 
-                placeholder="جستجوی مشتری..." @input="searchData"/>
+                placeholder="جستجوی خرج و مخارج..." @input="searchData"/>
                 <i class="bx bx-search-alt search-icon"></i>
             </div>
         </div>
@@ -16,7 +16,7 @@
         <b-modal v-model="showModal" title="ویرایش خرج و مخارج" title-class="text-black font-18" body-class="p-3" hide-footer>
             <b-alert v-model="isError" class="mb-4" variant="danger" dismissible>{{ this.formError
 }}</b-alert>
-            <form @submit.prevent="submitForm">
+            <form @submit.prevent="submitEditedForm">
                 <div class="row flex justify-between">
                     <div class="row flex justify-between">
                         <div class="col-md-6 col-sm-12 col-lg-6">
@@ -27,6 +27,7 @@
                                     <option value="expense">مصرف</option>
                                     <option value="income">درآمد</option>
                                 </select>
+                                   
                             </div>
                         </div>
                         <div class="col-sm-12 col-md-6 col-lg-6">
@@ -42,7 +43,7 @@
 
                                 <label class="form-control-label px-3">واحد پولی</label>
                                 <select v-model="editCurrency" class="form-control" required>
-                                    <option v-for="curr in currencies" :key="curr.id" :value="curr.id">{{curr.name}} {{curr.sign}}</option>
+                                    <option v-for="curr in edit_currencies" :key="curr.id" :value="curr.id">{{curr.name}} {{curr.sign}}</option>
 
                                 </select>
                             </div>
@@ -71,9 +72,9 @@
                             </label>
                             <div class="input-group ">
                                 <!-- persian data picker -->
-                                <date-picker @select="select" mode="single" type="date" locale="fa" :column="1" required>
+                                <date-picker @select="edit_select" mode="single" type="date" locale="fa" :column="1" required>
                                 </date-picker>
-
+                                <span class="text-center">{{editDate}}</span>
                             </div>
                             <span class="text-danger error-text afrad_error" v-if="errors.date">{{errors.date[0]}}</span>
                         </div>
@@ -84,25 +85,19 @@
                             <textarea v-model="editDesc" id="desc" cols="30" rows="4" class="form-control"></textarea>
                         </div>
                     </div>
-                    <div class="col-12">
-                        <div class="mb-3">
-                            <label for="address">آدرس</label>
-                            <textarea v-model="editAddress" id="address" cols="30" rows="4" class="form-control" placeholder="آدرس خود را وارد کنید"></textarea>
-                        </div>
-                    </div>
-
+                 
                 </div>
 
                 <div class="text-end pt-5 mt-1 g-2">
                     <b-button variant="danger" @click="closeModal">بستن</b-button>
-                    <b-button type="submit" variant="success" class="ms-1 ml-2">ساختن</b-button>
+                    <b-button type="submit" variant="success" class="ms-1 ml-2">آپدیت</b-button>
                 </div>
             </form>
         </b-modal>
     </div>
 </div>
 <!-- edit modal end -->
-<div class="table-responsive" v-if="IncomeExpenses.length > 0">
+<div class="table-responsive" v-if="IncomeExpenses.length">
   
     <table class="table table-centered table-nowrap">
         <thead>
@@ -165,33 +160,21 @@
         </tbody>
     </table>
 
-<ul class="pagination pagination-rounded justify-content-end mb-2">
-    <li class="page-item disabled">
-        <a class="page-link" href="javascript: void(0);" aria-label="Previous">
-            <i class="mdi mdi-chevron-left"></i>
-        </a>
-    </li>
-    <li class="page-item active">
-        <a class="page-link" href="javascript: void(0);">1</a>
-    </li>
-    <li class="page-item">
-        <a class="page-link" href="javascript: void(0);">2</a>
-    </li>
-    <li class="page-item">
-        <a class="page-link" href="javascript: void(0);">3</a>
-    </li>
-    <li class="page-item">
-        <a class="page-link" href="javascript: void(0);">4</a>
-    </li>
-    <li class="page-item">
-        <a class="page-link" href="javascript: void(0);">5</a>
-    </li>
-    <li class="page-item">
-        <a class="page-link" href="javascript: void(0);" aria-label="Next">
-            <i class="mdi mdi-chevron-right"></i>
-        </a>
-    </li>
-</ul>
+    <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
+        <li class="page-item">
+            <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
+                <i class="mdi mdi-chevron-left"></i>
+            </a>
+        </li>
+        <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
+            <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
+                <i class="mdi mdi-chevron-right"></i>
+            </a>
+        </li>
+    </ul>
 </div>
 <div v-else class="text-center font-size-20">
     نتیجه مورد نظر یافت نشد!
@@ -201,8 +184,12 @@
 <script>
 import axios from 'axios';
 import Swal from 'sweetalert2'
+import DatePicker from '@alireza-ab/vue3-persian-datepicker';
 export default {
     name: 'financeAccountTable',
+    components:{
+        DatePicker,
+    },
     data() {
         return {
             showModal: false,
@@ -220,14 +207,15 @@ export default {
             user_id: '',
             ref_type: '',
             editState: '',
-            editAddress: '',
             editDesc: '',
             errors: {},
             stateError: null,
+            edit_currencies:[],
+            // pagination
+            currentPage: 1,
+            totalPages: 1,
             limit: 10,
-            offset: 0,
-            total_pages: 0,
-            
+
         }
     },
     mounted() {
@@ -235,102 +223,109 @@ export default {
     },
 
     methods: {
-        select(date) {
-       this.editAddress = date.toString();
+        edit_select(date) {
+       this.editDate = date.toString();
           },
 
           openModal() {
             this.showModal = true;
         },
         openModaledit() {
-
-            console.log(this.editIncomeExp);
             this.showModal = true;
+            this.get_edit_Currencies();
         },
         closeModal() {
             this.showModal = false;
         },
-        showalert($title, $text, $icon) {
+        showalert(title, text, icon) {
             Swal.fire({
-                title: $title,
-                text: $text,
-                icon: $icon,
+                title: title,
+                text: text,
+                icon: icon,
                 confirmButtonText: 'OK'
             })
         },
-        async getIncomeExp() {
+        async getIncomeExp(page = 1) {
             try {
-                await axios.get('/api/income_expense', {
-                        params: {
-                            limit: this.limit,
-                            offset: this.offset,
-                        },
-                    }).then((response) => {
-                        this.IncomeExpenses = response.data.IncomeExpenses;
-                        this.total_pages = response.data.total_pages;
-                    })
-                    .catch((error) => {
-                        console.error('Error fetching IncomeExpenses:', error);
-                    });
-
-                // console.log(this.IncomeExpenses);
+                const response = await axios.get(`/api/income_expense?page=${page}&limit=${this.limit}`);
+                this.IncomeExpenses = response.data.IncomeExpenses.data;
+                this.totalPages = response.data.IncomeExpenses.last_page;
+                this.currentPage = page; // Update the current page
             } catch (error) {
-                console.error('Error fetching data: ', error.message);
+                console.error('Error fetching IncomeExpenses:', error);
             }
         },
+        async get_edit_Currencies() {
+            try {
+                const response = await axios.get('/api/currencies');
+                this.edit_currencies = response.data.currencies.data;
+            } catch (error) {
+                console.log(error.message);
+            }
 
+        },
         prevPage() {
-            if (this.offset > 0) {
-                this.offset -= this.limit;
-                this.getIncomeExp();
+            if (this.currentPage > 1) {
+                this.getIncomeExp(this.currentPage - 1); // Update the page parameter
             }
         },
         nextPage() {
-            if (this.offset + this.limit < this.limit * this.total_pages) {
-                this.offset += this.limit;
-                this.getIncomeExp();
+            if (this.currentPage < this.totalPages) {
+                this.getIncomeExp(this.currentPage + 1); // Update the page parameter
             }
         },
        
         async editIncomeExpense(id) {
            
             const response = await axios.get(`/api/income_expense/${id}`);
-            console.log("editIcomeExpense id:",id);
+           
             this.editIncomeExp = response.data;
             this.editType = this.editIncomeExp.type;
+            this.openModaledit();
             this.editAmount = this.editIncomeExp.amount;
             this.editCurrency = this.editIncomeExp.currency;
             this.editAmount_equal = this.editIncomeExp.amount_equal
             this.editCurrency_equal = this.editIncomeExp.currency_equal;
             this.editDate = this.editIncomeExp.date;
-            this.transaction_id = this.editIncomeExp.transaction_id
-            this.finance_acount_id = this.editIncomeExp.finance_acount_id
-            // this.user_id = this.editIncomeExp.this.user_id
-            this.ref_type = this.editIncomeExp.ref_type
-            this.editState = this.editIncomeExp.editState
-            this.editAddress = this.editIncomeExp.editAddress
-            this.editDesc = this.editIncomeExp.editDesc
-
-            console.log(this.editIncomeExp);
-            this.openModaledit(this.editIncomeExp);
+            this.editState = this.editIncomeExp.state
+            this.editDesc = this.editIncomeExp.desc
 
         },
 
-        async submitEditedForm(id) {
+        async submitEditedForm() {
+            let id= this.editIncomeExp.id;
+    
             try {
-                const responseUpdate = await axios.put(`/api/income_expense/${id}`, this.newIncomeExp);
-                this.newIncomeExp = responseUpdate;
-                if (responseUpdate.status) {
+                const response = await axios.put(`/api/income_expense/${id}`, {
+                    type: this.editType,
+                    amount: this.editAmount,
+                    currency: this.editCurrency,
+                    amount_equal: this.editAmount_equal,
+                    // currency_equal: this.currency_equal,
+                    date: this.editDate,
+                    state: this.editState,
+                    desc: this.editDesc,
+                });
+                
+                if (response.status) {
+                    this.errors = {}
+                        this.editType='';
+                        this.editAmount='';
+                        this.editCurrency='';
+                        this.editAmount_equal='';
+                        this.editCurrency_equal='';
+                        this.editDate= null;
+                        this.editState='';
+                        this.editDesc='';
+                        this.showModal=false;
                     this.showalert('خرج و مخارج با موفقیت ویرایش شد!', 'ادامه دهید', 'success');
-                    console.log("Customer updated successfully");
+                    
                 }
 
             } catch (error) {
                 console.log(error);
-                this.showalert('خرج و مخارج با موفقیت ویرایش نشد!', 'ادامه دهید', 'error');
+                this.showalert('خرج و مخارج با موفقیت ویرایش نشد!', 'Error', 'error');
             }
-            this.showModal = false;
-            this.$router.push('/customer');
             this.getIncomeExp();
 
         },
