@@ -52,7 +52,7 @@ export default {
 
             edit_transfer_amount: '',
             edit_transfer_currency_model: '',
-            edit_commission: 'darad',
+            edit_commission: null,
             edit_commission_currency_model: '',
             edit_transfer_date: null,
             edit_transfer_desc: '',
@@ -70,6 +70,10 @@ export default {
             commission_id: 0,
 
             errors: {},
+        // pagination
+        currentPage: 1,
+        totalPages: 1,
+        limit: 10,
 
         };
     },
@@ -108,16 +112,27 @@ export default {
                 confirmButtonText: confirmButtonText,
             });
         },
-        async getTransferTransaction() {
-            const response = await axios.get('/api/gettransfers');
-            this.transfers = response.data;
-
+        async getTransferTransaction(page=1) {
+            const response = await axios.get(`/api/gettransfers?page=${page}&limit=${this.limit}`);
+            this.transfers = response.data.transactions.data;
+            this.totalPages = response.data.transactions.last_page;
+            this.currentPage = page;
         },
 
+        prevPage() {
+            if (this.currentPage > 1) {
+                this.getTransferTransaction(this.currentPage - 1); // Update the page parameter
+            }
+        },
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.getTransferTransaction(this.currentPage + 1); // Update the page parameter
+            }
+        },
         async getCurrency() {
             try {
                 await axios.get('/api/currencies').then((response) => {
-                        this.currencies = response.data.currencies;
+                        this.currencies = response.data.currencies.data;
 
                     })
                     .catch((error) => {
@@ -227,7 +242,7 @@ export default {
         async get_edit_Currency() {
             try {
                 await axios.get('/api/currencies').then((response) => {
-                        this.edit_currencies = response.data.currencies;
+                        this.edit_currencies = response.data.currencies.data;
                     })
                     .catch((error) => {
                         console.error('Error fetching currencies:', error);
@@ -271,6 +286,7 @@ export default {
         },
 
         async edit_transfer_func(id, type) {
+           
             const response = await axios.post(`/api/gettransferforedit/`, {
                 id: id,
                 rasid_bord: type
@@ -282,35 +298,39 @@ export default {
             this.openModaledit();
             this.rasid_id = rasid_list.id;
             this.bord_id = bord_list.id;
-            this.commission_id = commission_list.id;
-            // console.log("commission id", this.commmission_id);
+            this.commission_id = commission_list?.id;
+            // console.log("commission id",this.commission_id);
 
-            this.edit_transfer_amount = bord_list.amount;
+            this.edit_transfer_amount = bord_list?.amount;
             this.edit_transfer_currency_model = bord_list.currency;
             this.edit_getBanksByCID(this.edit_transfer_currency_model)
             this.edit_source_selectedDakhl = bord_list.bank_acount_id;
             this.destination_Dakhl = rasid_list.bank_acount_id;
 
             this.edit_commission_currency_model = commission_list?.currency;
-            this.edit_commission_amount = commission_list.amount;
-            this.edit_commission = commission_list.commission;
-            this.edit_commission_currency_model = commission_list.currency
+            this.edit_commission_amount = commission_list?.amount;
+            this.edit_commission = commission_list?.commission;
+            this.edit_commission_currency_model = commission_list?.currency
             this.edit_source_selectedDakhl = bord_list.bank_acount_id;
             this.edit_getBanksByCIDforComision(this.edit_commission_currency_model)
             this.edit_transfer_date = bord_list.date;
             this.edit_transfer_desc = bord_list.desc;
-            // const commission1 = document.getElementById('commission');
-            // const nocommission = document.getElementById('nocommission');
 
-            // if (commission_list.commission) {
-            //     commission1.checked = true;
-            //     nocommission.checked = false;
-            //     console.log("Commission darad");
-            // } else {
-            //     commission1.checked = false;
-            //     nocommission.checked = true;
-            //     console.log("Commission nadarad");
-            // }
+            const commission1 = document.getElementById('commission');
+            const nocommission = document.getElementById('nocommission');
+            console.log(this.commission);
+
+            document.addEventListener('DOMContentLoaded', function() {
+                if (this.commission.value="darad") {
+                commission1.checked = true;
+                nocommission.checked = false;
+            } else {
+                commission1.checked = false;
+                nocommission.checked = true;
+                console.log("Commission nadarad");
+            }
+                });
+           
 
         },
 
@@ -418,7 +438,7 @@ export default {
             <!-- edit modal start -->
             <div class="col-sm-8">
                 <div class="text-sm-end">
-                    <b-modal v-model="showModal" title="ویرایش فروش" title-class="text-black font-18" body-class="p-3" hide-footer>
+                    <b-modal v-model="showModal" title="ویرایش انتقال" title-class="text-black font-18" body-class="p-3" hide-footer>
                         <form id="category_insert" autocomplete="on" class="form-horizontal form-label-left" @submit.prevent="editSubmitTransfer">
 
                             <div class="form-group">
@@ -427,7 +447,7 @@ export default {
                                         <label for="supplier">واحد پول انتقالی:</label>
                                         <select class="form-control form-control-lg select2 required" v-model="edit_transfer_currency_model" @change="edit_change_transfer_currency" required>
                                             <option disabled selected> واحد</option>
-                                            <option v-for="currency in edit_currencies" :key="currency.id" :value="currency.id">{{currency.name}} {{currency.sign}}</option>
+                                            <option v-for="currency in edit_currencies" :key="currency?.id" :value="currency?.id">{{currency?.name}} {{currency?.sign}}</option>
                                         </select>
                                         <span class="text-danger error-text currency_error"></span>
                                     </div>
@@ -477,7 +497,7 @@ export default {
                                         <label for="supplier">واحد پول کمیشن:</label>
                                         <select class="form-control form-control-lg select2 required" v-model="edit_commission_currency_model" @change="edit_change_commission_currency">
                                             <option disabled selected> واحد</option>
-                                            <option v-for="currency in edit_currencies" :key="currency.id" :value="currency.id">{{currency.name}} {{currency.sign}}</option>
+                                            <option v-for="currency in edit_currencies" :key="currency?.id" :value="currency?.id">{{currency?.name}} {{currency?.sign}}</option>
                                         </select>
                                         <span class="text-danger error-text currency_error"></span>
                                     </div>
@@ -547,7 +567,7 @@ export default {
                                         <label for="supplier">واحد پول انتقالی:</label>
                                         <select class="form-control form-control-lg select2 required" v-model="transfer_currency_model" @change="change_transfer_currency" required>
                                             <option disabled selected> واحد</option>
-                                            <option v-for="currency in currencies" :key="currency.id" :value="currency.id">{{currency.name}} {{currency.sign}}</option>
+                                            <option v-for="currency in currencies" :key="currency?.id" :value="currency?.id">{{currency?.name}} {{currency?.sign}}</option>
                                         </select>
                                         <span class="text-danger error-text currency_error"></span>
                                     </div>
@@ -597,7 +617,7 @@ export default {
                                         <label for="supplier">واحد پول کمیشن:</label>
                                         <select class="form-control form-control-lg select2 required" v-model="commission_currency_model" @change="change_commission_currency">
                                             <option disabled selected> واحد</option>
-                                            <option v-for="currency in currencies" :key="currency.id" :value="currency.id">{{currency.name}} {{currency.sign}}</option>
+                                            <option v-for="currency in currencies" :key="currency?.id" :value="currency?.id">{{currency?.name}} {{currency?.sign}}</option>
                                         </select>
                                         <span class="text-danger error-text currency_error"></span>
                                     </div>
@@ -664,7 +684,7 @@ export default {
                         <div class="search-box me-2 mb-2 d-inline-block">
 
                             <div class="position-relative">
-                                <input type="text" class="form-control" v-model="searchQuery" placeholder="جستجوی مشتری..." @input="searchData" />
+                                <input type="text" class="form-control" v-model="searchQuery" placeholder="جستجوی انتقالات..." @input="searchData" />
                                 <i class="bx bx-search-alt search-icon"></i>
                             </div>
                         </div>
@@ -700,14 +720,14 @@ export default {
                                                 </span>
                                             </td>
 
-                                            <td>{{transaction.transaction_type}}</td>
-                                            <td>{{transaction.check_number}}</td>
-                                            <td>{{transaction.amount}}</td>
-                                            <td>{{transaction.tr_currency.name}}</td>
-                                            <td v-if="transaction.bank_account!=null">{{transaction.bank_account?.account_name}}</td>
-                                            <td v-else>{{ transaction.finance_account?.account_name}}</td>
-                                            <td>{{transaction.desc}}</td>
-                                            <td>{{transaction.user_id}}</td>
+                                            <td>{{transaction?.transaction_type}}</td>
+                                            <td>{{transaction?.check_number}}</td>
+                                            <td>{{transaction?.amount}}</td>
+                                            <td>{{transaction?.tr_currency.name}}</td>
+                                            <td v-if="transaction?.bank_account!=null">{{transaction.bank_account?.account_name}}</td>
+                                            <td v-else>{{ transaction?.finance_account?.account_name}}</td>
+                                            <td>{{transaction?.desc}}</td>
+                                            <td>{{transaction?.user_id}}</td>
 
                                             <td>
 
@@ -725,29 +745,17 @@ export default {
                                     </tbody>
                                 </table>
 
-                                <ul class="pagination pagination-rounded justify-content-end mb-2">
-                                    <li class="page-item disabled">
-                                        <a class="page-link" href="javascript: void(0);" aria-label="Previous">
+                                <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
+                                    <li class="page-item">
+                                        <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
                                             <i class="mdi mdi-chevron-left"></i>
                                         </a>
                                     </li>
-                                    <li class="page-item active">
-                                        <a class="page-link" href="javascript: void(0);">1</a>
+                                    <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
+                                        <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
                                     </li>
                                     <li class="page-item">
-                                        <a class="page-link" href="javascript: void(0);">2</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="javascript: void(0);">3</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="javascript: void(0);">4</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="javascript: void(0);">5</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="javascript: void(0);" aria-label="Next">
+                                        <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
                                             <i class="mdi mdi-chevron-right"></i>
                                         </a>
                                     </li>

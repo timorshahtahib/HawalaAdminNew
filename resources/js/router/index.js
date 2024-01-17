@@ -66,10 +66,10 @@ const routes = [{
             import ('../views/report/FinanceReport.vue')
     },
     {
-        path: '/charts/chartjs',
-        meta: { authRequired: true, title: 'Chartjs' },
+        path: '/report/borrowpaid',
+        meta: { authRequired: true, title: 'Borrow and Paid' },
         component: () =>
-            import ('../views/charts/chartjs/index.vue')
+            import ('../views/report/BorrowPaid.vue')
     },
     {
         path: '/report/financereport/bankDetails/:id',

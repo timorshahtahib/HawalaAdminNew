@@ -127,7 +127,7 @@ export default {
     <div class="navbar-header">
       <div class="d-flex">
         <!-- LOGO -->
-        <div class="navbar-brand-box">
+        <div class="navbar-brand-box mb-2">
           <router-link to="/" class="logo logo-dark">
             <span class="logo-sm">
               <img :src="logoDarkSm" alt height="22" />
@@ -141,11 +141,13 @@ export default {
             <span class="logo-sm">
               <img :src="logoLightSm" alt height="22" />
             </span>
-            <span class="logo-lg text-white">
+            <span class="logo-lg text-white ">
               <!-- Asia admin panel -->
-              <img :src="asialogo" alt height="110" />
+              <img :src="asialogo" alt height="140" class="mt-5"/>
             </span>
+
           </router-link>
+          <!-- <h3>پنل مدیریت آسیا تلکام</h3> -->
         </div>
 
         <button

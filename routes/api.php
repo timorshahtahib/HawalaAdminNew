@@ -96,6 +96,7 @@ Route::apiResource('/exchange',ExchangeController::class);
 Route::post('/getexchangeforedit',[ExchangeController::class,'getExchangeforEdit']);
 Route::post('/updateexchange',[ExchangeController::class,'updateBuyExchangeTransaction']);
 Route::post('/deleteexchange',[ExchangeController::class,'deleteBuyExchange']);
+Route::post('/searchexchange',[ExchangeController::class,'getBuySearchTransaction']);
 
 
 Route::post('/salestore',[ExchangeController::class,'saleStoreExchange']);

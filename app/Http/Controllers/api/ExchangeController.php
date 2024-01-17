@@ -15,31 +15,41 @@ class ExchangeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $transaction = Transaction::where('status', '=', '1')->where('transaction_type','exchange')->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')->get();
+            $limit = $request->has('limit') ? $request->limit : 10;
+            $transaction = Transaction::where('status', '=', '1')->where('transaction_type','exchange')
+            ->with(['financeAccount','customer','tr_currency','bank_account'])
+            ->orderBy('id','desc')->paginate($limit);
 
             if ($transaction->isEmpty()) {
-                return response()->json(['error' => 'Transaction not found'], 404);
+                return response()->json([]);
             }
-            return response()->json($transaction);
+            $total_pages = $transaction->lastPage();
+
+            return response()->json(['transactions'=>$transaction,'total_pages'=>$transaction]);
         }
         catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    public function getTransfer()
+    public function getTransfer(Request $request)
     {
         try {
+            $limit = $request->has('limit') ? $request->limit : 10;
+
             $transaction = Transaction::where('status', '=', '1')->where('transaction_type','transfer')
-            ->orWhere('transaction_type','commission')
-            ->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')->get();
+                ->orWhere('transaction_type','commission')
+            ->with(['financeAccount','customer','tr_currency','bank_account'])
+            ->orderBy('id','desc')->paginate($limit);
 
             if ($transaction->isEmpty()) {
-                return response()->json(['error' => 'Transaction not found'], 404);
+                return response()->json([]);
             }
-            return response()->json($transaction);
+            $total_pages = $transaction->lastPage();
+
+            return response()->json(['transactions'=>$transaction,'total_pages'=>$transaction]);
         }
         catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -339,7 +349,49 @@ class ExchangeController extends Controller
         
     }
 
-
+    public function getBuySearchTransaction(Request $request) {
+        
+        try {
+            $searchTerm = $request->input('query');
+    
+            $transaction = Transaction::query()->where('status', '=', '1')->where
+            (function ($query) {
+                $query->where('transaction_type', 'exchange');
+            });
+    
+            if ($searchTerm) {
+                $transaction->where(function ($query) use ($searchTerm) {
+                    $query->whereHas('customer', function ($query) use ($searchTerm) {
+                        $query->where('name', 'like', '%' . $searchTerm . '%');
+                    })
+                    ->orWhereHas('financeAccount', function ($query) use ($searchTerm) {
+                        $query->where('account_name', 'like', '%' . $searchTerm . '%');
+                    })
+                    ->orWhereHas('tr_currency', function ($query) use ($searchTerm) {
+                        $query->where('name', 'like', '%' . $searchTerm . '%');
+                    })
+                    ->orWhere('check_number', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('amount', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('amount_equal', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('currency_equal', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('currency_rate', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('desc', 'like', '%' . $searchTerm . '%');
+                });
+            }
+    
+            $transactions = $transaction->with(['financeAccount', 'customer', 'tr_currency', 'bank_account'])
+                ->orderBy('id', 'desc')
+                ->get();
+    
+            if ($transactions->isEmpty()) {
+                return response()->json([]);
+            }
+    
+            return response()->json($transactions);
+        } catch (Throwable $e) {
+            return response()->json(['message' => $e->getMessage()]);
+        }
+    }
 
 
     public function saleStoreExchange(Request $request)
@@ -404,6 +456,7 @@ class ExchangeController extends Controller
                     'date'=>$request->date,
                     'check_number'=>$check_number2,
                 ];
+                
                 $transaction_id2 = Transaction::insertGetId($transaction_values2);
 
                 if($transaction_id && $transaction_id2 ){
@@ -598,7 +651,7 @@ class ExchangeController extends Controller
             // commission
             'commission_bank_acount_id'=>'nullable|exists:finance_account,id',
             // 
-            "commission"=>"required",
+            "commission"=>"nullable",
             "commission_amount"=>"nullable",
             "commission_currency"=>'nullable',
             "date"=>'required',
@@ -921,6 +974,7 @@ class ExchangeController extends Controller
             if($searchTerm){
                 $query->where(function ($query) use ($searchTerm) {
                     $query->where('check_number', $searchTerm)
+
                         ->orWhere('rasid_bord', 'like', '%' . $searchTerm . '%')
                         ->orWhere('amount', 'like', '%' . $searchTerm . '%')
                         ->orWhere('ref_id', 'like', '%' . $searchTerm . '%')

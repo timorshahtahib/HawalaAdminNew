@@ -44,7 +44,7 @@ export default {
 
 <template>
   <!-- ========== Left Sidebar Start ========== -->
-  <div class="vertical-menu">
+  <div class="vertical-menu mt-2">
     <simplebar
       v-if="!isCondensed"
       :settings="settings"
