@@ -87,7 +87,7 @@ Route::get('/getbankbyid/{id}', [FinanceAccountController::class, 'getBanksByCur
 
 // Route::apiResource('reportfinanceAccounts',ReportFinanceController::class);
 Route::get('/bankbalance',[ReportFinanceController::class, 'getBankBalance']);
-Route::post('/bankdetails',[ReportFinanceController::class, 'getBanksTransaction']);
+Route::get('/bankdetails/{id}',[ReportFinanceController::class, 'getBanksTransaction']);
 Route::post('/filterBankTransactions',[ReportFinanceController::class, 'filterBankTransactions']);
 
 

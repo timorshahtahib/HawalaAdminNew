@@ -91,8 +91,8 @@ export default {
 
             newExpense: [],
 
-               // pagination
-               currentPage: 1,
+            // pagination
+            currentPage: 1,
             totalPages: 1,
             limit: 10,
         };
@@ -169,17 +169,17 @@ export default {
             });
         },
 
-        async getCustomers(page=1) {
+        async getCustomers() {
             try {
-                const response = await axios.get(`/api/customer?page=${page}&limit=${this.limit}`);
+                const response = await axios.get('/api/customer');
                 this.customers = response.data.customers.data;
-                this.totalPages = response.data.customers.last_page;
-                this.currentPage = page; // Update the current page
-
+                console.log(this.customers);
+              
             } catch (error) {
-                console.error('Error fetching data: ', error.message);
+                console.error('Error fetching customers:', error);
             }
         },
+      
         async getCurrency() {
             try {
                 await axios.get('/api/currencies').then((response) => {
@@ -207,9 +207,25 @@ export default {
 
         async getTransaction() {
             let d= this.$route.params.id
-            const response = await axios.get('/api/bankdetails/'+d);
-            this.transactions = response.data.banksTransaction;
-            console.log("Id ii",d);
+            // const response = await axios.get('/api/bankdetails/'+d);
+            // this.transactions = response.data.banksTransaction;
+            // console.log("Id ii",d);
+
+            const response = await axios.post(`/api/bankdetails?page=${page}&limit=${this.limit}`,{id:d});
+            this.transactions = response.data.transactions.data;
+            this.totalPages = response.data.transactions.last_page;
+            this.currentPage = page; // Update the current page
+            console.log("this.transactions",this.transactions);
+        },
+        prevPage() {
+            if (this.currentPage > 1) {
+                this.getCustomers(this.currentPage - 1); // Update the page parameter
+            }
+        },
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.getCustomers(this.currentPage + 1); // Update the page parameter
+            }
         },
         async searchData() {
             const response = await axios.post('/api/searchtransaction', {
@@ -599,29 +615,17 @@ export default {
                                     </tbody>
                                 </table>
 
-                                <ul class="pagination pagination-rounded justify-content-end mb-2">
-                                    <li class="page-item disabled">
-                                        <a class="page-link" href="javascript: void(0);" aria-label="Previous">
+                                <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
+                                    <li class="page-item">
+                                        <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
                                             <i class="mdi mdi-chevron-left"></i>
                                         </a>
                                     </li>
-                                    <li class="page-item active">
-                                        <a class="page-link" href="javascript: void(0);">1</a>
+                                    <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
+                                        <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
                                     </li>
                                     <li class="page-item">
-                                        <a class="page-link" href="javascript: void(0);">2</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="javascript: void(0);">3</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="javascript: void(0);">4</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="javascript: void(0);">5</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="javascript: void(0);" aria-label="Next">
+                                        <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
                                             <i class="mdi mdi-chevron-right"></i>
                                         </a>
                                     </li>

@@ -74,8 +74,8 @@ export default {
         
 
         
-              // pagination
-              currentPage: 1,
+            // pagination
+            currentPage: 1,
             totalPages: 1,
             limit: 10,
 

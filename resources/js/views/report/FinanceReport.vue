@@ -13,6 +13,10 @@ export default {
       title: "گزارشات",
       showModal: false,
       bank_balance:[],
+      // pagination
+      currentPage: 1,
+      totalPages: 1,
+      limit: 10,
     };
   },
    mounted() {
@@ -24,22 +28,30 @@ export default {
     this.getBanksBalance();
   },
   methods:{
-    async getBanksBalance() {
+    async getBanksBalance(page = 1) {
             // console.log("getCustomerForEdit",id);
             try {
-                const response = await axios.get('/api/bankbalance');
+                const response = await axios.get(`/api/bankbalance?page=${page}&limit=${this.limit}`);
                 this.bank_balance = response.data.bank_balance;
-               console.log("get banks", this.bank_balance);
-              
+                this.totalPages = response.data.bank_balance.last_page;
+                this.currentPage = page;
             } catch (error) {
                 console.log(error.message);
             }
         },
 
-
+        prevPage() {
+            if (this.currentPage > 1) {
+                this.getBanksBalance(this.currentPage - 1); // Update the page parameter
+            }
+        },
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.getBanksBalance(this.currentPage + 1); // Update the page parameter
+            }
+        },
         gobankDesc(id){
-       
-      this.$router.push({ name: 'bankDetails', params: { id } });
+            this.$router.push({ name: 'bankDetails', params: { id } });
         }
   }
 };
@@ -169,6 +181,22 @@ export default {
                
               </div>
               <!-- end table -->
+
+              <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
+                <li class="page-item">
+                    <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
+                        <i class="mdi mdi-chevron-left"></i>
+                    </a>
+                </li>
+                <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
+                    <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
+                        <i class="mdi mdi-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
           </div>
         </div>
       </div>
