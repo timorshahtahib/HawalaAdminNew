@@ -32,9 +32,8 @@ class ReportFinanceController extends Controller
         }
 
 
-        public function getBanksTransaction(Request $request){
-            $id = $request->id;
-            dd($request->all());
+        public function getBanksTransaction($id){
+            // $id = $request->id;
             $bankTransaction = Transaction::where('bank_acount_id',$id)->where('status',1)->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')->get();
             
             return response()->json(['banksTransaction'=>$bankTransaction]);

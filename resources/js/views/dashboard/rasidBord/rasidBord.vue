@@ -348,7 +348,7 @@ export default {
                 return;
             } else {
                 try {
-                    const response = await axios.delete(`/api/transaction/${id}`);
+                    const response = await axios.post(`/api/deleteonetransaction`,{id:id});
                     // this.transactions = response.data;
                     if (response.status === 204) {
                         // this.transactions.push(response.data.new_data)

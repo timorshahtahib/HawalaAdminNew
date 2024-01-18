@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\CurrencyController;
 use App\Http\Controllers\api\CustomerController;
+use App\Http\Controllers\api\deleteTransaction;
 use App\Http\Controllers\api\ExchangeController;
 use App\Http\Controllers\api\FinanceAccountController;
 use App\Http\Controllers\api\IncomeExpController;
@@ -87,6 +88,7 @@ Route::get('/getbankbyid/{id}', [FinanceAccountController::class, 'getBanksByCur
 
 // Route::apiResource('reportfinanceAccounts',ReportFinanceController::class);
 Route::get('/bankbalance',[ReportFinanceController::class, 'getBankBalance']);
+// Route::get('/bankdetails/{id}',[ReportFinanceController::class, 'getBanksTransaction']);
 Route::get('/bankdetails/{id}',[ReportFinanceController::class, 'getBanksTransaction']);
 Route::post('/filterBankTransactions',[ReportFinanceController::class, 'filterBankTransactions']);
 
@@ -115,5 +117,6 @@ Route::post('/deletetransfer',[ExchangeController::class,'deleteTransfer']);
 Route::post('/searchtransfer',[ExchangeController::class,'searchTransfers']);
 
 
+Route::post('/deleteonetransaction',[deleteTransaction::class, 'deleteTransaction']);
 
 
