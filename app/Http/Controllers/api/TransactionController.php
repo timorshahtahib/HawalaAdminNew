@@ -375,17 +375,43 @@ class TransactionController extends Controller
 
     public function deleteOneTransaction(Request $request)
     {
+<<<<<<< HEAD
        
         try {
             $id=$request->id;
             $transaction = Transaction::findOrFail($id);
             $transaction->status = $request->input('status');
+=======
+       dd($request->id);
+        try {
+          
+            dd("deleted transaction id",$request->id);
+            $transaction = Transaction::findOrFail($request->id);
+            // $transaction->status = $request->input('status');
+>>>>>>> 27b351257b1cb2674777b7e13ad2c5a96c6e54c9
     
             $transaction->update(['status'=>0]);
             return response()->json(['message' => 'Transaction deleted successfully', 'data' => $transaction], 204);
         } catch (Throwable $e) {
             return response()->json(['message'=>$e->getMessage()]);
         }
+<<<<<<< HEAD
+=======
+    }
+    public function deleteTransaction()
+    {
+       dd(5);
+        // try {
+          
+        //     dd("deleted transaction id",$id);
+        //     $transaction = Transaction::findOrFail($id);
+    
+        //     $transaction->update(['status'=>0]);
+        //     return response()->json(['message' => 'Transaction deleted successfully', 'data' => $transaction], 204);
+        // } catch (Throwable $e) {
+        //     return response()->json(['message'=>$e->getMessage()]);
+        // }
+>>>>>>> 27b351257b1cb2674777b7e13ad2c5a96c6e54c9
     }
 
     public function getSearchTransactions(Request $request) {

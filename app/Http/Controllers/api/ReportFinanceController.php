@@ -20,7 +20,6 @@ class ReportFinanceController extends Controller
      */
     public function index()
     {
-   // $bankBalances = BankBalance::all();
 
       
     }
@@ -32,8 +31,13 @@ class ReportFinanceController extends Controller
         }
 
 
+<<<<<<< HEAD
         public function getBanksTransaction($id){
             // $id = $request->id;
+=======
+        public function getBanksTransaction(Request $request){
+            $id = $request->id;
+>>>>>>> 27b351257b1cb2674777b7e13ad2c5a96c6e54c9
             $bankTransaction = Transaction::where('bank_acount_id',$id)->where('status',1)->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')->get();
             
             return response()->json(['banksTransaction'=>$bankTransaction]);
@@ -96,5 +100,9 @@ class ReportFinanceController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function getUserAllPaindAndLoan(){
+
     }
 }

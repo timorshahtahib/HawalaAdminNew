@@ -348,7 +348,11 @@ export default {
                 return;
             } else {
                 try {
+<<<<<<< HEAD
                     const response = await axios.post(`/api/deleteonetransaction`,{id:id});
+=======
+                    const response = await axios.get(`/api/transactiondelete/${id}`);
+>>>>>>> 27b351257b1cb2674777b7e13ad2c5a96c6e54c9
                     // this.transactions = response.data;
                     if (response.status === 204) {
                         // this.transactions.push(response.data.new_data)

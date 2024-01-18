@@ -169,12 +169,26 @@ export default {
             });
         },
 
-        async getCustomers() {
+        async getCustomers(page =1) {
+            // try {
+            //     const response = await axios.get(`/api/customer?page=${page}&limit=${this.limit}`);
+            //     this.customers = response.data.customers.data;
+            //     console.log("Customers",this.customers.data);
+              
+            // } catch (error) {
+            //     console.error('Error fetching customers:', error);
+            // }
             try {
-                const response = await axios.get('/api/customer');
+                const response = await axios.get(`/api/customer?page=${page}&limit=${this.limit}`);
                 this.customers = response.data.customers.data;
+<<<<<<< HEAD
                 console.log("Customers",this.customers.data);
               
+=======
+                this.totalPages = response.data.customers.last_page;
+                this.currentPage = page; // Update the current page
+                console.log(this.customers);
+>>>>>>> 27b351257b1cb2674777b7e13ad2c5a96c6e54c9
             } catch (error) {
                 console.error('Error fetching customers:', error);
             }
@@ -209,6 +223,7 @@ export default {
             let d= this.$route.params.id
             const response = await axios.get('/api/bankdetails/'+d);
             this.transactions = response.data.banksTransaction;
+<<<<<<< HEAD
             console.log("this.transactions",this.transactions);
 
             // const response = await axios.post(`/api/bankdetails?page=${page}&limit=${this.limit}`,{id:d});
@@ -216,6 +231,15 @@ export default {
             // // this.totalPages = response.data.transactions.last_page;
             // this.currentPage = page; // Update the current page
             // console.log("this response",response);
+=======
+            // console.log("Id ii",d);
+
+            // const response = await axios.post(`/api/bankdetails?page=${page}&limit=${this.limit}`,{id:d});
+            // this.transactions = response.data.transactions.data;
+            // this.totalPages = response.data.transactions.last_page;
+            // this.currentPage = page; // Update the current page
+            // console.log("this.transactions",this.transactions);
+>>>>>>> 27b351257b1cb2674777b7e13ad2c5a96c6e54c9
         },
         prevPage() {
             if (this.currentPage > 1) {
@@ -327,9 +351,15 @@ export default {
                 return;
             } else {
                 try {
+<<<<<<< HEAD
                     const response = await axios.post(`/api/deleteonetransaction`,{id:id});
+=======
+                   
+                    const response = await axios.post(`/api/deleteOneTransaction`,{id:id});
+>>>>>>> 27b351257b1cb2674777b7e13ad2c5a96c6e54c9
                     // this.transactions = response.data;
                     if (response.status === 204) {
+                        console.log("response.status === 204");
                         // this.transactions.push(response.data.new_data)
                         this.showalert(' با موفقیت حذف شد!', 'success', 'success');
                         this.getTransaction();
@@ -337,6 +367,7 @@ export default {
                     }
 
                 } catch (error) {
+                    console.log("error");
                     this.showalert(' با موفقیت حذف نشد!', 'error', 'error');
                 }
             }

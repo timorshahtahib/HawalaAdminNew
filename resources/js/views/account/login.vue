@@ -63,7 +63,9 @@ export default {
               <div class="row">
                 <div class="col-12">
                   <div class=" p-4 text-center">
+
                     <h5 class="">به پنل مدیریت آسیا تلکام خوش آمدید</h5>
+                    <h5 class="">به پنل مدیریت حواله خوش آمدید</h5>
                   </div>
                 </div>
                
