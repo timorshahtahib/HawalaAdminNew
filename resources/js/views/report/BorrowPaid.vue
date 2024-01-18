@@ -229,8 +229,8 @@ export default {
                         <select class="form-control form-control-lg  required" v-model="rasid_bord_type">
 
                             <option value="all">همه</option>
-                            <option value="rasid">رسید</option>
-                            <option value="bord">برد</option>
+                            <option value="rasid">پرداخت شده</option>
+                            <option value="bord">قرض</option>
                         </select>
                       </div>
                       <div class="mb-3 col-lg-2">

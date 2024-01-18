@@ -169,12 +169,21 @@ export default {
             });
         },
 
-        async getCustomers() {
-            try {
-                const response = await axios.get('/api/customer');
-                this.customers = response.data.customers.data;
-                console.log(this.customers);
+        async getCustomers(page =1) {
+            // try {
+            //     const response = await axios.get(`/api/customer?page=${page}&limit=${this.limit}`);
+            //     this.customers = response.data.customers.data;
+            //     console.log("Customers",this.customers.data);
               
+            // } catch (error) {
+            //     console.error('Error fetching customers:', error);
+            // }
+            try {
+                const response = await axios.get(`/api/customer?page=${page}&limit=${this.limit}`);
+                this.customers = response.data.customers.data;
+                this.totalPages = response.data.customers.last_page;
+                this.currentPage = page; // Update the current page
+                console.log(this.customers);
             } catch (error) {
                 console.error('Error fetching customers:', error);
             }
@@ -207,15 +216,15 @@ export default {
 
         async getTransaction() {
             let d= this.$route.params.id
-            // const response = await axios.get('/api/bankdetails/'+d);
-            // this.transactions = response.data.banksTransaction;
+            const response = await axios.get('/api/bankdetails/'+d);
+            this.transactions = response.data.banksTransaction;
             // console.log("Id ii",d);
 
-            const response = await axios.post(`/api/bankdetails?page=${page}&limit=${this.limit}`,{id:d});
-            this.transactions = response.data.transactions.data;
-            this.totalPages = response.data.transactions.last_page;
-            this.currentPage = page; // Update the current page
-            console.log("this.transactions",this.transactions);
+            // const response = await axios.post(`/api/bankdetails?page=${page}&limit=${this.limit}`,{id:d});
+            // this.transactions = response.data.transactions.data;
+            // this.totalPages = response.data.transactions.last_page;
+            // this.currentPage = page; // Update the current page
+            // console.log("this.transactions",this.transactions);
         },
         prevPage() {
             if (this.currentPage > 1) {
@@ -228,12 +237,12 @@ export default {
             }
         },
         async searchData() {
-            const response = await axios.post('/api/searchtransaction', {
+            const response = await axios.post('/api/searchtransactions', {
                 query: this.searchQuery
             });
 
             this.transactions = response.data;
-            console.log(this.transactions);
+            // console.log(this.transactions);
         },
 
         async editTransactionFunc(id) {
@@ -327,9 +336,11 @@ export default {
                 return;
             } else {
                 try {
-                    const response = await axios.delete(`/api/transaction/${id}`);
+                   
+                    const response = await axios.post(`/api/deleteOneTransaction`,{id:id});
                     // this.transactions = response.data;
                     if (response.status === 204) {
+                        console.log("response.status === 204");
                         // this.transactions.push(response.data.new_data)
                         this.showalert(' با موفقیت حذف شد!', 'success', 'success');
                         this.getTransaction($route.params.id);
@@ -337,6 +348,7 @@ export default {
                     }
 
                 } catch (error) {
+                    console.log("error");
                     this.showalert(' با موفقیت حذف نشد!', 'error', 'error');
                 }
             }
@@ -543,7 +555,7 @@ export default {
                         <div class="search-box me-2 mb-2 d-inline-block">
 
                             <div class="position-relative">
-                                <input type="text" class="form-control" placeholder="جستجوی مشتری..." @input="searchData" />
+                                <input type="text" v-model="searchQuery" class="form-control" placeholder="جستجوی مشتری..." @input="searchData" />
                                 <i class="bx bx-search-alt search-icon"></i>
                             </div>
                         </div>
@@ -555,7 +567,6 @@ export default {
                                 <table class="table table-centered table-nowrap">
                                     <thead>
                                         <tr>
-                                            <th class="text-center">#</th>
                                             <th class="text-center">آیدی</th>
                                             <th class="text-center">تاریخ</th>
                                             <th class="text-center">نام مشتری</th>
@@ -572,13 +583,6 @@ export default {
                                     </thead>
                                     <tbody>
                                         <tr v-for="transaction in transactions" :key="transaction?.id">
-                                            <td>
-                                                <div class="form-check font-size-16">
-                                                    <input :id="`customCheck${transaction?.id}`" type="checkbox" class="form-check-input" />
-                                                    <label class="form-check-label" :for="`customCheck${transaction?.id}`">&nbsp;</label>
-                                                </div>
-                                            </td>
-
                                             <td>{{transaction?.id}}</td>
                                             <td>{{transaction?.date}}</td>
                                             <td v-if="transaction.customer!=null">{{ transaction.customer?.name}}</td>

@@ -364,13 +364,43 @@ class TransactionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request,$id)
-    {
-        $transaction = Transaction::findOrFail($id);
-        $transaction->status = $request->input('status');
+    // public function destroy(Request $request,$id)
+    // {
+    //     $transaction = Transaction::findOrFail($id);
+    //     $transaction->status = $request->input('status');
 
-        $transaction->update(['status'=>0]);
-        return response()->json(['message' => 'Transaction deleted successfully', 'data' => $transaction], 204);
+    //     $transaction->update(['status'=>0]);
+    //     return response()->json(['message' => 'Transaction deleted successfully', 'data' => $transaction], 204);
+    // }
+
+    public function deleteOneTransaction(Request $request)
+    {
+       dd($request->id);
+        try {
+          
+            dd("deleted transaction id",$request->id);
+            $transaction = Transaction::findOrFail($request->id);
+            // $transaction->status = $request->input('status');
+    
+            $transaction->update(['status'=>0]);
+            return response()->json(['message' => 'Transaction deleted successfully', 'data' => $transaction], 204);
+        } catch (Throwable $e) {
+            return response()->json(['message'=>$e->getMessage()]);
+        }
+    }
+    public function deleteTransaction()
+    {
+       dd(5);
+        // try {
+          
+        //     dd("deleted transaction id",$id);
+        //     $transaction = Transaction::findOrFail($id);
+    
+        //     $transaction->update(['status'=>0]);
+        //     return response()->json(['message' => 'Transaction deleted successfully', 'data' => $transaction], 204);
+        // } catch (Throwable $e) {
+        //     return response()->json(['message'=>$e->getMessage()]);
+        // }
     }
 
     public function getSearchTransactions(Request $request) {

@@ -1,6 +1,6 @@
 <script>
 import profileImg from '../../../images/profile-img.png';
-import logo from '../../../images/logo.svg';
+import logo from '../../../images/mycustom/Asiatelecomlogo.png';
 import axios from 'axios';
 
 /**
@@ -61,15 +61,12 @@ export default {
           <div class="card overflow-hidden">
             <div class="bg-soft bg-primary">
               <div class="row">
-                <div class="col-7">
-                  <div class="text-primary p-4">
-                    <h5 class="text-primary">Welcome Back !</h5>
-                    <p>Sign in to continue to Skote.</p>
+                <div class="col-12">
+                  <div class=" p-4 text-center">
+                    <h5 class="">به پنل مدیریت حواله خوش آمدید</h5>
                   </div>
                 </div>
-                <div class="col-5 align-self-end">
-                  <img :src="profileImg" alt class="img-fluid" />
-                </div>
+               
               </div>
             </div>
             <div class="card-body pt-0">
@@ -77,7 +74,7 @@ export default {
                 <router-link to="/">
                   <div class="avatar-md profile-user-wid mb-4">
                     <span class="avatar-title rounded-circle bg-light">
-                      <img :src="logo" alt height="34" />
+                      <img :src="logo" alt height="80" />
                     </span>
                   </div>
                 </router-link>
@@ -87,48 +84,28 @@ export default {
 
               <b-form class="p-2" action="javascript:void(0)" method="POST">
                 <slot />
-                <b-form-group id="input-group-1" label="Email" label-for="input-1" class="mb-3">
+                <b-form-group id="input-group-1" label="ایمل آدرس" label-for="input-1" class="mb-3">
                   <b-form-input id="input-1" name="email" v-model="auth.email" type="text"
                     placeholder="Enter email"></b-form-input>
                 </b-form-group>
 
-                <b-form-group id="input-group-2" label="Password" label-for="input-2" class="mb-3">
+                <b-form-group id="input-group-2" label="رمز عبور" label-for="input-2" class="mb-3">
                   <b-form-input id="input-2" v-model="auth.password" name="password" type="password"
-                    placeholder="Enter password"></b-form-input>
+                    placeholder="رمز عبور خود را وارد نمائید"></b-form-input>
                 </b-form-group>
                 <b-form-checkbox id="customControlInline" name="checkbox-1" value="accepted"
                   unchecked-value="not_accepted">
-                  Remember me
+                  مرا بخاطر بسپار!
                 </b-form-checkbox>
                 <div class="mt-3 d-grid">
                   <button type="submit" :disabled="processing" @click="login" class="btn btn-primary btn-block">
-                    {{ processing ? "Please wait" : "Login" }}
+                    {{ processing ? "Please wait" : "ورود" }}
                   </button>
                 </div>
-                <div class="mt-4 text-center">
-                  <h5 class="font-size-14 mb-3">Sign in with</h5>
-
-                  <ul class="list-inline">
-                    <li class="list-inline-item">
-                      <a href="javascript: void(0);" class="social-list-item bg-primary text-white border-primary">
-                        <i class="mdi mdi-facebook"></i>
-                      </a>
-                    </li>
-                    <li class="list-inline-item">
-                      <a href="javascript: void(0);" class="social-list-item bg-info text-white border-info">
-                        <i class="mdi mdi-twitter"></i>
-                      </a>
-                    </li>
-                    <li class="list-inline-item">
-                      <a href="javascript: void(0);" class="social-list-item bg-danger text-white border-danger">
-                        <i class="mdi mdi-google"></i>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
+           
                 <div class="mt-4 text-center">
                   <router-link to="/forget-password" class="text-muted">
-                    <i class="mdi mdi-lock mr-1"></i> Forgot your password?
+                    <i class="mdi mdi-lock mr-1"></i> رمز عبور خود را فراموش کرده اید؟
                   </router-link>
                 </div>
               </b-form>
@@ -139,12 +116,12 @@ export default {
 
           <div class="mt-5 text-center">
             <p>
-              Don't have an account ?
-              <router-link to="/auth/register" class="fw-medium text-primary">Signup now</router-link>
+              آیا حساب ندارید؟
+              <router-link to="/auth/register" class="fw-medium text-primary">حالا ثبت نام نمائید</router-link>
             </p>
             <p>
-              © {{ new Date().getFullYear() }} Skote. Crafted with
-              <i class="mdi mdi-heart text-danger"></i> by Themesbrand
+              © {{ new Date().getFullYear() }}
+              <i class="mdi mdi-heart text-danger"></i> by Nazir Ahmad Rahmaty
             </p>
           </div>
           <!-- end row -->
