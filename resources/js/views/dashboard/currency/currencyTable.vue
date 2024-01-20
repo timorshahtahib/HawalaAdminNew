@@ -210,7 +210,7 @@ export default {
             }
 
             this.showModal = false;
-            this.getCurrencies();
+           
 
         },
 
@@ -239,6 +239,10 @@ export default {
             this.currencies = response.data;
             // console.log(this.searchQuery.length);
         },
+
+        sendgetCurrency(){
+            this.$emit('send-function', this.getCurrencies);
+        }
     },
 }
 </script>

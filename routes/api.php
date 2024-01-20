@@ -60,12 +60,12 @@ Route::post('/searchincomexpenses', [IncomeExpController::class, 'searchIncomeEx
 Route::apiResource('transaction',TransactionController::class);
 Route::get('/transaction/{id}',[TransactionController::class]);
 Route::post('/searchtransactions',[TransactionController::class,'getSearchTransactions']);
-Route::post('/searchtransaction/{id}',[TransactionController::class,'getCustomerInfoSearch']);
+Route::post('/searchtransaction',[TransactionController::class,'getCustomerInfoSearch']);
 // edit transaction
 Route::post('/updateTransaction',[TransactionController::class,'updateTransaction']);
 
 // select transaction that the ref_id equal to customer id
-Route::get('/customerinfo/{id}',[TransactionController::class,'getCustomerInfo']);
+Route::post('/customerinfo',[TransactionController::class,'getCustomerInfo']);
 
 // Route::get('/transactionbyorderid/{id}',[TransactionController::class,'transactionByOrderId']);
 

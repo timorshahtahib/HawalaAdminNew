@@ -57,31 +57,31 @@ class TransactionController extends Controller
     }
 
     // select all transaction that have the ref_id = customer id in the profile page
-        public function getCustomerInfo($id){
+        public function getCustomerInfo(Request $request){
            
-            $transaction_rasid_bord = Transaction::where('status', '=', '1')->where('ref_id',$id)
-            ->with(['financeAccount','tr_currency','bank_account'])->get();
-            $customer = Customer::where('id',$id)->get();
-            $transaction_order = Transaction::where('status', '=', '1')
-            ->where('ref_id',$id)->where('transaction_type','order')->with(['financeAccount','tr_currency','bank_account'])->get();
-        
-            $rasid=Transaction::where('status', '=', '1')->where('ref_id',$id)->sum('amount');
-            $bord=Transaction::where('status', '=', '1')->where('ref_id',$id)->sum('amount_equal');
-            $totalAmount = $rasid - $bord;
-            // $rasid2=Transaction::where('status', '=', '1')->where('ref_id',$id)->sum('amount');
-            // $bord2=Transaction::where('status', '=', '1')->where('ref_id',$id)->sum('amount_equal');
-            
-            // $rasid3=Transaction::where('status', '=', '1')->where('ref_id',$id)->sum('amount');
-            // $bord3=Transaction::where('status', '=', '1')->where('ref_id',$id)->sum('amount_equal');
+                try {
+                    $id = $request->id;
+                    $limit = $request->has('limit') ? $request->limit : 10;
 
-            // $rasid4=Transaction::where('status', '=', '1')->where('ref_id',$id)->sum('amount');
-            // $bord4=Transaction::where('status', '=', '1')->where('ref_id',$id)->sum('amount_equal');
-            
-            if($transaction_rasid_bord->isEmpty()){
-                return response()->json([]);
-            }
-            return response()->json(['customer'=>$customer,'transactions'=>$transaction_rasid_bord,'orders'=>$transaction_order,'rasid'=> $rasid,'bord'=>$bord,'total_amount'=>$totalAmount]);
-                  
+                    $transaction_rasid_bord = Transaction::where('status', '=', '1')->where('ref_id',$id)
+                    ->with(['financeAccount','tr_currency','bank_account'])->paginate($limit);
+                    $customer = Customer::where('id',$id)->paginate($limit);
+                    $transaction_order = Transaction::where('status', '=', '1')
+                    ->where('ref_id',$id)->where('transaction_type','order')->with(['financeAccount','tr_currency','bank_account'])->paginate($limit);
+                
+                    $rasid=Transaction::where('status', '=', '1')->where('ref_id',$id)->sum('amount');
+                    $bord=Transaction::where('status', '=', '1')->where('ref_id',$id)->sum('amount_equal');
+                    $totalAmount = $rasid - $bord;
+
+                    if($transaction_rasid_bord->isEmpty()){
+                        return response()->json([]);
+                    }
+                    $total_pages= $transaction_rasid_bord->lastPage();
+                    return response()->json(['customer'=>$customer,'transactions'=>$transaction_rasid_bord,'orders'=>$transaction_order,'rasid'=> $rasid,'bord'=>$bord,'total_amount'=>$totalAmount,'total_pages'=>$total_pages]);
+                      
+                } catch (Throwable $e) {
+                  return response()->json(['message'=>$e->getMessage()]);
+                }
         }
 
      
@@ -373,46 +373,7 @@ class TransactionController extends Controller
     //     return response()->json(['message' => 'Transaction deleted successfully', 'data' => $transaction], 204);
     // }
 
-    public function deleteOneTransaction(Request $request)
-    {
-<<<<<<< HEAD
-       
-        try {
-            $id=$request->id;
-            $transaction = Transaction::findOrFail($id);
-            $transaction->status = $request->input('status');
-=======
-       dd($request->id);
-        try {
-          
-            dd("deleted transaction id",$request->id);
-            $transaction = Transaction::findOrFail($request->id);
-            // $transaction->status = $request->input('status');
->>>>>>> 27b351257b1cb2674777b7e13ad2c5a96c6e54c9
-    
-            $transaction->update(['status'=>0]);
-            return response()->json(['message' => 'Transaction deleted successfully', 'data' => $transaction], 204);
-        } catch (Throwable $e) {
-            return response()->json(['message'=>$e->getMessage()]);
-        }
-<<<<<<< HEAD
-=======
-    }
-    public function deleteTransaction()
-    {
-       dd(5);
-        // try {
-          
-        //     dd("deleted transaction id",$id);
-        //     $transaction = Transaction::findOrFail($id);
-    
-        //     $transaction->update(['status'=>0]);
-        //     return response()->json(['message' => 'Transaction deleted successfully', 'data' => $transaction], 204);
-        // } catch (Throwable $e) {
-        //     return response()->json(['message'=>$e->getMessage()]);
-        // }
->>>>>>> 27b351257b1cb2674777b7e13ad2c5a96c6e54c9
-    }
+   
 
     public function getSearchTransactions(Request $request) {
         

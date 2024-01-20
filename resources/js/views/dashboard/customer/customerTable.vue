@@ -22,13 +22,13 @@
 
                             <div class="mb-3">
                                 <label for="editname">نام</label>
-                                <input id="editname" v-model="editname" type="text" class="form-control" placeholder="نام خود را وارد کنید" />
+                                <input id="editname" v-model="editname" type="text" class="form-control" placeholder="نام خود را وارد کنید" required />
                             </div>
                         </div>
                         <div class="col-sm-12 col-md-6 col-lg-6">
                             <div class="mb-3">
                                 <label for="editLastName">نام خانواگی</label>
-                                <input id="editLastName" v-model="editLastName" type="text" class="form-control" placeholder="نام خانوادگی خود را وارکنید" />
+                                <input id="editLastName" v-model="editLastName" type="text" class="form-control" placeholder="نام خانوادگی خود را وارکنید" required />
                             </div>
                         </div>
                     </div>
@@ -42,14 +42,17 @@
                         <div class="col-md-6 col-sm-12 col-lg-6">
                             <div class="mb-3">
                                 <label for="editPhone">شماره تماس</label>
-                                <input type="text" v-model="editPhone" class="form-control" />
+                                <input type="text" v-model="editPhone" class="form-control" @blur="phoneValidation('editPhone')" required />
+                                lklk';l
+                                <span class="text-danger error-text afrad_error" v-if="this.editphoneError">{{this.editphoneError}}</span>
+
                             </div>
                         </div>
                     </div>
                     <div class="col-12">
                         <div class="mb-3">
                             <label for="editAddress">آدرس</label>
-                            <textarea v-model="editAddress" id="editAddress" cols="30" rows="4" class="form-control" placeholder="آدرس خود را وارد کنید"></textarea>
+                            <textarea v-model="editAddress" id="editAddress" cols="30" rows="4" class="form-control" placeholder="آدرس خود را وارد کنید" required></textarea>
                         </div>
                     </div>
                     <div class="col-12">
@@ -140,7 +143,9 @@
         </li>
     </ul>
 </div>
-<h3 class="text-center" v-else>{{ notFoundMessage }}</h3>
+<div v-else class="text-center font-size-20">
+    نتیجه مورد نظر یافت نشد!
+</div>
 </template>
 
 <script>
@@ -166,12 +171,12 @@ export default {
             editImage: null,
             editAddress: '',
             editDesc: '',
-
+            editphoneError: '',
             // pagination
             currentPage: 1,
             totalPages: 1,
             limit: 10,
-            
+
         }
     },
     mounted() {
@@ -184,7 +189,7 @@ export default {
             try {
                 const response = await axios.get(`/api/customer?page=${page}&limit=${this.limit}`);
                 this.customers = response.data.customers.data;
-                this.totalPages = response.data.customers.last_page;
+                this.totalPages = response.data.customers?.last_page;
                 this.currentPage = page; // Update the current page
             } catch (error) {
                 console.error('Error fetching customers:', error);
@@ -222,17 +227,16 @@ export default {
         async editCustomer(id) {
             const response = await axios.get(`/api/customer/${id}`);
             this.editCust = response.data;
-            this.openEditModal(this.editCust);
-            //    console.log("editCustomer",this.editCust);
+            this.openEditModal();
+            console.log("editCustomer", this.editCust);
             this.editname = this.editCust.name;
             this.editLastName = this.editCust.last_name;
             this.editPhone = this.editCust.phone;
-            this.editUsername = this.editCust.username;
-            this.editPassword = this.editCust.password;
+            // this.editUsername = this.editCust.username;
+            // this.editPassword = this.editCust.password;
             this.ediPhoto = this.editCust.image;
             this.editAddress = this.editCust.address;
             this.editDesc = this.editCust.desc;
-            editUsername
 
             //    console.log("inside editcustomer ", this.editDesc);
         },
@@ -298,68 +302,27 @@ export default {
             }
         },
         async searchData() {
-            try {
-                const response = await axios.post('/api/searchCustomer', {
+           try {
+            const response = await axios.post('/api/searchCustomer', {
                     query: this.searchQuery
                 });
 
-                if (response.data.length) {
-                    this.customers = response.data;
-                } else {
-                    // No results found
-                    this.customers = [];
-                    // You can set a message or perform other actions to notify the user
-                    this.notFoundMessage = 'نتیجه مورد نظر یافت نشد.';
-                }
-            } catch (error) {
-                // Handle the error, e.g., display an error message
-                console.error('Error fetching data:', error);
-                // Set an appropriate error message for the user
-                this.errorMessage = 'Error fetching data. Please try again.';
-            }
+                this.customers = response.data;
+           } catch (error) {
+                console.log(error.message);
+           }
         },
 
-        customerValidation(field) {
-            if (field === 'name') {
-                if (this.name === '') {
-                    this.nameError = 'نام ضروری است';
-                } else if (this.name.length < 4) {
-                    this.nameError = 'نام باید حداقل 4 کاراکتر باشد.';
+        phoneValidation(field) {
+            console.log("phon3e validation");
+            if (field === 'editPhone') {
+                if (this.editPhone === '') {
+                    this.editphoneError = 'شماره تماس ضروری است';
+                } else if (this.editPhone.length < 10) {
+                    this.editphoneError = 'شماره تماس باید حداقل 10 کاراکتر باشد.';
+                    this.telephoneCheck(this.editPhone);
                 } else {
-                    this.nameError = null;
-                }
-            } else if (field === 'last_name') {
-                if (this.last_name === '') {
-                    this.lastNameError = 'نام فامیلی ضروری است';
-                } else if (this.last_name.length < 4) {
-                    this.lastNameError = 'نام فامیلی باید حداقل 4 کاراکتر باشد.';
-                } else {
-                    this.lastNameError = null;
-                }
-            } else if (field === 'username') {
-                if (this.username === '') {
-                    this.usernameError = 'نام کاربری ضروری است';
-                } else if (this.username.length < 4) {
-                    this.usernameError = 'نام کاربری باید حداقل 4 کاراکتر باشد.';
-                } else {
-                    this.usernameError = null;
-                }
-            } else if (field === 'password') {
-                if (this.password === '') {
-                    this.passwordError = 'رمز عبور ضروری است';
-                } else if (this.password.length < 8) {
-                    this.passwordError = 'رمز عبور باید حداقل 8 کاراکتر باشد.';
-                } else {
-                    this.passwordError = null;
-                }
-            } else if (field === 'phone') {
-                if (this.phone === '') {
-                    this.phoneError = 'شماره تماس ضروری است';
-                } else if (this.phone.length < 10) {
-                    this.phoneError = 'شماره تماس باید حداقل 10 کاراکتر باشد.';
-                    this.telephoneCheck(this.phone);
-                } else {
-                    this.phoneError = null;
+                    this.editphoneError = null;
                 }
             }
 
@@ -367,9 +330,9 @@ export default {
         telephoneCheck(str) {
             let isphone = /^(1\s|1|)?((\(\d{3}\))|\d{3})(\-|\s)?(\d{3})(\-|\s)?(\d{4})$/.test(str);
             if (!isphone) {
-                this.phoneError = 'لطفا شماره تماس وارد نمائید!';
+                this.editphoneError = 'لطفا شماره تماس وارد نمائید!';
             } else {
-                this.phoneError = null;
+                this.editphoneError = null;
             }
         }
     },

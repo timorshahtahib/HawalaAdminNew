@@ -170,8 +170,6 @@ export default {
             try {
                 await axios.get('/api/currencies').then((response) => {
                         this.currencies = response.data.currencies.data;
-                       ;
-
                     })
                     .catch((error) => {
                         console.error('Error fetching currencies:', error);
@@ -253,7 +251,6 @@ export default {
                 query: this.searchQuery
             });
             this.transactions = response.data;
-    
             
         },
 
@@ -348,11 +345,11 @@ export default {
                 return;
             } else {
                 try {
-<<<<<<< HEAD
+
                     const response = await axios.post(`/api/deleteonetransaction`,{id:id});
-=======
-                    const response = await axios.get(`/api/transactiondelete/${id}`);
->>>>>>> 27b351257b1cb2674777b7e13ad2c5a96c6e54c9
+
+                    // const response = await axios.get(`/api/transactiondelete/${id}`);
+
                     // this.transactions = response.data;
                     if (response.status === 204) {
                         // this.transactions.push(response.data.new_data)

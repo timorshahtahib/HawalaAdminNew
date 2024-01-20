@@ -18,6 +18,7 @@ const routes = [{
     },
     {
         path: '/dashboard/customer/:id',
+        // path: '/dashboard/customer',
         meta: { title: 'Dashboard' },
         component: () =>
             import ('../views/dashboard/customer/profile.vue')

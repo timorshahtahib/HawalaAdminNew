@@ -22,14 +22,14 @@
                                                 <div class="col-md-6 col-sm-12 col-lg-6">
                                                     <div class="mb-3">
                                                         <label for="name">نام</label>
-                                                        <input id="name" v-model="name" type="text" class="form-control" placeholder="نام خود را وارد کنید" @blur="customerValidation('name')" required/>
+                                                        <input id="name" v-model="name" type="text" class="form-control" placeholder="نام خود را وارد کنید" @blur="phoneValidation('name')" required/>
                                                     </div>
                                                     <!-- <span class="text-danger error-text afrad_error" v-if="nameError">{{errors.name}}</span> -->
                                                 </div>
                                                 <div class="col-sm-12 col-md-6 col-lg-6">
                                                     <div class="mb-3">
                                                         <label for="last_name">نام خانواگی</label>
-                                                        <input id="last_name" v-model="last_name" type="text" class="form-control" placeholder="نام خانوادگی خود را وارکنید" required/>
+                                                        <input id="lastName" v-model="last_name" type="text" class="form-control" placeholder="نام خانوادگی خود را وارکنید" required/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -59,15 +59,17 @@
                                                 <div class="col-md-6 col-sm-12 col-lg-6">
                                                     <div class="mb-3">
                                                         <label for="phone">شماره تماس</label>
-                                                        <input type="text" v-model="phone" class="form-control" required/>
+                                                        <input type="text" v-model="phone" class="form-control" required @blur="phoneValidation('phone')"/>
                                                         <span class="text-danger error-text afrad_error" v-if="errors.phone">{{errors.phone[0]}}</span>
+                                                     
+                                                        <span class="text-danger error-text afrad_error" v-if="this.phoneError">{{this.phoneError}}</span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-12">
                                                 <div class="mb-3">
                                                     <label for="address">آدرس</label>
-                                                    <textarea v-model="address" id="address" cols="30" rows="4" class="form-control" placeholder="آدرس خود را وارد کنید"></textarea>
+                                                    <textarea v-model="address" id="address" cols="30" rows="4" class="form-control" placeholder="آدرس خود را وارد کنید" required></textarea>
                                                 </div>
                                             </div>
                                             <div class="col-12">
@@ -117,7 +119,7 @@ export default {
             
             title: "لیست مشتریان",
             items: [{
-                    text: "داشبورد",
+                    text: "مشتری",
                     href: "/"
                 },
                 {
@@ -131,7 +133,7 @@ export default {
             formError: "",
 
             name: '',
-            nameError:null,
+            phoneError:'',
             last_name: '',
             phone: '',
             username: '',
@@ -140,9 +142,6 @@ export default {
             address: '',
             desc: '',
             errors: {},
-
-        
-
         };
     },
  
@@ -177,7 +176,7 @@ export default {
         },
 
 
-        async storeCustomer(e) {
+        async storeCustomer() {
             this.submitted = true;
             if (this.name && this.last_name && this.phone && this.username && this.password) {
 
@@ -222,49 +221,17 @@ export default {
 
                 }
 
-                // this.customers = {};
+        
             } else {
                 this.isError = true;
-                this.formError = "All fields are required";
+                this.formError = "فیلد ها خالی است";
             }
             // stop here if form is invalid
 
         },
   
-        customerValidation(field) {
-            if (field === 'name') {
-                if (this.name === '') {
-                    this.nameError = 'نام ضروری است';
-                } else if (this.name.length < 4) {
-                    this.nameError = 'نام باید حداقل 4 کاراکتر باشد.';
-                } else {
-                    this.nameError = null;
-                }
-            } else if (field === 'last_name') {
-                if (this.last_name === '') {
-                    this.lastNameError = 'نام فامیلی ضروری است';
-                } else if (this.last_name.length < 4) {
-                    this.lastNameError = 'نام فامیلی باید حداقل 4 کاراکتر باشد.';
-                } else {
-                    this.lastNameError = null;
-                }
-            } else if (field === 'username') {
-                if (this.username === '') {
-                    this.usernameError = 'نام کاربری ضروری است';
-                } else if (this.username.length < 4) {
-                    this.usernameError = 'نام کاربری باید حداقل 4 کاراکتر باشد.';
-                } else {
-                    this.usernameError = null;
-                }
-            } else if (field === 'password') {
-                if (this.password === '') {
-                    this.passwordError = 'رمز عبور ضروری است';
-                } else if (this.password.length < 8) {
-                    this.passwordError = 'رمز عبور باید حداقل 8 کاراکتر باشد.';
-                } else {
-                    this.passwordError = null;
-                }
-            } else if (field === 'phone') {
+        phoneValidation(field) {
+         if (field === 'phone') {
                 if (this.phone === '') {
                     this.phoneError = 'شماره تماس ضروری است';
                 } else if (this.phone.length < 10) {

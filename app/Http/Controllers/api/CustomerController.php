@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Throwable;
 
 class CustomerController extends Controller
 {
@@ -189,19 +190,32 @@ class CustomerController extends Controller
 
     public function searchCustomer(Request $request){
 
-      $query=$request->input('query');
-      $searchTerm = $request->input('query');
-        $customer =Customer::query()
-        ->Where('name',  'like', '%' . $searchTerm . '%')
-        ->orWhere('last_name',  'like', '%' . $searchTerm . '%')
-        ->orWhere('cu_number',  'like', '%' . $searchTerm . '%')
-        ->orWhere('phone',  'like', '%' . $searchTerm . '%')
-        ->orWhere('address',  'like', '%' . $searchTerm . '%')
-        ->orWhere('type',  'like', '%' . $searchTerm . '%')
-        ->get();
-        
-        return response()->json($customer);
+    try {
+        $searchTerm = $request->input('query');
+          $query=Customer::query()->where('status', '=', '1')->orderBy('id', 'desc');
+            
+          if($searchTerm){
+            $query->where(function ($query) use ($searchTerm) {
+                $query->where('name',  'like', '%' . $searchTerm . '%')
+                ->orWhere('last_name',  'like', '%' . $searchTerm . '%')
+                    ->orWhere('cu_number',  'like', '%' . $searchTerm . '%')
+                    ->orWhere('phone',  'like', '%' . $searchTerm . '%')
+                    ->orWhere('address',  'like', '%' . $searchTerm . '%')
+                    ->orWhere('type',  'like', '%' . $searchTerm . '%')
+                    ->orWhere('desc',  'like', '%' . $searchTerm . '%')
+                   ->get();
+            });
 
+          }
+          $customer = $query->get();
+          if ($customer->isEmpty()) {
+            return response()->json([]);
+        }
+          
+          return response()->json($customer);
+        } catch (Throwable $e) {
+            return response()->json(['message'=>$e->getMessage()]);
+        }
         
     }
 }

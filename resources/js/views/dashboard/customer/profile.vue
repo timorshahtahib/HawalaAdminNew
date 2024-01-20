@@ -10,7 +10,9 @@ import profile from '../../../../images/profile-img.png';
 import avatar1 from '../../../../images/users/avatar-1.jpg';
 import axios from "axios";
 import Swal from 'sweetalert2'
-
+import DatePicker from '@alireza-ab/vue3-persian-datepicker';
+import vSelect from 'vue-select';
+import 'vue-select/dist/vue-select.css';
 import {
     ref
 } from 'vue';
@@ -20,7 +22,9 @@ import {
 export default {
     components: {
         Layout,
-        PageHeader
+        PageHeader,
+        DatePicker,
+        vSelect,
     },
     data() {
         return {
@@ -40,6 +44,7 @@ export default {
             showModal: false,
             showEditUserModal: false,
             showEditPasswordModal: false,
+            showModaltransaction: false,
             searchQuery: '',
             customer: [],
             transactionslist: [],
@@ -57,8 +62,12 @@ export default {
             editImage: null,
             editAddress: '',
             editDesc: '',
+            editbanks: [],
+            edit_currencies: [],
             errors: {},
-
+            currentPage: 1,
+            totalPages: 1,
+            limit: 10,
         };
     },
 
@@ -70,14 +79,16 @@ export default {
         try {
             const response = await axios.get(`/api/customer/${this.$route.params.id}`);
             this.customer = response.data;
+            // console.log("customer",this.customer);
         } catch (error) {
             console.error(error.message);
         }
     },
     methods: {
 
-        openEditModal() {
-            this.showModal = true;
+        openEditModaltransaction() {
+            this.showModaltransaction = true;
+            this.getCurrency();
         },
         closeModal() {
             this.showModal = false;
@@ -89,9 +100,10 @@ export default {
 
         openEditPasswordModal() {
             this.showEditPasswordModal = true;
-           
         },
-
+        openEditModal() {
+            this.showModal = true;
+        },
         showalert(title, text, icon) {
             Swal.fire({
                 title: title,
@@ -101,19 +113,32 @@ export default {
             })
         },
 
-        async getTransactionbycid() {
+        async getTransactionbycid(page = 1) {
 
             try {
-                const response = await axios.get(`/api/customerinfo/${this.$route.params.id}`);
-                this.transactionslist = response.data.transactions;
+                const response = await axios.post(`/api/customerinfo`,{id:this.$route.params.id});
+                this.transactionslist = response.data.transactions?.data;
                 this.orderslist = response.data.orders;
                 this.rasid = response.data.rasid;
                 this.bord = response.data.bord;
                 this.totalAmount = response.data.total_amount;
+                this.totalPages = response.data.customers?.last_page();
+                this.currentPage = page;
+                // console.log("transactionslist=",this.transactionslist);
             } catch (error) {
                 console.log(error.message);
             }
 
+        },
+        prevPage() {
+            if (this.currentPage > 1) {
+                this.getTransactionbycid(this.currentPage - 1); // Update the page parameter
+            }
+        },
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.getTransactionbycid(this.currentPage + 1); // Update the page parameter
+            }
         },
 
         async editCustomer(id) {
@@ -250,9 +275,6 @@ export default {
             } catch (error) {
                 console.log(error.message);
             }
-
-
-
             try {
               const response = await axios.post(`/api/changepassword/${this.$route.params.id}`, {
                     password: this.this.editPassword
@@ -263,11 +285,127 @@ export default {
             }
         },
         async searchData() {
-            const response = await axios.post(`/api/searchtransaction/${this.$route.params.id}`, {
+            const response = await axios.post('/api/searchtransactions', {
                 query: this.searchQuery
             });
-            this.transactionslist = response.data;
+            this.transactions = response.data;
+            
         },
+        async editTransactionFunc(id) {
+            const response = await axios.get(`/api/transaction/${id}`);
+            this.editTransaction = response.data;
+            this.openEditModaltransaction();
+            console.log("this.editTransaction",this.editTransaction);
+            this.edit_rasid_bord = this.editTransaction[0].rasid_bord
+            this.editAmount = this.editTransaction[0].amount;
+            this.editCurrency_rate = this.editTransaction[0].currency_rate;
+            this.editEqual_amount = this.editTransaction[0].amount_equal;
+            this.editDesc = this.editTransaction[0].desc;
+            this.editDate = this.editTransaction[0].date;
+            this.editCurrencyModel = this.editTransaction[0].tr_currency;
+            this.editEqualcurrencyModel = this.editTransaction[0].currency_equal;
+            this.getBanksForEdit(this.editCurrencyModel)
+            // this.getCustomerForEdit(this.editTransaction[0].ref_id);
+
+            //  console.log("this.editTransaction", this.editTransaction);
+
+        },
+        async submitEditTransaction() {
+            let id = this.editTransaction[0].id;
+            const response = await axios.post(`/api/updateTransaction`, {
+                id: this.editTransaction[0].id,
+                rasid_bord: this.editasid_bord,
+                transaction_type: this.editasid_bord,
+                ref_id: this.editSelectedCustomer.id,
+                amount: this.editAmount,
+                currency: this.editCurrencyModel,
+                amount_equal: this.editEqual_amount,
+                currency_equal: this.editEqualcurrencyModel,
+                currency_rate: this.editCurrency_rate,
+                bank_acount_id: this.editSelectedDakhl,
+                date: this.editDate,
+                desc: this.editDesc,
+                user_id: 1,
+            });
+
+            
+            if (response.data != null) {
+
+                // console.log("in data!=null");
+                if (response.data.status === false) {
+
+                    if (response.data.message != null) {
+                        this.showalert(response.data.message, "error", "error!");
+                    } else {
+                        this.errors = response.data.error;
+
+                    }
+
+                } else {
+                    // console.log("else true");
+
+                    this.errors = {};
+                    this.transactions.push(response.data.new_data);
+                    this.showModal=false;
+                    this.showalert(response.data.message, "success", "success");
+
+                    // console.log(response.data);
+                }
+            }
+            //  console.log("Successfully updated", this.editTransaction);
+
+        },
+        async deleteTransaction(id) {
+            if (!window.confirm('آیا میخواهید که رسید برد حذف شود؟')) {
+                return;
+            } else {
+                try {
+                    const response = await axios.post(`/api/deleteonetransaction`,{id:id});
+                    if (response.status === 204) {
+                        // this.transactions.push(response.data.new_data)
+                        this.showalert(' با موفقیت حذف شد!', 'success', 'success');
+                        this.getTransactionbycid();
+                    }
+                } catch (error) {
+                    this.showalert(' با موفقیت حذف نشد!', 'error', 'error');
+                }
+            }
+        },
+         
+ async getCurrency() {
+            try {
+                await axios.get('/api/currencies').then((response) => {
+                        this.edit_currencies = response.data.currencies.data;
+                        console.log("this.edit_currencies",this.edit_currencies);
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching currencies:', error);
+                    });
+
+            } catch (error) {
+                console.error('Error fetching data: ', error.message);
+            }
+        },
+
+ editChange_currency() {
+            // this.getBanksForEdit(this.editCurrencyModel);
+        },
+
+
+
+ async getBanksForEdit(id) {
+            try {
+                const response = await axios.get('/api/getbankbyid/' + id);
+                this.editbanks = response.data.banks;
+                console.log("getNBanks",this.editbanks);
+                this.editSelectedDakhl = this.editbanks[0].id;
+
+            } catch (error) {
+                console.log(error.message);
+            }
+        },
+
+
     },
 };
 </script>
@@ -283,8 +421,8 @@ export default {
                     <div class="row">
                         <div class="col-7">
                             <div class="text-primary p-3">
-                                <h5 class="text-primary">سلام خوش آمدید !</h5>
-                                <p>ساده به نظر می رسد</p>
+                                <!-- <h5 class="text-primary">سلام خوش آمدید !</h5>
+                                <p>ساده به نظر می رسد</p> -->
                             </div>
                         </div>
                         <div class="col-5 align-self-end">
@@ -331,7 +469,7 @@ export default {
                                 <b-button type="button" variant="primary" class="btn btn-primary btn-sm btn-rounded text-bold" @click="openEditPasswordModal">تغیر رمز عبور</b-button>
                             </div>
                             <div class="flex-fill">
-                                <b-button type="button" variant="primary" class="btn btn-primary btn-sm btn-rounded text-bold" @click="openEditPasswordModal">غیر فعال کردن</b-button>
+                                <b-button type="button" variant="primary" class="btn btn-primary btn-sm btn-rounded text-bold" >غیر فعال کردن</b-button>
                             </div>
                         </div>
                     </div>
@@ -422,13 +560,12 @@ export default {
                                         <div>
                                             <div class="row justify-content-center">
                                                 <div class="col-xl-12">
-                                                    <div v-if="transactionslist.length > 0">
+                                                    <div >
                                                         <hr class="mb-4" />
-                                                        <div class="table-responsive">
+                                                        <div class="table-responsive" v-if="transactionslist?.length">
                                                             <table class="table table-centered table-nowrap">
                                                                 <thead>
                                                                     <tr>
-                                                                        <th class="text-center">#</th>
                                                                         <th class="text-center">آیدی</th>
                                                                         <th class="text-center">نام مشتری</th>
                                                                         <th class="text-center">رسید برد</th>
@@ -444,13 +581,6 @@ export default {
                                                                 </thead>
                                                                 <tbody>
                                                                     <tr v-for="transaction in transactionslist" :key="transaction?.id">
-                                                                        <td>
-                                                                            <div class="form-check font-size-16">
-                                                                                <input :id="`customCheck${transaction.id}`" type="checkbox" class="form-check-input" />
-                                                                                <label class="form-check-label" :for="`customCheck${transaction.id}`">&nbsp;</label>
-                                                                            </div>
-                                                                        </td>
-
                                                                         <td>{{transaction.id}}</td>
                                                                         <td v-if="transaction.customer!=null">{{ transaction.customer.name}}</td>
                                                                         <td v-else>{{ transaction.finance_account.account_name}}</td>
@@ -466,55 +596,40 @@ export default {
                                                                         <td>{{transaction.user_id}}</td>
 
                                                                         <td>
-                                                                            <b-dropdown class="card-drop" variant="white" right toggle-class="p-0" menu-class="dropdown-menu-end">
-                                                                                <template v-slot:button-content>
-                                                                                    <i class="mdi mdi-dots-horizontal font-size-18"></i>
-                                                                                </template>
-
-                                                                                <b-dropdown-item>
-                                                                                    <i class="fas fa-pencil-alt text-success me-1" @click="editTransactionFunc(transaction.id)"></i> Edit
-                                                                                </b-dropdown-item>
-
-                                                                                <b-dropdown-item>
-                                                                                    <i class="fas fa-trash-alt text-danger me-1" @click="deleteTransaction(transaction.id)"></i> Delete
-                                                                                </b-dropdown-item>
-                                                                            </b-dropdown>
+                                                                            
+                                                                                    <button class="btn btn-xs">
+                                                                                        <i class="fas fa-pencil-alt text-success me-1" @click="editTransactionFunc(transaction.id)"></i>
+                                                                                    </button>
+                                    
+                                                                                    <button class="btn btn-xs">
+                                                                                        <i class="fas fa-trash-alt text-danger me-1" @click="deleteTransaction(transaction.id)"></i>
+                                                                                    </button>
                                                                         </td>
 
                                                                     </tr>
 
                                                                 </tbody>
                                                             </table>
-
-                                                        </div>
-
-                                                        <div class="text-center">
-                                                            <ul class="pagination justify-content-center pagination-rounded">
-                                                                <li class="page-item disabled">
-                                                                    <a href="#" class="page-link"><i class="mdi mdi-chevron-left"></i></a>
+                                                            <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
+                                                                <li class="page-item">
+                                                                    <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
+                                                                        <i class="mdi mdi-chevron-left"></i>
+                                                                    </a>
+                                                                </li>
+                                                                <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
+                                                                    <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
                                                                 </li>
                                                                 <li class="page-item">
-                                                                    <a href="#" class="page-link">1</a>
-                                                                </li>
-                                                                <li class="page-item active">
-                                                                    <a href="#" class="page-link">2</a>
-                                                                </li>
-                                                                <li class="page-item">
-                                                                    <a href="#" class="page-link">3</a>
-                                                                </li>
-                                                                <li class="page-item">
-                                                                    <a href="#" class="page-link">...</a>
-                                                                </li>
-                                                                <li class="page-item">
-                                                                    <a href="#" class="page-link">10</a>
-                                                                </li>
-                                                                <li class="page-item">
-                                                                    <a href="#" class="page-link"><i class="mdi mdi-chevron-right"></i></a>
+                                                                    <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
+                                                                        <i class="mdi mdi-chevron-right"></i>
+                                                                    </a>
                                                                 </li>
                                                             </ul>
                                                         </div>
+
+                                                        <h3 class="text-center" v-else>این مشتری ترانزکشنی انجام نداده است</h3>
+                                                       
                                                     </div>
-                                                    <h3 class="text-center" v-else>این مشتری ترانزکشنی انجام نداده است</h3>
                                                 </div>
                                             </div>
                                         </div>
@@ -525,7 +640,7 @@ export default {
                                                 <div class="col-xl-12">
                                                     <!-- <h5>Archive</h5> -->
 
-                                                    <div class="mt-5" v-if="orderslist.length > 0">
+                                                    <div class="mt-5" v-if="orderslist.length">
                                                         <hr class="mt-2" />
                                                         <div class="table-responsive">
                                                             <table class="table table-centered table-nowrap">
@@ -547,13 +662,7 @@ export default {
                                                                 </thead>
                                                                 <tbody>
                                                                     <tr v-for="transaction in orderslist" :key="transaction?.id">
-                                                                        <td>
-                                                                            <div class="form-check font-size-16">
-                                                                                <input :id="`customCheck${transaction.id}`" type="checkbox" class="form-check-input" />
-                                                                                <label class="form-check-label" :for="`customCheck${transaction.id}`">&nbsp;</label>
-                                                                            </div>
-                                                                        </td>
-
+                                                                      
                                                                         <td>{{transaction.id}}</td>
                                                                         <td v-if="transaction.customer!=null">{{ transaction.customer.name}}</td>
                                                                         <td v-else>{{ transaction.finance_account.account_name}}</td>
@@ -719,6 +828,119 @@ export default {
                             </div>
                         </div>
                         <!-- edit modal end -->
+
+
+                             <!-- edit modal start edit transaction -->
+                <div class="col-sm-8">
+                    <div class="text-sm-end">
+                        <b-modal v-model="showModaltransaction" title="ویرایش ترانزکشن" title-class="text-black font-18" body-class="p-3" hide-footer>
+                            <b-alert v-model="isError" class="mb-4" variant="danger" dismissible>{{ this.formError
+        }}</b-alert>
+
+                            <form id="category_insert"  class="form-horizontal form-label-left" @submit.prevent="submitEditTransaction">
+
+                                <div class="form-group">
+                                    <div class="col-sm-12 col-xs-12">
+                                        <label for="supplier">نوعیت:
+                                        </label>
+                                        <select class="form-control form-control-lg  required" v-model="edit_rasid_bord" required>
+                                            <option disabled value="">ابتدا نوعیت را انتخاب کنید.</option>
+                                            <option value="rasid">رسید</option>
+                                            <option value="bord">برد</option>
+                                        </select>
+                                        <span class="text-danger error-text currency_error"></span>
+                                    </div>
+                                    <div class="col-sm-12 col-xs-12">
+
+                                        <label for="supplier">انتخاب شخص / حساب :
+                                        </label>
+
+                                        <div>
+                                                <!-- <v-select v-model="editSelectedCustomer" :options="customer" label="name" placeholder="مشتری مورد نظر خود را سرچ کنید" class="searchCustomer" /> -->
+                                        
+                                        </div>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-4 col-xs-12">
+                                            <label for="supplier">واحد پول :</label>
+                                            <select class="form-control form-control-lg select2 required" @change="editChange_currency" v-model="editCurrencyModel" required>
+                                                <option disabled selected> واحد</option>
+                                                <option v-for="currency in edit_currencies" :key="currency.id" :value="currency.id">{{currency.name}} {{currency.sign}}</option>
+                                            </select>
+                                            <span class="text-danger error-text currency_error"></span>
+                                        </div>
+                                        <div class="col-sm-8 col-xs-12">
+                                            <label for="name">مقدار پول :‌</label>
+                                            <input type="number" id="editAmount" v-model="editAmount" @input="editCalculateEqualAmount" class="form-control required">
+                                            <span class="text-danger error-text amount_error"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-12 col-xs-12">
+                                        <label for="supplier">انتخاب دخل :
+                                        </label>
+                                        <select class="form-control form-control-lg select2 required" v-model="editSelectedDakhl">
+                                            <option disabled selected>ابتدا واحد پول را انتخاب کنید.</option>
+                                            <option v-for="editbank in editbanks" :key="editbank.id" :value="editbank.id">{{editbank.account_name}}</option>
+                                        </select>
+                                        <span class="text-danger error-text dakhl_error"></span>
+                                    </div>
+
+                                    <div class="row mb-2">
+                                        <div class="col-sm-4 col-xs-12">
+                                            <label for="name">نرخ ارز :‌</label>
+                                            <input type="number" id="editCurrency_rate" v-model="editCurrency_rate" @input="editCalculateEqualAmount" class="form-control required">
+                                            <span class="text-danger error-text currency_rate_error"></span>
+
+                                        </div>
+                                        <div class="col-sm-8 col-xs-12">
+                                            <label for="factore_date">تاریخ :
+                                            </label>
+                                            <div class="input-group ">
+                                                <!-- @alireza-ab/vue3-persian-datepicker -->
+                                                <date-picker @select="editSelect" mode="single" type="date" locale="fa" :column="1">
+                                                </date-picker>
+                                                <span class="">{{editDate}}</span>
+                                            </div>
+                                            <span class="text-danger error-text afrad_error" v-if="errors.date">{{errors.date[0]}}</span>
+                                        </div>
+                                    </div>
+                                 
+                                    <div class="row">
+                                        <div class="col-sm-4 col-xs-12">
+                                            <label for="supplier">واحد پول رسید:</label>
+                                            <select class="form-control form-control-lg select2 required" v-model="editEqualcurrencyModel">
+                                                <option disabled selected> واحد</option>
+                                                <option v-for="currency in currencies" :key="currency.id" :value="currency.id">{{currency.name}} {{currency.sign}}</option>
+                                            </select>
+                                            <span class="text-danger error-text currency_error"></span>
+                                        </div>
+                                        <div class="col-sm-8 col-xs-12">
+                                            <label for="name"> مقدار پول رسید:‌</label>
+                                            <input type="number" id="amount" v-model="editEqual_amount" class="form-control required">
+                                            <span class="text-danger error-text amount_error"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-xs-12">
+                                        <br>
+
+                                        <textarea id="disc" class="form-control" autocomplete="on" v-model="editDesc" rows="4" placeholder="توضیحات"></textarea>
+                                        <span class="text-danger error-text disc_error"></span>
+
+                                    </div>
+
+                                </div>
+                                <div class="text-end pt-5 mt-1 g-2">
+                                    <b-button variant="danger" @click="closeModal">بستن</b-button>
+                                    <b-button type="submit" variant="success" class="ms-1 ml-2">آپدیت</b-button>
+                                </div>
+                            </form>
+
+                        </b-modal>
+                    </div>
+                </div>
+                <!-- edit modal end -->
                     </div>
                 </div>
             </div>

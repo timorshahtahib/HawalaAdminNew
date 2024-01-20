@@ -44,7 +44,7 @@
                                 <label class="form-control-label px-3">پول<span class="text-danger">*</span></label>
                                 <select class="form-control form-control-lg select2 required" v-model="editCurrency" style="width: 100%;" required>
                                     <option disabled selected> واحد</option>
-                                    <option v-for="currency in currencies" :key="currency.id" :value="currency.id">{{currency.name}} {{currency.sign}}</option>
+                                    <option v-for="currency in edit_currencies" :key="currency?.id" :value="currency?.id">{{currency?.name}} {{currency?.sign}}</option>
                                 </select>
                             </div>
                         </div>
@@ -153,6 +153,7 @@ export default {
             showModal: false,
             financeAccounts: [],
             currencies: [],
+            edit_currencies: [],
             searchQuery: '',
             // edit modal
             editAccountName: '',
@@ -219,10 +220,17 @@ export default {
                 console.error('Error fetching data: ', error.message);
             }
         },
-
+        async get_edit_currencies() {
+           try {
+            const response = await axios.get('/api/currencies');
+            this.edit_currencies = response.data.currencies.data;
+           } catch (error) {
+            console.log(error.message);
+           }
+        },
         openEditModal() {
             this.showModal = true;
-            this.getcurrencies();
+            this.get_edit_currencies();
 
         },
         closeModal() {
@@ -239,13 +247,14 @@ export default {
         async editfinanceAccount(id) {
             // console.log("editfinanceAccount id:",id);
             const response = await axios.get(`/api/finance_account/${id}`);
-            console.log("finance Account response",response.data);
+            // console.log("finance Account response",response.data);
             this.editFinance = response.data;
 
-            this.openEditModal(this.editFinance);
+            this.openEditModal();
             this.editAccountName = this.editFinance.account_name;
             this.editType = this.editFinance.type
-            this.editCurrency = this.editFinance.finance_currency.currency
+            this.editCurrency = this.editFinance.currency
+            // console.log("this.editFinance.finance_currency.currency",this.editFinance);
             this.editDescription = this.editFinance.description
             this.editAccountType = this.editFinance.account
             //    console.log("inside editFinanceomer ", this.editDesc);
