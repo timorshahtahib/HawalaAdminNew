@@ -17,6 +17,7 @@ class Transaction extends Model
     ];
     public function customer()
     {
+        // return $this->belongsTo(Customer::class,'ref_id');
         return $this->belongsTo(Customer::class,'ref_id');
     }
     public function finacount_expenc()
@@ -26,6 +27,10 @@ class Transaction extends Model
     public function tr_currency()
     {
         return $this->belongsTo(Currency::class,'currency');
+    }
+    public function eq_transaction()
+    {
+        return $this->belongsTo(Currency::class,'currency_equal');
     }
 
    public function financeAccount(){

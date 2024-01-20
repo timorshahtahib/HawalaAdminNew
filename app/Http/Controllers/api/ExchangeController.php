@@ -1050,7 +1050,7 @@ class ExchangeController extends Controller
                 $id=$request->id;
                 $transfer_tr1= Transaction::where('status', '=', '1')->where('transaction_type','transfer')->where('id',$id)->first();
                 $transfer_tr2= Transaction::where('status', '=', '1')->where('transaction_type','transfer')->where('order_id',$id)->first();
-                $commissionTransaction= Transaction::where('status', '=', '1')->where('transaction_type','commission')->where('order_id',$id)->first();
+                $transfer_tr3= Transaction::where('status', '=', '1')->where('transaction_type','commission')->where('order_id',$transfer_tr1->id)->first();
 
                 // if ($request->) {
 
@@ -1058,7 +1058,7 @@ class ExchangeController extends Controller
                     // }
                     $transfer_tr1->update(['status'=>0]);
                     $transfer_tr2->update(['status'=>0]);
-                    $commissionTransaction->update(['status'=>0]);
+                    $transfer_tr3->update(['status'=>0]);
  
             
                 DB::commit();

@@ -113,11 +113,15 @@ export default {
             });
         },
         async getTransferTransaction(page=1) {
-            const response = await axios.get(`/api/gettransfers?page=${page}&limit=${this.limit}`);
-            this.transfers = response.data.transactions.data;
-            this.totalPages = response.data.transactions.last_page;
-            this.currentPage = page;
-            console.log(this.transfers);
+                try {
+                    const response = await axios.get(`/api/gettransfers?page=${page}&limit=${this.limit}`);
+                    this.transfers = response.data.transactions.data;
+                    this.totalPages = response.data.transactions.last_page;
+                    this.currentPage = page;
+                } catch (error) {
+                    console.log(error.message);
+                }
+            // console.log(this.transfers);
         },
 
         prevPage() {

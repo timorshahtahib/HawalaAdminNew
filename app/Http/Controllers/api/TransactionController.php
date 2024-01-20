@@ -95,17 +95,17 @@ class TransactionController extends Controller
 
         $check_number = $this->new_check_number();
         $validator =Validator::make($request->all(),[
-            'rasid_bord'=>'in:rasid,bord',
+            'rasid_bord'=>'required|in:rasid,bord',
             'amount'=>'required',
             'currency'=>'required',
-            'amount_equal'=>'nullable',
-            'currency_equal'=>'nullable',
+            'amount_equal'=>'required',
+            'currency_equal'=>'required',
             'currency_rate'=>'required',
             'ref_id'=>"required|max:20|exists:customer,id",
             'order_id'=>'nullable',
             'bank_acount_id'=>'required',
-            'desc'=>'nullable',
-            'status'=>'',
+            'desc'=>'nullable'
+           
 
         ]);
         

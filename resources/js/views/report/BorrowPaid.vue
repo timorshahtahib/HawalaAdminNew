@@ -171,10 +171,13 @@ export default {
 
         async getTransaction(page=1) {
             let d= this.$route.params.id
-            const response = await axios.post(`/api/bankdetails/?page=${page}&limit=${this.limit}`,{id:d});
-            this.transactions = response.data.banksTransaction.data;
-            this.totalPages = response.data.banksTransaction.last_page;
-            this.currentPage = page; 
+            // const response = await axios.post(`/api/bankdetails/?page=${page}&limit=${this.limit}`,{id:d});
+            // this.transactions = response.data.banksTransaction.data;
+            // this.totalPages = response.data.banksTransaction.last_page;
+            // this.currentPage = page; 
+
+            const response = await axios.get('/api/bankdetails/'+d);
+            this.transactions = response.data.banksTransaction;
          
         },
         prevPage() {
