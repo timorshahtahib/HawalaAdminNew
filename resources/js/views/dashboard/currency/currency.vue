@@ -79,7 +79,7 @@ export default {
                     this.currencyName = null;
                     this.currencySign = null;
                     this.showModal = false;
-                  
+                    location.reload();
                     this.showalert( "واحد پولی با موفقیت ثبت شد!",'success','success');
                     // console.log("مشتری با موفقیت ثبت شد!",'success','ok');
                 }

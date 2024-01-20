@@ -6,7 +6,7 @@
         <b-modal v-model="showModal" title="ویرایش کردن واحد پولی جدید" title-class="text-black font-18" body-class="p-3" hide-footer>
             <b-alert v-model="isError" class="mb-4" variant="danger" dismissible>{{ this.formError
             }}</b-alert>
-            <form @submit.prevent="editCucurrencyForm(editCurr.id)">
+            <form @submit.prevent="editCucurrencyForm">
                 <div class="row flex justify-between">
                     <div class="row flex justify-between">
                         <div class="col-md-6 col-sm-12 col-lg-6">
@@ -175,18 +175,20 @@ export default {
         async editCurrencyFunction(id) {
             const response = await axios.get(`/api/currencies/${id}`);
             this.editCurr = response.data;
-            this.openEditModal(this.editCurr);
+            this.openEditModal();
             this.editCurrencyName = this.editCurr.name;
             this.editCurrencySign = this.editCurr.sign;
         },
 
      
-        async editCucurrencyForm(id) {
-            const response = await axios.put(`/api/currencies/${id}`, {
+        async editCucurrencyForm() {
+            let id = this.editCurr.id;
+            const response = await axios.post(`/api/updatecurrency`, {
               name : this.editCurrencyName,
-              sign : this.editCurrencySign
+              sign : this.editCurrencySign,
+              id:id
             });
-            console.log(this.response);
+            // console.log(this.response.data);
             if (response.data != null) {
                 if (response.data.status === false) {
                     if (response.data.message != null) {
@@ -199,10 +201,10 @@ export default {
                     this.errors = {};
                     this.editCurrencyName = null;
                     this.editCurrencySign = null;
-                  
+                     this.getCurrencies();
                     this.showalert("واحد پولی  با موفقیت ویرایش شد!", 'موفقانه', 'success');
                 }
-                console.log("Currency updated successfully");   
+                // console.log("Currency updated successfully");   
             } else {
                 this.errors = {};
                 this.closeModal();
@@ -237,12 +239,9 @@ export default {
             });
             // console.log(response.data);
             this.currencies = response.data;
-            // console.log(this.searchQuery.length);
+          
         },
 
-        sendgetCurrency(){
-            this.$emit('send-function', this.getCurrencies);
-        }
     },
 }
 </script>

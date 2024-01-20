@@ -42,6 +42,7 @@ Route::post('/changeusername/{id}', [CustomerController::class, 'ChangeUsernameF
 Route::post('/changepassword/{id}', [CustomerController::class, 'ChangePasswordFunc']);
 
 Route::apiResource('currencies',CurrencyController::class);
+Route::post('/updatecurrency', [CurrencyController::class, 'updateCurrency']);
 Route::post('/searchcurrency', [CurrencyController::class, 'searchCurrency']);
 
 Route::apiResource('finance_account',FinanceAccountController::class);
@@ -53,6 +54,7 @@ Route::post('/searchorder', [OrderController::class, 'searchOrder']);
 Route::apiResource('users',UserController::class);
 
 Route::get('/financeAccWithCurrency/{id}',[IncomeExpController::class, 'getFinanceAccountByCurrencyId']);
+Route::post('/searchbanksbytype',[FinanceAccountController::class, 'searchBanksByType']);
 Route::post('/deleteExpense',[IncomeExpController::class, 'deleteExpense']);
 Route::post('/searchincomexpenses', [IncomeExpController::class, 'searchIncomeExpensesFunc']);
 
@@ -95,8 +97,10 @@ Route::post('/filterBankTransactions',[ReportFinanceController::class, 'filterBa
 
 // Exchange Buy Controller
 Route::apiResource('/exchange',ExchangeController::class);
+Route::post('/buystoretransaction',[ExchangeController::class,'buyStoreExchange']);
 Route::post('/getexchangeforedit',[ExchangeController::class,'getExchangeforEdit']);
-Route::post('/updateexchange',[ExchangeController::class,'updateBuyExchangeTransaction']);
+Route::post('/updatebuyexchange',[ExchangeController::class,'updateBuyExchangeTransaction']);
+// Route::post('/updateexchange',[ExchangeController::class,'updateBuyExchangeTransaction']);
 Route::post('/deleteexchange',[ExchangeController::class,'deleteBuyExchange']);
 Route::post('/searchexchange',[ExchangeController::class,'getBuySearchTransaction']);
 

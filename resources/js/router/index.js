@@ -41,12 +41,12 @@ const routes = [{
         component: () =>
             import ('../views/dashboard/currency/currency.vue'),
     },
-    {
-        path: '/dashboard/income_expense',
-        meta: { authRequired: true, title: 'income_expense' },
-        component: () =>
-            import ('../views/dashboard/incomExpense/incomeExpense.vue'),
-    },
+    // {
+    //     path: '/dashboard/income_expense',
+    //     meta: { authRequired: true, title: 'income_expense' },
+    //     component: () =>
+    //         import ('../views/dashboard/incomExpense/incomeExpense.vue'),
+    // },
     {
         path: '/dashboard/expense',
         meta: { authRequired: true, title: 'expense' },

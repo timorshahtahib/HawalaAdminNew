@@ -53,13 +53,7 @@ export const menuItems = [{
                 link: "/dashboard/order",
                 parentId: 2
             },
-            {
-                id: 7,
-                label: "خرج ومخارج",
-                link: "/dashboard/income_expense",
-                parentId: 2,
 
-            },
             {
                 id: 8,
                 label: "ثبت مصرف جدید",
@@ -78,28 +72,6 @@ export const menuItems = [{
             },
         ]
     },
-
-    // {
-    //     id: 19,
-    //     icon: 'bxs-report',
-    //     label: "گزارشات",
-    //     // icon: "bx-dollar",
-    //     subItems: [{
-    //             id: 6,
-    //             label: "گزارش بانک ها",
-    //             link: "/report/financereport",
-    //             parentId: 2
-    //         },
-    //         {
-    //             id: 7,
-    //             label: "قرض ها و رسیدها",
-    //             link: "/report/borrowpaid",
-    //             parentId: 2,
-
-    //         },
-    //     ]
-    // },
-
     {
         id: 19,
         icon: 'bxs-report',

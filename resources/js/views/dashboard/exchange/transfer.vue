@@ -117,6 +117,7 @@ export default {
             this.transfers = response.data.transactions.data;
             this.totalPages = response.data.transactions.last_page;
             this.currentPage = page;
+            console.log(this.transfers);
         },
 
         prevPage() {

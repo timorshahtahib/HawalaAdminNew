@@ -26,12 +26,7 @@ export const menuItems = [{
                 link: '/dashboard/rasidbord',
                 parentId: 1
             },
-            {
-                id: 1,
-                label: "menuitems.demo.text",
-                icon: "bx-file",
-                link: "/demo"
-            },
+
         ]
     },
 

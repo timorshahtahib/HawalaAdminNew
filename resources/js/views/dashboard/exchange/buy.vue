@@ -18,49 +18,50 @@ export default {
     },
     data() {
         return {
-            title: "لیست فروشات",
+            title: "لیست خریدها",
             items: [{
-                    text: "فروش",
+                    text: "خرید",
                     href: "/"
                 },
                 {
-                    text: "لیست فروش",
+                    text: "لیست خرید",
                     active: true
                 }
             ],
             showModal: false,
             searchQuery: '',
 
-            sale_amount: 0,
-            sale_currency_model: '',
-            rasid_amount: '',
-            currency_rate: 0.00,
-            rasid_currency_Model: '',
+            buy_amount: 0,
+            buy_currency_model: '',
             rasid_selectedDakhl: '',
+            currency_rate: 0.00,
+            bord_amount: '',
+            bord_currency_Model: '',
             buy_date: null,
             rasid_desc: '',
-            // Dakhl V-Model and arrays
+            bord_selectedDakhl: '',
+
             banks: [],
             currencies: [],
             // show transaction in the table
             transactions: [],
-            bord_selectedDakhl: '',
-            bordbanks: [],
+            rasidbanks: [],
 
-            // edit buy
-            edit_sale_amount: 0,
-            edit_sale_currency_model: '',
-            edit_rasid_amount: '',
-            edit_currency_rate: 0.00,
-            edit_rasid_currency_Model: '',
+            edit_buy_amount: 0,
+            edit_buy_currency_model: '',
             edit_rasid_selectedDakhl: '',
+            edit_currency_rate: 0.00,
+            edit_bord_amount: '',
+            edit_bord_currency_Model: '',
             edit_buy_date: null,
             edit_rasid_desc: '',
+            edit_bord_selectedDakhl: '',
+            // edit buy
             // Dakhl V-Model and arrays
             edit_banks: [],
             edit_currencies: [],
             edit_bord_selectedDakhl: '',
-            edit_bordbanks: [],
+            edit_rasidbanks: [],
 
             rasid_id :0,
             bord_id: 0,
@@ -158,17 +159,17 @@ export default {
             }
         },
         // for adding new Transaction  
-        async storeSaleTransaction() {
-            
-            try {
-                const response = await axios.post('/api/salestore', {
-                    bord_amount: this.sale_amount,
-                    bord_currency: this.sale_currency_model,
-                    bord_bank_acount_id: this.bord_selectedDakhl,
+        async storeBuyTransaction() {
 
-                    rasid_amount: this.rasid_amount,
-                    rasid_currency: this.rasid_currency_Model,
+            try {
+                const response = await axios.post('/api/buystoretransaction', {
+                    rasid_amount: this.buy_amount,
+                    rasid_currency: this.buy_currency_model,
                     rasid_bank_acount_id: this.rasid_selectedDakhl,
+
+                    bord_amount: this.bord_amount,
+                    bord_currency: this.bord_currency_Model,
+                    bord_bank_acount_id: this.bord_selectedDakhl,
                     currency_rate: this.currency_rate,
                     finance_account_id: 20,
                    
@@ -178,7 +179,7 @@ export default {
 
                 if (response.data != null) {
 
-                    console.log("in data!=null", response.data);
+                    // console.log("in data!=null", response.data);
                     if (response.data.status === false) {
 
                         if (response.data.message != null) {
@@ -194,14 +195,14 @@ export default {
                         this.transactions.push(response.data.new_data2);
 
                         this.errors = {}
-                        this.sale_currency_model = '';
-                        this.rasid_selectedDakhl = '';
-                        this.sale_amount = 0;
-                        this.rasid_amount = 0;
+                        this.buy_currency_model = '';
+                        this.bord_selectedDakhl = '';
+                        this.buy_amount = 0;
+                        this.bord_amount = 0;
                         this.currency_rate=0;
-                        this.sale_currency_model = '';
+                        this.buy_currency_model = '';
                         this.rasid_desc = '';
-                        this.rasid_currency_Model = '';
+                        this.bord_currency_Model = '';
                         this.buy_date = null;
                         this.showalert(response.data.message, "success", "success");
 
@@ -215,23 +216,23 @@ export default {
 
         },
         change_currency() {
-            this.getBanks(this.rasid_currency_Model);
+            this.getBanks(this.bord_currency_Model);
         },
         edit_change_currency() {
-            // this.getBanks(this.edit_rasid_currency_Model);
-            this.edit_getBanks(this.edit_rasid_currency_Model);
+            // this.getBanks(this.edit_bord_currency_Model);
+            this.edit_getBanks(this.edit_bord_currency_Model);
         },
-        change_bord_currency() {
-            this.getBordBanks(this.sale_currency_model);
+        change_rasid_currency() {
+            this.getrasidBanks(this.buy_currency_model);
         },
-        edit_change_bord_currency() {
-            this.edit_getBordBanks(this.edit_sale_currency_model);
+        edit_change_rasid_currency() {
+            this.edit_getrasidBanks(this.edit_buy_currency_model);
             
         },
 
    
 
-        async edit_sale_func(id,type) {
+        async edit_buy_func(id,type) {
             const response = await axios.post(`/api/getexchangesaleforedit/`,{id: id,rasid_bord:type});
             let rasid_list = response.data.rasid;
             let bord_list = response.data.bord;
@@ -239,39 +240,39 @@ export default {
             this.rasid_id=rasid_list.id;
             this.bord_id=bord_list.id;
 
-            this.edit_getBordBanks(bord_list.currency,bord_list.bank_acount_id);
+            this.edit_getrasidBanks(bord_list.currency,bord_list.bank_acount_id);
             this.edit_getRasidBanks(rasid_list.currency,rasid_list.bank_acount_id);
-            this.edit_sale_amount = bord_list.amount;
-            this.edit_sale_currency_model = bord_list.currency;
+            this.edit_buy_amount = bord_list.amount;
+            this.edit_buy_currency_model = bord_list.currency;
             this.edit_edit_rasid_desc = rasid_list.desc;
             this.edit_currency_rate = bord_list.currency_rate;
-            this.edit_rasid_amount = rasid_list.amount;
-            this.edit_rasid_currency_Model = rasid_list.currency;
+            this.edit_bord_amount = rasid_list.amount;
+            this.edit_bord_currency_Model = rasid_list.currency;
             this.edit_rasid_desc= bord_list.desc;
             this.edit_buy_date = bord_list.date;
         },
      
    
     
-        async submiteditSaleTransaction() {
+        async submiteditBuyTransaction() {
             
-            const response = await axios.post(`/api/updateexchange`, {
+            const response = await axios.post(`/api/updatebuyexchange`, {
                 rasid_id: this.rasid_id,
-                rasid_amount: this.edit_sale_amount,
-                rasid_currency: this.edit_sale_currency_model,
-                rasid_bank_acount_id: this.edit_bord_selectedDakhl,
+                rasid_amount: this.edit_buy_amount,
+
+                rasid_currency: this.edit_buy_currency_model,
+                rasid_bank_acount_id: this.edit_rasid_selectedDakhl,
 
                 bord_id:this.bord_id,
-                bord_amount: this.edit_rasid_amount,
-                bord_currency: this.edit_rasid_currency_Model,
-                bord_bank_acount_id: this.edit_rasid_selectedDakhl,
-
+                bord_amount: this.edit_bord_amount,
+                bord_currency: this.edit_bord_currency_Model,
+                bord_bank_acount_id: this.edit_bord_selectedDakhl,
                 currency_rate: this.edit_currency_rate,
                 date: this.edit_buy_date,
-                desc: this.edit_edit_rasid_desc,
+                desc: this.edit_rasid_desc,
               
             });
-            // console.log(response.data);
+            console.log("update buy",response.data);
 
             if (response.data != null) {
                 // console.log("in data!=null");
@@ -285,7 +286,6 @@ export default {
                     }
 
                 } else {
-
                     this.errors = {};
                     this.transactions.push(response.data.new_data);
                     this.showModal = false;
@@ -296,7 +296,7 @@ export default {
 
         },
 
-        async deleteSaleExchange(id) {
+        async deleteBuyExchange(id) {
             if (!window.confirm('آیا میخواهید که رسید حذف شود؟')) {
                 return;
             } else {
@@ -321,7 +321,7 @@ export default {
             try {
                 const response = await axios.get('/api/getbankbyid/' + id);
                 this.banks = response.data.banks;
-                this.rasid_selectedDakhl = this.banks[0].id;
+                this.bord_selectedDakhl = this.banks[0].id;
                 // console.log("selected Dakhl", this.selectedDakhl);
 
             } catch (error) {
@@ -333,18 +333,18 @@ export default {
             try {
                 const response = await axios.get('/api/getbankbyid/' + id);
                 this.edit_banks = response.data.banks;
-                this.edit_rasid_selectedDakhl = this.edit_banks[0].id;
+                this.edit_bord_selectedDakhl = this.edit_banks[0].id;
                 // console.log("selected Dakhl", this.selectedDakhl);
 
             } catch (error) {
                 console.log(error.message);
             }
         },
-        async getBordBanks(id) {
+        async getrasidBanks(id) {
             try {
                 const response = await axios.get('/api/getbankbyid/' + id);
-                this.bordbanks = response.data.banks;
-                this.bord_selectedDakhl = this.bordbanks[0].id;
+                this.rasidbanks = response.data.banks;
+                this.rasid_selectedDakhl = this.rasidbanks[0].id;
                 // console.log("selected Dakhl", this.selectedDakhl);
 
             } catch (error) {
@@ -352,11 +352,11 @@ export default {
             }
         },
       
-        async edit_getBordBanks(id) {
+        async edit_getrasidBanks(id) {
             try {
                 const response = await axios.get('/api/getbankbyid/' + id);
-                this.edit_bordbanks = response.data.banks;
-                this.edit_bord_selectedDakhl = this.edit_bordbanks[0].id;
+                this.edit_rasidbanks = response.data.banks;
+                this.edit_rasid_selectedDakhl = this.edit_rasidbanks[0].id;
                 // console.log("selected Dakhl", this.selectedDakhl);
 
             } catch (error) {
@@ -367,7 +367,7 @@ export default {
             try {
                 const response = await axios.get('/api/getbankbyid/' + id);
                 this.edit_banks = response.data.banks;
-                this.edit_rasid_selectedDakhl = this.edit_banks[0].id;
+                this.edit_bord_selectedDakhl = this.edit_banks[0].id;
                 // console.log("selected Dakhl", this.selectedDakhl);
 
             } catch (error) {
@@ -396,99 +396,99 @@ export default {
                 <!-- edit modal start -->
                 <div class="col-sm-8">
                     <div class="text-sm-end">
-                        <b-modal v-model="showModal" title="ویرایش فروش" title-class="text-black font-18" body-class="p-3" hide-footer>
-                                <form autocomplete="on" class="form-horizontal form-label-left" @submit.prevent="submiteditSaleTransaction">
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-sm-6 col-xs-12">
-                                                <label for="supplier">واحد پول فروش:</label>
-                                                <select class="form-control form-control-lg select2 required" v-model="edit_sale_currency_model" @change="edit_change_bord_currency" required>
-                                                    <option disabled selected> واحد</option>
-                                                    <option v-for="currency in currencies" :key="currency?.id" :value="currency?.id">{{currency?.name}} {{currency?.sign}}</option>
-                                                </select>
-                                                <span class="text-danger error-text currency_error"></span>
-                                            </div>
-        
-                                            <div class="col-sm-6 col-xs-12">
-                                                <label for="name"> مقدار پول فروش:‌</label>
-                                                <input type="number" id="sale_amount" v-model="edit_sale_amount" class="form-control required">
-                                                <span class="text-danger error-text sale_amount_error"></span>
-                                            </div>
-        
+                        <b-modal v-model="showModal" title="ویرایش خرید" title-class="text-black font-18" body-class="p-3" hide-footer>
+                            <form  autocomplete="on" class="form-horizontal form-label-left" @submit.prevent="submiteditBuyTransaction">
+
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-6 col-xs-12">
+                                            <label for="supplier">واحد پول خرید:</label>
+                                            <select class="form-control form-control-lg select2 required" v-model="edit_buy_currency_model" @change="edit_change_rasid_currency" required>
+                                                <option disabled selected> واحد</option>
+                                                <option v-for="currency in edit_currencies" :key="currency?.id" :value="currency?.id">{{currency?.name}} {{currency?.sign}}</option>
+                                            </select>
+                                            <span class="text-danger error-text currency_error"></span>
                                         </div>
-                                        <div class="col-sm-12 col-xs-12">
-                                            <label for="supplier">انتخاب دخل فروش :
+    
+                                        <div class="col-sm-6 col-xs-12 mb-2">
+                                            <label for="name"> مقدار پول خرید:‌</label>
+                                            <input type="number" id="buy_amount" v-model="edit_buy_amount" class="form-control required">
+                                            <span class="text-danger error-text buy_amount_error"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-xs-12 my-2">
+                                        <select class="form-control form-control-lg select2 required" v-model="edit_rasid_selectedDakhl" style="width: 100%;">
+                                        <label for="supplier">انتخاب دخل خرید :
+                                        </label>
+                                            <option disabled selected>ابتدا واحد پول را انتخاب کنید.</option>
+                                            <option v-for="bank in edit_rasidbanks" :key="bank.id" :value="bank.id">{{bank.account_name}}</option>
+    
+                                        </select>
+                                        <span class="text-danger error-text dakhl_error"></span>
+                                    </div>
+                                   <div class="row">
+                                        <span class="border-bottom w-100 font-size-16">
+                                            پول خارج شده از دخل
+                                        </span>
+                                        <label for="supplier">واحد پول پرداخت شده :</label>
+                                        <div class="col-sm-6 col-xs-12">
+                                            <select class="form-control form-control-lg select2 required" @change="edit_change_currency" v-model="edit_bord_currency_Model" required>
+                                                <option disabled selected>رسید واحد</option>
+                                                <option v-for="currency in edit_currencies" :key="currency?.id" :value="currency.id">{{currency?.name}} {{currency?.sign}}</option>
+                                            </select>
+                                            <span class="text-danger error-text currency_error"></span>
+                                        </div>
+                                        
+                                        <div class="col-sm-6 col-xs-12">
+                                            <select class="form-control form-control-lg select2 required" v-model="edit_bord_selectedDakhl" >
+                                            <label for="supplier">انتخاب دخل :
                                             </label>
-                                            <select class="form-control form-control-lg select2 required" v-model="edit_bord_selectedDakhl" style="width: 100%;">
                                                 <option disabled selected>ابتدا واحد پول را انتخاب کنید.</option>
-                                                <option v-for="bank in edit_bordbanks" :key="bank.id" :value="bank.id">{{bank.account_name}}</option>
-        
+                                                <option v-for="bank in edit_banks" :key="bank.id" :value="bank.id">{{bank.account_name}}</option>
                                             </select>
                                             <span class="text-danger error-text dakhl_error"></span>
                                         </div>
-                                        <div class="row">
-                                            <span class="border-bottom w-100 font-size-16">
-                                                پول وارد شده به دخل
-                                            </span>
-                                            <div class="col-sm-6 col-xs-12">
-                                                <label for="supplier">واحد پول وارد شده :</label>
-                                                <select class="form-control form-control-lg select2 required" @change="edit_change_currency" v-model="edit_rasid_currency_Model" style="width: 100%;" required>
-                                                    <option disabled selected>رسید واحد</option>
-                                                    <option v-for="currency in edit_currencies" :key="currency?.id" :value="currency.id">{{currency?.name}} {{currency?.sign}}</option>
-                                                </select>
-                                                <span class="text-danger error-text currency_error"></span>
-                                            </div>
-        
-                                            <div class="col-sm-6 col-xs-12">
-                                                <label for="supplier">انتخاب دخل :
-                                                </label>
-                                                <select class="form-control form-control-lg select2 required" v-model="edit_rasid_selectedDakhl" style="width: 100%;">
-                                                    <option disabled selected>ابتدا واحد پول را انتخاب کنید.</option>
-                                                    <option v-for="bank in edit_banks" :key="bank.id" :value="bank.id">{{bank.account_name}}</option>
-                                                </select>
-                                                <span class="text-danger error-text dakhl_error"></span>
-                                            </div>
-                                            <div class="row p-0 m-0">
-                                                <div class="col-sm-6 col-xs-12">
-                                                    <label for="name">مقدار پول وارد شده :‌</label>
-                                                    <input type="number" id="edit_rasid_amount" v-model="edit_rasid_amount" @input="calculatePayAmount" class="form-control required">
-                                                    <span class="text-danger error-text amount_error"></span>
-                                                </div>
-                                                <div class="col-sm-6 col-xs-12">
-                                                    <label for="name">نرخ ارز :‌</label>
-                                                    <input type="number" step="0.01" id="edit_currency_rate" v-model="edit_currency_rate" @input="calculatePayAmount" class="form-control required">
-                                                    <span class="text-danger error-text edit_currency_rate_error"></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- <div class="row"> -->
-                                        <div class="col-sm-12 col-xs-12 p-0">
-                                            <label for="factore_date">تاریخ :
-                                            </label>
-                                            <div class="input-group ">
-                                                <!-- @alireza-ab/vue3-persian-datepicker -->
-                                                <date-picker @select="edit_select" mode="single" type="date" locale="fa" :column="1" required>
-                                                </date-picker>
-                                            </div>
-                                            <span class="text-danger error-text afrad_error" v-if="errors.date">{{errors.date[0]}}</span>
-                                            <span class="text-center" >{{edit_buy_date}}</span>
-                                        </div>
-                                        <!-- </div> -->
-        
-                                        <div class="col-sm-12 col-xs-12" style="padding-right:0px!important">
-                                            <br>
-        
-                                            <textarea id="disc" class="form-control" autocomplete="on" v-model="edit_rasid_desc" rows="4" placeholder="توضیحات"></textarea>
-                                            <span class="text-danger error-text disc_error"></span>
-                                        </div>
-        
+                                   </div>
+                                   <div class="row">
+                                    <div class="col-sm-6 col-xs-12">
+                                        <label for="name">مقدار پول وارد شده :‌</label>
+                                        <input type="number" id="edit_bord_amount" v-model="edit_bord_amount" @input="edit_calculatePayAmount" class="form-control required">
+                                        <span class="text-danger error-text amount_error"></span>
                                     </div>
-                                    <div class="form-group">
-                                        <div class="text-end pt-2 mt-1 g-2 mb-2">
-                                            <b-button type="submit" variant="primary" class="ms-1 ml-2">آپدیت</b-button>
-                                        </div>
+                                    <div class="col-sm-6 col-xs-12">
+                                        <label for="name">نرخ ارز :‌</label>
+                                        <input type="number" step="0.01" id="edit_currency_rate" v-model="edit_currency_rate" @input="calculatePayAmount" class="form-control required">
+                                        <span class="text-danger error-text currency_rate_error"></span>
                                     </div>
-                                </form>
+                                </div>
+                                     
+                                    <div class="col-sm-12 col-xs-12 p-0">
+                                        <label for="factore_date">تاریخ :
+                                        </label>
+                                        <div class="input-group ">
+                                            <!-- @alireza-ab/vue3-persian-datepicker -->
+                                            <date-picker @select="edit_select" mode="single" type="date" locale="fa" :column="1" required>
+                                            </date-picker>
+                                        </div>
+                                        <span class="text-center">{{edit_buy_date}}</span>
+                                        <span class="text-danger error-text afrad_error" v-if="errors.date">{{errors.date[0]}}</span>
+                                    </div>
+                                    <!-- </div> -->
+    
+                                    <div class="col-sm-12 col-xs-12" style="padding-right:0px!important">
+                                        <br>
+    
+                                        <textarea id="disc" class="form-control" autocomplete="on" v-model="edit_rasid_desc" rows="4" placeholder="توضیحات"></textarea>
+                                        <span class="text-danger error-text disc_error"></span>
+                                    </div>
+    
+                                </div>
+                                <div class="form-group">
+                                    <div class="text-end pt-2 mt-1 g-2 mb-2">
+                                        <b-button type="submit" variant="primary" class="ms-1 ml-2">آپدیت</b-button>
+                                    </div>
+                                </div>
+                            </form>
                            
                         </b-modal>
                     </div>
@@ -496,78 +496,77 @@ export default {
                 <!-- edit modal end -->
 
                 <div class="card-body">
-                    <h4 class="card-title mb-2 p-2 text-white text-center font-size-18" style="background-color: crimson;">فروش :</h4>
+                    <h4 class="card-title mb-2 p-2 text-white text-center font-size-18 bg-success" >خرید :</h4>
                     <span class="border-bottom w-100 font-size-16">
-                        پول فروخته شده از دخل
+                        پول خرید شده به دخل
                     </span>
                     <div>
 
-                        <form id="category_insert" autocomplete="on" class="form-horizontal form-label-left" @submit.prevent="storeSaleTransaction">
+                        <form  autocomplete="on" class="form-horizontal form-label-left" @submit.prevent="storeBuyTransaction">
 
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-sm-6 col-xs-12">
-                                        <label for="supplier">واحد پول فروش:</label>
-                                        <select class="form-control form-control-lg select2 required" v-model="sale_currency_model" @change="change_bord_currency" required>
+                                        <label for="supplier">واحد پول خرید:</label>
+                                        <select class="form-control form-control-lg select2 required" v-model="buy_currency_model" @change="change_rasid_currency" required>
                                             <option disabled selected> واحد</option>
                                             <option v-for="currency in currencies" :key="currency?.id" :value="currency?.id">{{currency?.name}} {{currency?.sign}}</option>
                                         </select>
                                         <span class="text-danger error-text currency_error"></span>
                                     </div>
 
-                                    <div class="col-sm-6 col-xs-12">
-                                        <label for="name"> مقدار پول فروش:‌</label>
-                                        <input type="number" id="sale_amount" v-model="sale_amount" class="form-control required">
-                                        <span class="text-danger error-text sale_amount_error"></span>
+                                    <div class="col-sm-6 col-xs-12 mb-2">
+                                        <label for="name"> مقدار پول خرید:‌</label>
+                                        <input type="number" id="buy_amount" v-model="buy_amount" class="form-control required">
+                                        <span class="text-danger error-text buy_amount_error"></span>
                                     </div>
-
                                 </div>
-                                <div class="col-sm-12 col-xs-12">
-                                    <label for="supplier">انتخاب دخل فروش :
+                                <div class="col-sm-12 col-xs-12 my-2">
+                                    <select class="form-control form-control-lg select2 required" v-model="rasid_selectedDakhl" style="width: 100%;">
+                                    <label for="supplier">انتخاب دخل خرید :
                                     </label>
-                                    <select class="form-control form-control-lg select2 required" v-model="bord_selectedDakhl" style="width: 100%;">
                                         <option disabled selected>ابتدا واحد پول را انتخاب کنید.</option>
-                                        <option v-for="bank in bordbanks" :key="bank.id" :value="bank.id">{{bank.account_name}}</option>
+                                        <option v-for="bank in rasidbanks" :key="bank.id" :value="bank.id">{{bank.account_name}}</option>
 
                                     </select>
                                     <span class="text-danger error-text dakhl_error"></span>
                                 </div>
-                                <div class="row">
+                               <div class="row">
                                     <span class="border-bottom w-100 font-size-16">
-                                        پول وارد شده به دخل
+                                        پول خارج شده از دخل
                                     </span>
+                                    <label for="supplier">واحد پول پرداخت شده :</label>
                                     <div class="col-sm-6 col-xs-12">
-                                        <label for="supplier">واحد پول وارد شده :</label>
-                                        <select class="form-control form-control-lg select2 required" @change="change_currency" v-model="rasid_currency_Model" style="width: 100%;" required>
+                                        <select class="form-control form-control-lg select2 required" @change="change_currency" v-model="bord_currency_Model" style="width: 100%;" required>
                                             <option disabled selected>رسید واحد</option>
                                             <option v-for="currency in currencies" :key="currency?.id" :value="currency.id">{{currency?.name}} {{currency?.sign}}</option>
                                         </select>
                                         <span class="text-danger error-text currency_error"></span>
                                     </div>
-
+                                    
                                     <div class="col-sm-6 col-xs-12">
+                                        <select class="form-control form-control-lg select2 required" v-model="bord_selectedDakhl" style="width: 100%;">
                                         <label for="supplier">انتخاب دخل :
                                         </label>
-                                        <select class="form-control form-control-lg select2 required" v-model="rasid_selectedDakhl" style="width: 100%;">
                                             <option disabled selected>ابتدا واحد پول را انتخاب کنید.</option>
                                             <option v-for="bank in banks" :key="bank.id" :value="bank.id">{{bank.account_name}}</option>
                                         </select>
                                         <span class="text-danger error-text dakhl_error"></span>
                                     </div>
-                                    <div class="row p-0 m-0">
-                                        <div class="col-sm-6 col-xs-12">
-                                            <label for="name">مقدار پول وارد شده :‌</label>
-                                            <input type="number" id="rasid_amount" v-model="rasid_amount" @input="calculatePayAmount" class="form-control required">
-                                            <span class="text-danger error-text amount_error"></span>
-                                        </div>
-                                        <div class="col-sm-6 col-xs-12">
-                                            <label for="name">نرخ ارز :‌</label>
-                                            <input type="number" step="0.01" id="currency_rate" v-model="currency_rate" @input="calculatePayAmount" class="form-control required">
-                                            <span class="text-danger error-text currency_rate_error"></span>
-                                        </div>
-                                    </div>
+                               </div>
+                               <div class="row">
+                                <div class="col-sm-6 col-xs-12">
+                                    <label for="name">مقدار پول وارد شده :‌</label>
+                                    <input type="number" id="bord_amount" v-model="bord_amount" @input="calculatePayAmount" class="form-control required">
+                                    <span class="text-danger error-text amount_error"></span>
                                 </div>
-                                <!-- <div class="row"> -->
+                                <div class="col-sm-6 col-xs-12">
+                                    <label for="name">نرخ ارز :‌</label>
+                                    <input type="number" step="0.01" id="currency_rate" v-model="currency_rate" @input="calculatePayAmount" class="form-control required">
+                                    <span class="text-danger error-text currency_rate_error"></span>
+                                </div>
+                            </div>
+                                 
                                 <div class="col-sm-12 col-xs-12 p-0">
                                     <label for="factore_date">تاریخ :
                                     </label>
@@ -610,7 +609,7 @@ export default {
                         <div class="search-box me-2 mb-2 d-inline-block">
 
                             <div class="position-relative">
-                                <input type="text" v-model="searchQuery" class="form-control" placeholder="جستجوی فروشات..." @input="searchData" />
+                                <input type="text" v-model="searchQuery" class="form-control" placeholder="جستجوی خریدات..." @input="searchData" />
                                 <i class="bx bx-search-alt search-icon"></i>
                             </div>
                         </div>
@@ -660,11 +659,11 @@ export default {
 
                                                 <button class="btn btn-xs">
                                                     <i class="fas fa-pencil-alt text-success me-1" 
-                                                    @click="edit_sale_func(transaction.id,transaction.rasid_bord)"></i>
+                                                    @click="edit_buy_func(transaction.id,transaction.rasid_bord)"></i>
                                                 </button>
 
                                                 <button class="btn btn-xs">
-                                                    <i class="fas fa-trash-alt text-danger me-1" @click="deleteSaleExchange(transaction.id)"></i>
+                                                    <i class="fas fa-trash-alt text-danger me-1" @click="deleteBuyExchange(transaction.id)"></i>
                                                 </button>
 
                                             </td>

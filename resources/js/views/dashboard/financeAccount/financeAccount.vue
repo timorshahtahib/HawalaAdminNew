@@ -5,11 +5,13 @@ import axios from 'axios';
 // import SweetAlert from '../../../SweetAlert.vue';
 import Swal from 'sweetalert2'
 import financeAccountTable from "./financeAccountTable.vue";
+import DatePicker from '@alireza-ab/vue3-persian-datepicker';
 export default {
     components: {
         Layout,
         PageHeader,
-        financeAccountTable
+        financeAccountTable,
+        DatePicker
     },
     data() {
         return {
@@ -40,15 +42,45 @@ export default {
             AccountType:'',
             errors: {},
 
-          
+            // search
+            type_of_banks:'',
+            start_date:'',
+            end_date:'',
         };
     },
     mounted() {
         this.getFinanceAccounts();
+        this.type_of_banks='all'
 
     },
     methods: {
+        select_start_date(date) {
+            this.start_date = date.toString();
 
+        },
+
+        select_end_date(date) {
+            this.end_date =  date.toString();
+        },
+        async searchBanksByType(){
+
+                try {
+                const response = await axios.post('/api/searchbanksbytype', {
+                tr_type: this.type_of_banks,
+                bank_type: this.$route.params.id,
+                start_date: this.start_date,
+                end_date: this.end_date,
+                });
+                if (response.data != null) {
+                this.transactions=response.data.searchBank
+
+
+                }
+
+                } catch (error) {
+                console.log("Store in catch", error.message);
+                }
+},
         openModal() {
             this.showModal = true;
             this.getcurrencies();
@@ -88,8 +120,8 @@ export default {
         async getcurrencies() {
             try {
                 await axios.get('/api/currencies').then((response) => {
-                        this.currencies = response.data.currencies;
-                        console.log('tag', response.data.currencies)
+                        this.currencies = response.data.currencies.data;
+                        // console.log('tag', response.data.currencies)
                         this.currency=this.currencies[0].id
                     })
                     .catch((error) => {
@@ -131,8 +163,8 @@ export default {
                         }
 
                   }else{
-                    // console.log('  this.financeAccounts.push(response.data.new_data)')
-                    this.financeAccounts.push(response.data.new_data);
+                    // console.log("new data", this.response.data.new_data)
+                    // this.financeAccounts.push(response.data.new_data);
                     this.account_name = '';
                     this.type = '';
                     this.currency = '';
@@ -163,6 +195,54 @@ export default {
 
     <div class="row">
         <div class="col-12">
+            <div class="col-12">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title mb-4">جستجوی معامله</h4>
+                    <form class="repeater" enctype="multipart/form-data">
+                      <div>
+                        <div  class="row">
+    
+    
+                          <div class="mb-3 col-lg-2">
+                            <label for="email">نوع  بانک</label>
+                            <select class="form-control form-control-lg  required" v-model="type_of_banks">
+                                <option value="all">All</option>
+                                <option value="asset">Assets</option>
+                                <option value="equity">Equity</option>
+                                <option value="liablity">Liablity</option>
+                            </select>
+                          </div>
+                          <div class="mb-3 col-lg-2">
+                            <label for="email">تاریخ شروع</label>
+                            <date-picker @select="select_start_date" mode="single" type="date" locale="fa" :column="1" required>
+                            </date-picker>
+                          </div>
+    
+                          <div class="mb-3 col-lg-2">
+                            <label for="email">تاریخ ختم</label>
+                            <date-picker @select="select_end_date" mode="single" type="date" locale="fa" :column="1" required>
+                            </date-picker>
+                          </div>    
+                          <div class="col-lg-2 align-self-center">
+                             <div class="d-grid">
+                            <input
+                              type="button"
+                              class="btn btn-primary btn-block"
+                              value="جستجو"
+                              @click="searchBanksByType"
+                            />
+                             </div>
+                          </div>
+                        </div>
+                      </div>
+    
+                    </form>
+                  </div>
+                  <!-- end card-body -->
+                </div>
+                <!-- end card -->
+              </div>
             <div class="card">
                 <div class="card-body">
                     <div class="row mb-2">
@@ -278,7 +358,7 @@ export default {
                                                       <label class="form-control-label px-3">پول<span class="text-danger">*</span></label>
                                                         <select class="form-control form-control-lg select2 required" v-model="currency" style="width: 100%;" required>
                                                           <option disabled selected> واحد</option>
-                                                          <option v-for="currency in currencies" :key="currency.id" :value="currency.id">{{currency.name}} {{currency.sign}}</option>
+                                                          <option v-for="currency in currencies" :key="currency?.id" :value="currency?.id">{{currency?.name}} {{currency?.sign}}</option>
                                                       </select>
                                                     </div>
                                                 </div>
@@ -315,33 +395,7 @@ export default {
                         <!-- end col-->
                     </div>
                     <financeAccountTable />
-                    <!-- <ul class="pagination pagination-rounded justify-content-end mb-2">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="javascript: void(0);" aria-label="Previous">
-                                <i class="mdi mdi-chevron-left"></i>
-                            </a>
-                        </li>
-                        <li class="page-item active">
-                            <a class="page-link" href="javascript: void(0);">1</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="javascript: void(0);">2</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="javascript: void(0);">3</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="javascript: void(0);">4</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="javascript: void(0);">5</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="javascript: void(0);" aria-label="Next">
-                                <i class="mdi mdi-chevron-right"></i>
-                            </a>
-                        </li>
-                    </ul> -->
+                   
                 </div>
             </div>
         </div>

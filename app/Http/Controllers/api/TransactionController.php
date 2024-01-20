@@ -361,17 +361,7 @@ class TransactionController extends Controller
         }
 }
     }
-    /**
-     * Remove the specified resource from storage.
-     */
-    // public function destroy(Request $request,$id)
-    // {
-    //     $transaction = Transaction::findOrFail($id);
-    //     $transaction->status = $request->input('status');
-
-    //     $transaction->update(['status'=>0]);
-    //     return response()->json(['message' => 'Transaction deleted successfully', 'data' => $transaction], 204);
-    // }
+    
 
    
 

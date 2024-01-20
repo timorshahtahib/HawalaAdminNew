@@ -1,4 +1,5 @@
 <template>
+    
 <div class="col-sm-4 bg-red" style="
     margin-top: -52px;
 ">
@@ -12,7 +13,7 @@
 <!-- edit modal start -->
 <div class="col-sm-8">
     <div class="text-sm-end">
-        <b-modal v-model="showModal" title="ویرایش حساب" title-class="text-black font-18" body-class="p-3" hide-footer>
+        <b-modal v-model="edit_showModal" title="ویرایش حساب" title-class="text-black font-18" body-class="p-3" hide-footer>
             <b-alert v-model="isError" class="mb-4" variant="danger" dismissible>{{ this.formError
  }}</b-alert>
 
@@ -71,7 +72,7 @@
                 </div>
 
                 <div class="text-end pt-5 mt-1 g-2">
-                    <b-button variant="danger" @click="showModal=false">بستن</b-button>
+                    <b-button variant="danger" @click="edit_showModal=false">بستن</b-button>
                     <b-button type="submit" variant="success" class="ms-1 ml-2">آپدیت</b-button>
                 </div>
             </form>
@@ -150,7 +151,7 @@ export default {
     name: 'customerTable',
     data() {
         return {
-            showModal: false,
+            edit_showModal: false,
             financeAccounts: [],
             currencies: [],
             edit_currencies: [],
@@ -229,12 +230,12 @@ export default {
            }
         },
         openEditModal() {
-            this.showModal = true;
+            this.edit_showModal = true;
             this.get_edit_currencies();
 
         },
         closeModal() {
-            this.showModal = false;
+            this.edit_showModal = false;
         },
         showalert(title, text, icon) {
             Swal.fire({
@@ -292,7 +293,7 @@ export default {
                         this.description = '';
                         this.user_id = '';
                         this.status = '';
-                        this.showModal = false;
+                        this.edit_showModal = false;
                         this.showalert("آپدیت حساب", "حساب موفقانه آپدیت شد", "success");
                     }
 
@@ -301,7 +302,7 @@ export default {
                 console.log(error);
                 this.showalert('حساب با موفقیت ویرایش نشد!', 'ادامه دهید', 'error');
             }
-            this.showModal = false;
+            this.edit_showModal = false;
             this.getFinanceAccount();
 
         },

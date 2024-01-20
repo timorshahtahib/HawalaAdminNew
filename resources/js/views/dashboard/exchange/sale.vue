@@ -178,7 +178,7 @@ export default {
 
                 if (response.data != null) {
 
-                    console.log("in data!=null", response.data);
+                    // console.log("in data!=null", response.data);
                     if (response.data.status === false) {
 
                         if (response.data.message != null) {
@@ -254,16 +254,16 @@ export default {
     
         async submiteditSaleTransaction() {
             
-            const response = await axios.post(`/api/updateexchange`, {
-                rasid_id: this.rasid_id,
-                rasid_amount: this.edit_sale_amount,
-                rasid_currency: this.edit_sale_currency_model,
-                rasid_bank_acount_id: this.edit_bord_selectedDakhl,
+            const response = await axios.post(`/api/updatesaleexchange`, {
+                rasid_id: this.bord_id,
+                bord_amount: this.edit_sale_amount,
+                bord_currency: this.edit_sale_currency_model,
+                bord_bank_acount_id: this.edit_bord_selectedDakhl,
 
-                bord_id:this.bord_id,
-                bord_amount: this.edit_rasid_amount,
-                bord_currency: this.edit_rasid_currency_Model,
-                bord_bank_acount_id: this.edit_rasid_selectedDakhl,
+                rasid_id:this.rasid_id,
+                rasid_amount: this.edit_rasid_amount,
+                rasid_currency: this.edit_rasid_currency_Model,
+                rasid_bank_acount_id: this.edit_rasid_selectedDakhl,
 
                 currency_rate: this.edit_currency_rate,
                 date: this.edit_sale_date,

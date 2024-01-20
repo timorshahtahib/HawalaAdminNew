@@ -232,10 +232,16 @@ class FinanceAccountController extends Controller
         } catch (Throwable $e) {
             return response()->json(['message'=>$e->getMessage()]);
         }
-        
-
-
-
 }
+    public function searchBanksByType(Request $request){
+        $tr_type = $request->tr_type;
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
+        // $bank_type = $request->bank_type;
     
+        // Building the query
+        $searchBank = FinanceAccount::where('type', $tr_type);
+    
+       
+    }
 }

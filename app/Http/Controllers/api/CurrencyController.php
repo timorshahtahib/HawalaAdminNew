@@ -89,41 +89,104 @@ class CurrencyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request,Currency $currency)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|max:20|unique:currency,name,id ',
-            'sign' => 'required|max:10|unique:currency,sign,id',
+    // public function update(Request $request,Currency $currency)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'name' => 'required|max:20|unique:currency,name,id ',
+    //         'sign' => 'required|max:10|unique:currency,sign,id',
 
-        ],
-        [
-            'name.required' =>'نام ضروری است',
-            'name.unique'=>'نام واحد پولی از قبل موجود است',
-            'sign.required'=>'نشان واحد ضروری است',
-            'sign.unique'=>'نشان واحد از قبل موجود است',
+    //     ],
+    //     [
+    //         'name.required' =>'نام ضروری است',
+    //         'name.unique'=>'نام واحد پولی از قبل موجود است',
+    //         'sign.required'=>'نشان واحد ضروری است',
+    //         'sign.unique'=>'نشان واحد از قبل موجود است',
 
-        ]
+    //     ]
     
-    );
+    // );
 
-        if(!$validator->passes()){
-            return response()->json([
-                'status'=>false,
-                'error'=>$validator->errors()->toArray(),
-            ]);
-        }
-        $currency->update($request->all());
-        return response()->json($currency,201);
-    }
+    //     if(!$validator->passes()){
+    //         return response()->json([
+    //             'status'=>false,
+    //             'error'=>$validator->errors()->toArray(),
+    //         ]);
+    //     }
+
+    //     $currency_value = [
+    //         'name'=> $request->name,
+    //         'sign'=> $request->sign,
+    //     ];
+    //     $currency_update = Currency::where('id',$request->id)->update($currency_value);
+    //     if($currency_update){
+    //         $output_data = Currency::where('id',$request->id)->first();
+    //         return  response()->json([
+    //             'status'=>true,
+    //             'new_data'=>$output_data,
+    //             'message'=>'اطلاعات موفقانه آپدیت شد.',
+    //         ]);
+
+    //     }else{
+   
+    //         return  response()->json([
+    //             'status'=>false,
+    //             'message'=>'عملیات انجام نشد',
+    //         ]);
+    //     }
+    // }
 
     /**
      * Remove the specified resource from storage.
      */
+
+     public function updateCurrency(Request $request)
+     {
+         $validator = Validator::make($request->all(), [
+             'name' => 'required',
+             'sign' => 'required',
+             'id' => 'required',
+ 
+         ],
+         [
+             'name.required' =>'نام ضروری است',
+             'sign.required'=>'نشان واحد ضروری است',
+ 
+         ]
+     
+     );
+ 
+         if(!$validator->passes()){
+             return response()->json([
+                 'status'=>false,
+                 'error'=>$validator->errors()->toArray(),
+             ]);
+         }
+        
+         $currency_value = [
+             'name'=> $request->name,
+             'sign'=> $request->sign,
+         ];
+         $currency_update = Currency::where('id',$request->id)->update($currency_value);
+         if($currency_update){
+             $output_data = Currency::where('id',$request->id)->first();
+             return  response()->json([
+                 'status'=>true,
+                 'new_data'=>$output_data,
+                 'message'=>'اطلاعات موفقانه آپدیت شد.',
+             ]);
+ 
+         }else{
+    
+             return  response()->json([
+                 'status'=>false,
+                 'message'=>'عملیات انجام نشد',
+             ]);
+         }
+     }
     public function destroy(Request $request,$id)
     {
         $currency = Currency::findOrFail($id);
         $currency->status = $request->input('status');
-    
         $currency->update(['status'=>0]);
         return response()->json(['message' => 'Currency deleted successfully', 'data' => $currency], 204);
     }

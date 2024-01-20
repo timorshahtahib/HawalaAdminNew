@@ -206,6 +206,115 @@ class ExchangeController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    public function buyStoreExchange(Request $request)
+    { 
+        $check_number = $this->new_check_number();
+        $validator =Validator::make($request->all(),[
+            'transaction_type'=>'exchange',
+            'bord_amount'=>'required',
+            'bord_currency'=>'required',
+            'amount_equal'=>'nullable',
+            'currency_equal'=>'nullable',
+            'currency_rate'=>'required',
+            'order_id'=>'nullable',
+            'bord_bank_acount_id'=>'required',
+            'rasid_bank_acount_id'=>'required',
+            'desc'=>'nullable',
+            'status'=>'',
+
+        ]);
+        
+        if(!$validator->passes()){
+            return response()->json([
+                'status'=>false,
+                'error'=>$validator->errors()->toArray(),
+            ]);
+        }else{
+        
+            DB::beginTransaction();
+            try{
+                ////transaction chek number generate
+                $check_number = TransactionController::new_check_number();
+
+                $transaction_values = [
+                    'rasid_bord'=> 'rasid',
+                    'transaction_type'=>'exchange',
+                    'amount'=>$request->rasid_amount,
+                    'currency'=>$request->rasid_currency,
+                    'finance_acount_id'=>25,
+                    'bank_acount_id'=>$request->rasid_bank_acount_id,
+                    'amount_equal'=>$request->bord_amount,
+                    'currency_equal'=>$request->bord_currency,
+                    'currency_rate'=>$request->currency_rate,
+                    'desc'=>$request->desc,
+                    'date'=>$request->date,
+                    'check_number'=>$check_number,
+                    
+                ];
+             
+                $transaction_id = Transaction::insertGetId($transaction_values);
+                $check_number2 = TransactionController::new_check_number();
+                $transaction_values2 = [
+                    'rasid_bord'=> 'bord',
+                    'transaction_type'=>'exchange',
+                    'amount'=>$request->bord_amount,
+                    'currency'=>$request->bord_currency,
+                    'finance_acount_id'=>25,
+                    'bank_acount_id'=>$request->bord_bank_acount_id,
+                    'amount_equal'=>$request->rasid_amount,
+                    'currency_equal'=>$request->rasid_currency,
+                    'currency_rate'=>$request->currency_rate,
+                    'desc'=>$request->desc,
+                    'date'=>$request->date,
+                    'check_number'=>$check_number2,
+                ];
+                
+                $transaction_id2 = Transaction::insertGetId($transaction_values2);
+
+                if($transaction_id && $transaction_id2 ){
+
+                    $update_values1 = [
+                        'order_id'=>$transaction_id2,
+                    ];
+                    $update_values2 = [
+                        'order_id'=>$transaction_id,
+                    ];
+                    Transaction::where('id',$transaction_id)->update($update_values1);
+                    Transaction::where('id',$transaction_id2)->update($update_values2);
+
+                    $update_values = ['transaction_id'=>$transaction_id,];
+                    $update_values2 = ['transaction_id2'=>$transaction_id2,];
+                 
+                    $output_data = Transaction::where('id',$transaction_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
+                    $output_data2 = Transaction::where('id',$transaction_id2)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
+
+                    DB::commit();
+                    return  response()->json([
+                        'status'=>true,
+                        'new_data1'=>$output_data,
+                        'new_data2'=>$output_data2,
+                        'message'=>'عملیات انجام شد',
+                    ]);
+
+                }else{
+                    DB::rollback();
+                    return  response()->json([
+                        'status'=>false,
+                        'message'=>'عملیات انجام نشد',
+                    ]);
+                }
+
+            }catch(Throwable $e){
+                DB::rollback();
+                return  response()->json([
+                    'status'=>false,
+                    'message'=>$e->getMessage(),
+                ]);
+            }
+
+        }
+       
+    }
     public function getExchangeforEdit(Request $request)
     {
         $tr_type=$request->rasid_bord;
@@ -264,7 +373,6 @@ class ExchangeController extends Controller
             ]);
         }else {
             $tr_rasidv = [
-            
                 'amount'=>$request->rasid_amount,
                 'currency'=>$request->rasid_currency,
                 'bank_acount_id'=>$request->rasid_bank_acount_id,
@@ -281,12 +389,15 @@ class ExchangeController extends Controller
                 'currency_rate'=>$request->currency_rate,
             ];
 
+
+            // dd("$tr_rasidv",$tr_rasidv,"$tr_bordv",$tr_bordv);
+
+            
             DB::beginTransaction();
             try{
                 
                $tr_rasid= Transaction::where('id',$request->rasid_id)->update($tr_rasidv);
                $tr_bord= Transaction::where('id',$request->bord_id)->update($tr_bordv);
-
 
                if($tr_rasid && $tr_bord){
 
@@ -561,18 +672,17 @@ class ExchangeController extends Controller
             ]);
         }else {
             $tr_rasidv = [
-            
-                'amount'=>$request->rasid_amount,
-                'currency'=>$request->rasid_currency,
-                'bank_acount_id'=>$request->rasid_bank_acount_id,
+                'amount'=>$request->bord_amount,
+                'currency'=>$request->bord_currency,
+                'bank_acount_id'=>$request->bord_bank_acount_id,
                 'desc'=>$request->desc,
                 'date'=>$request->date,
                 'currency_rate'=>$request->currency_rate,
             ];
             $tr_bordv = [
-                'amount'=>$request->bord_amount,
-                'currency'=>$request->bord_currency,
-                'bank_acount_id'=>$request->bord_bank_acount_id,
+                'amount'=>$request->rasid_amount,
+                'currency'=>$request->rasid_currency,
+                'bank_acount_id'=>$request->rasid_bank_acount_id,
                 'desc'=>$request->desc,
                 'date'=>$request->date,
                 'currency_rate'=>$request->currency_rate,
