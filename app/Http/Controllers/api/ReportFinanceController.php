@@ -102,4 +102,56 @@ class ReportFinanceController extends Controller
     public function getUserAllPaindAndLoan(){
 
     }
+
+    public function filterAllTransaction(Request $request) {
+        $transaction_type = $request->transaction_type;
+        $rasid_bord = $request->rasid_bord;
+        $customer_id = $request->customer_id;
+        $currency = $request->currency;
+        $dakhl = $request->dakhl;
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
+        
+    
+        $getTransaction = Transaction::where('status',1);
+        
+
+    
+        if ($transaction_type!='all') {
+            if ($rasid_bord!='all') {
+              
+                $getTransaction->where('rasid_bord', $rasid_bord)->where('transaction_type',$transaction_type);
+            }
+        }else{
+           
+            if ($rasid_bord!='all') {
+              
+                $getTransaction->where('rasid_bord', $rasid_bord);
+            }
+                }
+    
+    
+      
+    
+        if ($customer_id) {
+            $getTransaction->where('ref_id', $customer_id);
+        }
+        if ($currency) {
+            $getTransaction->where('currency', $currency);
+        }
+        if ($dakhl) {
+            $getTransaction->where('bank_acount_id', $dakhl);
+        }
+
+        if ($start_date) {
+            $getTransaction->whereDate('date', '>=', $start_date);
+        }
+        if ($end_date) {
+            $getTransaction->whereDate('date', '<=', $end_date);
+        }
+    
+        $result = $getTransaction->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')->get();
+    
+        return response()->json(['transaction' => $result]);
+    }
 }

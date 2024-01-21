@@ -122,7 +122,7 @@ class TransactionController extends Controller
 
                 $transaction_values = [
                     'rasid_bord'=> $request->rasid_bord,
-                    'transaction_type'=>$request->rasid_bord,
+                    'transaction_type'=>'rasid_bord',
                     'amount'=>$request->amount,
                     'currency'=>$request->currency,
                     'finance_acount_id'=>24,

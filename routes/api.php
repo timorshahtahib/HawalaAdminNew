@@ -97,7 +97,8 @@ Route::post('/filterBankTransactions',[ReportFinanceController::class, 'filterBa
 // for getting the customer balance
 // Route::get('/getcustomerbalance/{id}',[CustomerController::class, 'getCustomerBalance']);
 Route::get('/customerblance/{customerId}', [CustomerController::class, 'getCustomerBalance']);
-
+// for gettting all transaction
+Route::post('/filteralltransaction',[ReportFinanceController::class, 'filterAllTransaction']);
 
 // Exchange Buy Controller
 Route::apiResource('/exchange',ExchangeController::class);

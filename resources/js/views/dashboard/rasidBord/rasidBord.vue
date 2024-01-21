@@ -406,7 +406,6 @@ export default {
                                         <span class="text-danger error-text currency_error"></span>
                                     </div>
                                     <div class="col-sm-12 col-xs-12">
-
                                         <label for="supplier">انتخاب شخص / حساب :
                                         </label>
 
@@ -524,7 +523,6 @@ export default {
 
                                     <div class="bg-red me-auto">
                                         <v-select name="customerName" v-model="selectedCustomer" :options="customers" label="name" placeholder="مشتری مورد نظر خود را سرچ کنید" class="searchCustomer" style="width:105%;margin:0 -10px;height:4rem;padding:10px" />
-
                                     </div>
 
                                 </div>

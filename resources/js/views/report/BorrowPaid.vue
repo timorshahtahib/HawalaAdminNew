@@ -22,57 +22,34 @@ export default {
     },
     data() {
         return {
-            title: "لیست رسید و برد ها",
+            title: "لیست  تمام ترانزکشن ها",
             items: [{
-                    text: "مصرف",
+                    text: "جستجوی ترانزکشن ها",
                     href: "/"
                 },
                 {
-                    text: "لیست رسید و برد ها",
+                    text: "لیست تمام ترانزکشن ها",
                     active: true
                 }
             ],
             showModal: false,
             searchQuery: '',
-            start_date:'',
-            end_date:'',
+
+            transactions: [],
+            banks:[],
             rasid_bord_type:'',
-            //  V-Select Customer
-            customers: [],
-
-            // for v-select should be null
-            selectedCustomer: '',
-
-            // V-Model of rasid_bord select input
-            rasid_bord: '',
-
+            rasid_bord:'',
+            selectedCustomer:'',
+            currencyModel:'',
+            SelectedDakhl:'',
+            select_start_date:'',
+            select_end_date:'',
+            select_end_date:'',
+            customers:[],
             // Currency V-Model and arrays
             currencies: [],
-            currencyModel: '',
-
-            // Dakhl V-Model and arrays
-            selectedDakhl: '',
-            banks: [],
-
-            // does has an error
-            amount: 0,
-            currency_rate: 1,
-            equal_amount: 0,
-
-            // for setting the current date
-            transaction_date: null,
-            errors: {},
-
-            currencyModel: '',
-            // Description
-            desc: '',
-            // show transaction in the table
-            transactions: [],
-            // Equals v-model
-            equalcurrencyModel: '',
-
-        
-
+          
+    
         
             // pagination
             currentPage: 1,
@@ -85,6 +62,7 @@ export default {
         this.getCurrency();
         this.getTransaction();
         this.getCustomers();
+        this.getFinanceAccount()
         this.rasid_bord_type='all'
     },
 
@@ -100,47 +78,11 @@ export default {
             this.end_date =  date.toString();
         },
 
-        async searchbankTransaction(){
-
-            try {
-                const response = await axios.post('/api/filterBankTransactions', {
-                    tr_type: this.rasid_bord_type,
-                    bank_acount_id: this.$route.params.id,
-                    start_date: this.start_date,
-                    end_date: this.end_date,
-                });
-                if (response.data != null) {
-                        this.transactions=response.data.searchBank
-
-
-                }
-
-            } catch (error) {
-                console.log("Store in catch", error.message);
-            }
-        },
-        updateSelectedCustomer(customer) {
-            this.selectedCustomer = customer.name;
-            // console.log("Customerseleted", this.selectedCustomer);
-        },
-        // for calculating the Equal to input type
-        calculateEqualAmount() {
-            this.equal_amount = this.amount / this.currency_rate;
-        },
-  
-        // for showing the showalert modal
-        showalert(title, icon, confirmButtonText) {
-            Swal.fire({
-                title: title,
-                icon: icon,
-                confirmButtonText: confirmButtonText,
-            });
-        },
-
         async getCustomers() {
             try {
                 const response = await axios.get('/api/customer');
-                this.customers = response.data.customers;
+                this.customers = response.data.customers.data;
+                // console.log(this.customers);
 
             } catch (error) {
                 console.error('Error fetching data: ', error.message);
@@ -149,7 +91,7 @@ export default {
         async getCurrency() {
             try {
                 await axios.get('/api/currencies').then((response) => {
-                        this.currencies = response.data.currencies;
+                        this.currencies = response.data.currencies.data;
                         // console.log(this.currencies);
 
                     })
@@ -162,23 +104,27 @@ export default {
             }
         },
   
-
-        change_currency() {
-            this.getBanks(this.currencyModel);
+        async getFinanceAccount(page = 1) {
+            try {
+                const response = await axios.get(`/api/finance_account?page=${page}&limit=${this.limit}`);
+                this.banks = response.data.financeAccounts.data;
+                this.totalPages = response.data.financeAccounts.last_page;
+                this.currentPage = page; // Update the current page
+                console.log(this.financeAccounts);
+            } catch (error) {
+                console.error('Error fetching finance Account:', error);
+            }
         },
+   
 
 
 
         async getTransaction(page=1) {
-            let d= this.$route.params.id
-            // const response = await axios.post(`/api/bankdetails/?page=${page}&limit=${this.limit}`,{id:d});
-            // this.transactions = response.data.banksTransaction.data;
-            // this.totalPages = response.data.banksTransaction.last_page;
-            // this.currentPage = page; 
+            const response = await axios.get(`/api/transaction?page=${page}&limit=${this.limit}`);
+            this.transactions = response.data.transactions.data;
+            this.totalPages = response.data.transactions.last_page;
+            this.currentPage = page; // Update the current page
 
-            const response = await axios.get('/api/bankdetails/'+d);
-            this.transactions = response.data.banksTransaction;
-         
         },
         prevPage() {
             if (this.currentPage > 1) {
@@ -198,18 +144,15 @@ export default {
             this.transactions = response.data;
         },
 
-   
-        async getBanks(id) {
-            try {
-                const response = await axios.get('/api/getbankbyid/' + id);
-                this.banks = response.data.banks;
-                this.selectedDakhl = this.banks[0].id;
-                // console.log("selected Dakhl", this.selectedDakhl);
+        async filterAlltransaction() {
+            const response = await axios.post('/api/filteralltransaction', {
+                transaction_type:this.transaction_type,
+                rasid_bord:this.
+            });
 
-            } catch (error) {
-                console.log(error.message);
-            }
+            this.transactions = response.data;
         },
+   
     },
 };
 </script>
@@ -225,32 +168,60 @@ export default {
                 <form class="repeater" enctype="multipart/form-data">
                   <div>
                     <div  class="row">
-
-
-                      <div class="mb-3 col-lg-2">
+                      <div class="mb-3 col-md-1">
                         <label for="email">نوع  معامله</label>
                         <select class="form-control form-control-lg  required" v-model="rasid_bord_type">
-
                             <option value="all">همه</option>
-                            <option value="rasid">پرداخت شده</option>
-                            <option value="bord">قرض</option>
+                            <option value="rasid_bord">رسید و بردها</option>
+                            <option value="exchange">تبادلات</option>
+                            <option value="transfer">انتقلات</option>
+                            <option value="expense">مصارف</option>
+                            <option value="icome">درآمدها</option>
                         </select>
                       </div>
+                      <div class="mb-3 col-md-1">
+                        <label for="email">نوع رسید وبرد</label>
+                        <select class="form-control form-control-lg  required" v-model="rasid_bord">
+                            <option value="all">همه</option>
+                            <option value="rasid">رسید</option>
+                            <option value="bord">برد</option>
+                        </select>
+                      </div>
+                      <div class="mb-3 col-md-2 mt-4 p-2" >
+                        
+                          <v-select name="customerName" v-model="selectedCustomer" :options="customers" label="name" placeholder="مشتری مورد نظر خود را سرچ کنید" class="searchCustomer"/>
+                        </div>
+                        <div class="col-md-1 col-xs-12">
+                            <label for="supplier">واحد پول :</label>
+                            <select class="form-control form-control-lg select2 required" @change="change_currency" v-model="currencyModel" >
+                                <option disabled selected> واحد</option>
+                                <option v-for="currency in currencies" :key="currency?.id" :value="currency?.id">{{currency?.name}} {{currency?.sign}}</option>
+                            </select>
+                            <span class="text-danger error-text currency_error"></span>
+                        </div>
+                        <div class="col-md-1 col-xs-12">
+                            <label for="supplier">انتخاب دخل :
+                            </label>
+                            <select class="form-control form-control-lg select2 required" v-model="SelectedDakhl">
+                                <option disabled selected>ابتدا واحد پول را انتخاب کنید.</option>
+                                <option v-for="bank in banks" :key="bank.id" :value="bank.id">{{bank.account_name}}</option>
+                            </select>
+                            <span class="text-danger error-text dakhl_error"></span>
+                        </div>
                       <div class="mb-3 col-lg-2">
                         <label for="email">تاریخ شروع</label>
-                        <date-picker @select="select_start_date" mode="single" type="date" locale="fa" :column="1" required>
+                        <date-picker @select="select_start_date" mode="single" type="date" locale="fa" :column="1" >
                         </date-picker>
                       </div>
 
                       <div class="mb-3 col-lg-2">
                         <label for="email">تاریخ ختم</label>
-                        <date-picker @select="select_end_date" mode="single" type="date" locale="fa" :column="1" required>
+                        <date-picker @select="select_end_date" mode="single" type="date" locale="fa" :column="1" >
                         </date-picker>
                       </div>
 
-
-
-                      <div class="col-lg-2 align-self-center">
+                
+                      <div class="col-lg-1 align-self-center">
                          <div class="d-grid">
                         <input
                           type="button"
