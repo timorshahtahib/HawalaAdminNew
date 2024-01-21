@@ -494,43 +494,46 @@ class IncomeExpController extends Controller
 
 
 // for searching all expenses
-        public function searchExpensesFunc(Request $request)
-        {
-            try {
-                $searchTerm = $request->input('query');
-                $query=IncomeExp::query()->where('status', '=', '1')->where('type','expense')
-                ->orderBy('id', 'desc')
-                ->with(['expense_bank','customer_expense','expense_currency']);
+        // public function searchExpensesFunc(Request $request)
+        // {
+
+        
+        //     try {
+        //         $searchTerm = $request->input('query');
+        //         $query=IncomeExp::query()->where('status', '=', '1')->where('type','expense')
+        //         ->orderBy('id', 'desc')
+        //         ->with(['expense_bank','customer_expense','expense_currency']);
+            
+        //         if($searchTerm){
+        //         $query->where(function ($query) use ($searchTerm) {
+        //         // $query->where('account_name', $searchTerm)
+        //         $query->where('amount',  'like', '%' . $searchTerm . '%')
+        //         ->orWhere('type',  'like', '%' . $searchTerm . '%')
+        //         ->orWhere('currency',  'like', '%' . $searchTerm . '%')
+        //         ->orWhere('amount_equal',  'like', '%' . $searchTerm . '%')
+        //         ->orWhere('currency_equal',  'like', '%' . $searchTerm . '%')
+        //         ->orWhere('date',  'like', '%' . $searchTerm . '%')
+        //         ->orWhere('transaction_id',  'like', '%' . $searchTerm . '%')
+        //         // ->orWhere('finance_acount_id',  'like', '%' . $searchTerm . '%')
+        //         ->orWhere('bank_id',  'like', '%' . $searchTerm . '%')
+        //         ->orWhere('user_id',  'like', '%' . $searchTerm . '%')
+        //         ->orWhere('ref_type',  'like', '%' . $searchTerm . '%')
+        //         ->orWhere('state',  'like', '%' . $searchTerm . '%')->with(['expense_bank','customer_expense','expense_currency'])->get();
+        //         });
+        //         $expense = $query
+        //         ->with(['finance_currency'])->get();
+        //         if ($expense->isEmpty()) {
+        //         return response()->json([]);
+        //         }
+        //         return response()->json($expense);
               
-                if($searchTerm){
-                $query->where(function ($query) use ($searchTerm) {
-                // $query->where('account_name', $searchTerm)
-                $query->where('amount',  'like', '%' . $searchTerm . '%')
-                ->orWhere('currency',  'like', '%' . $searchTerm . '%')
-                ->orWhere('amount_equal',  'like', '%' . $searchTerm . '%')
-                ->orWhere('currency_equal',  'like', '%' . $searchTerm . '%')
-                ->orWhere('date',  'like', '%' . $searchTerm . '%')
-                ->orWhere('transaction_id',  'like', '%' . $searchTerm . '%')
-                // ->orWhere('finance_acount_id',  'like', '%' . $searchTerm . '%')
-                ->orWhere('bank_id',  'like', '%' . $searchTerm . '%')
-                ->orWhere('user_id',  'like', '%' . $searchTerm . '%')
-                ->orWhere('ref_type',  'like', '%' . $searchTerm . '%')
-                ->orWhere('state',  'like', '%' . $searchTerm . '%')->with(['expense_bank','customer_expense','expense_currency'])->get();
-                });
-                $expense = $query
-                ->with(['finance_currency'])->get();
-                if ($expense->isEmpty()) {
-                return response()->json([]);
-                }
-                return response()->json($expense);
-              
     
-              }
+        //       }
     
     
-                } catch (Throwable $e) {
-                    return response()->json(['message'=>$e->getMessage()]);
-                }
+        //         } catch (Throwable $e) {
+        //             return response()->json(['message'=>$e->getMessage()]);
+        //         }
 
 
             
@@ -538,7 +541,49 @@ class IncomeExpController extends Controller
 
 
 
+        // }
+
+
+        public function searchExpensesFunc(Request $request)
+{
+    try {
+        $searchTerm = $request->input('query');
+        
+        $query = IncomeExp::query()
+            ->where('status', '=', '1')
+            ->where('type', 'expense')
+            ->orderBy('id', 'desc')
+            ->with(['expense_bank', 'customer_expense', 'expense_currency']);
+
+        if ($searchTerm) {
+            $query->where(function ($query) use ($searchTerm) {
+                $query->where('amount', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('id', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('type', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('currency', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('amount_equal', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('currency_equal', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('date', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('transaction_id', 'like', '%' . $searchTerm . '%')
+                    // ->orWhere('finance_acount_id', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('bank_id', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('user_id', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('ref_type', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('state', 'like', '%' . $searchTerm . '%');
+            });
         }
+
+        $expense = $query->with(['expense_currency'])->get();
+
+        if ($expense->isEmpty()) {
+            return response()->json([]);
+        }
+
+        return response()->json($expense);
+    } catch (Throwable $e) {
+        return response()->json(['message' => $e->getMessage()]);
+    }
+}
 
         public function deleteExpense(Request $request){
            

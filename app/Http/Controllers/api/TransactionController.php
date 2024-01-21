@@ -102,7 +102,6 @@ class TransactionController extends Controller
             'currency_equal'=>'required',
             'currency_rate'=>'required',
             'ref_id'=>"required|max:20|exists:customer,id",
-            'order_id'=>'nullable',
             'bank_acount_id'=>'required',
             'desc'=>'nullable'
            
@@ -386,10 +385,15 @@ class TransactionController extends Controller
                     ->orWhereHas('tr_currency', function ($query) use ($searchTerm) {
                         $query->where('name', 'like', '%' . $searchTerm . '%');
                     })
+                    ->orWhere('id', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('rasid_bord', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('check_number', 'like', '%' . $searchTerm . '%')
                     ->orWhere('amount', 'like', '%' . $searchTerm . '%')
                     ->orWhere('amount_equal', 'like', '%' . $searchTerm . '%')
                     ->orWhere('currency_equal', 'like', '%' . $searchTerm . '%')
                     ->orWhere('currency_rate', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('currency', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('bank_acount_id', 'like', '%' . $searchTerm . '%')
                     ->orWhere('desc', 'like', '%' . $searchTerm . '%');
                 });
             }

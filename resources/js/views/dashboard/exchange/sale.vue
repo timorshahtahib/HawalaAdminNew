@@ -242,20 +242,17 @@ export default {
             this.edit_getRasidBanks(rasid_list.currency,rasid_list.bank_acount_id);
             this.edit_sale_amount = bord_list.amount;
             this.edit_sale_currency_model = bord_list.currency;
-            this.edit_edit_rasid_desc = rasid_list.desc;
+
             this.edit_currency_rate = bord_list.currency_rate;
             this.edit_rasid_amount = rasid_list.amount;
             this.edit_rasid_currency_Model = rasid_list.currency;
             this.edit_rasid_desc= bord_list.desc;
             this.edit_sale_date = bord_list.date;
         },
-     
-   
-    
         async submiteditSaleTransaction() {
             
             const response = await axios.post(`/api/updatesaleexchange`, {
-                rasid_id: this.bord_id,
+                bord_id: this.bord_id,
                 bord_amount: this.edit_sale_amount,
                 bord_currency: this.edit_sale_currency_model,
                 bord_bank_acount_id: this.edit_bord_selectedDakhl,
@@ -292,7 +289,7 @@ export default {
                 }
             }
          
-
+              
         },
 
         async deleteSaleExchange(id) {

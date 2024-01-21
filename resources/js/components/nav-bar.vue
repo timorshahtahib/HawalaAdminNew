@@ -9,12 +9,12 @@ import zh from '../../images/flags/chaina.png';
 import ar from '../../images/flags/arabic.png';
 
 import logoDarkLg from '../../images/logo-dark.png';
-import logoDarkSm from '../../images/logo.svg';
+
 
 import asialogo from '../../images/mycustom/Asiatelecomlogo.png';
-import logoLightSm from '../../images/logo-light.svg';
+// import asialogo from '../../images/logo-light.svg';
 
-import avatar1 from '../../images/users/avatar-1.jpg';
+import avatar1 from '../../images/users/avatar-2.jpg';
 import avatar3 from '../../images/users/avatar-3.jpg';
 import avatar4 from '../../images/users/avatar-4.jpg';
 
@@ -33,7 +33,7 @@ import megamenu from '../../images/megamenu-img.png';
 export default {
   data() {
     return {
-      logoDarkLg, logoDarkSm, asialogo, logoLightSm, avatar1, avatar3, avatar4, github, bitbucket, dribbble, dropbox, mail_chimp, slack, megamenu,
+      logoDarkLg, asialogo, avatar1, avatar3, avatar4, github, bitbucket, dribbble, dropbox, mail_chimp, slack, megamenu,
       languages: [
         {
           flag: us,
@@ -130,7 +130,7 @@ export default {
         <div class="navbar-brand-box mb-2">
           <router-link to="/" class="logo logo-dark">
             <span class="logo-sm">
-              <img :src="logoDarkSm" alt height="22" />
+              <img :src="logoDarkLg" alt height="s" />
             </span>
             <span class="logo-lg">
               <img :src="logoDarkLg" alt height="17" />
@@ -139,7 +139,7 @@ export default {
 
           <router-link to="/" class="logo logo-light">
             <span class="logo-sm">
-              <img :src="logoLightSm" alt height="22" />
+              <img :src="asialogo" alt height="22" />
             </span>
             <span class="logo-lg text-white ">
               <!-- Asia admin panel -->
@@ -147,7 +147,6 @@ export default {
             </span>
 
           </router-link>
-          <!-- <h3>پنل مدیریت آسیا تلکام</h3> -->
         </div>
 
         <button

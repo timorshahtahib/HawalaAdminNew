@@ -88,6 +88,7 @@
              <th>نام حساب</th>
              <th>نوعیت</th>
              <th>پول</th>
+             <th>حساب</th>
              <th>توضیحات</th>
              <th>وضیعت</th>
              <th>آکشن</th>
@@ -100,6 +101,7 @@
                <td>{{ financeAccount.account_name }}</td>
                <td>{{ financeAccount.type }}</td>
                <td>{{ financeAccount.finance_currency?.name }}</td>
+               <td>{{ financeAccount?.account }}</td>
                <td>{{ financeAccount.description }}</td>
                <!-- <td>{{ financeAccount.user_id }}</td> -->
               <td>
@@ -246,7 +248,6 @@ export default {
             })
         },
         async editfinanceAccount(id) {
-            // console.log("editfinanceAccount id:",id);
             const response = await axios.get(`/api/finance_account/${id}`);
             // console.log("finance Account response",response.data);
             this.editFinance = response.data;
@@ -258,7 +259,7 @@ export default {
             // console.log("this.editFinance.finance_currency.currency",this.editFinance);
             this.editDescription = this.editFinance.description
             this.editAccountType = this.editFinance.account
-            //    console.log("inside editFinanceomer ", this.editDesc);
+            //    console.log("inside this.editAccountType ", this.editAccountType);
         },
         async submitEditedForm(id) {
             try {
@@ -270,13 +271,13 @@ export default {
                     // user_id: this.user_id,
                     account: this.editAccountType
                 });
-
+                    
                 if (responseUpdate.data != null) {
                     console.log('responseUpdate.data != null')
                     if (responseUpdate.data.status === false) {
                         if (responseUpdate.data.message != null) {
-                            this.showalert(responseUpdate.data.message, "error", "1توجه!");
-                            console.log('responseUpdate.data.message != null')
+                            this.showalert(responseUpdate.data.message, "error", "error");
+                            // console.log('responseUpdate.data.message != null')
                         } else {
                             this.errors = responseUpdate.data.error;
                             console.log("Errors", this.errors);
@@ -300,7 +301,7 @@ export default {
                 }
             } catch (error) {
                 console.log(error);
-                this.showalert('حساب با موفقیت ویرایش نشد!', 'ادامه دهید', 'error');
+                this.showalert('حساب با موفقیت ویرایش نشد!', "error", "error");
             }
             this.edit_showModal = false;
             this.getFinanceAccount();

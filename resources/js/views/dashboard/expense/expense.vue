@@ -331,7 +331,7 @@ export default {
             });
 
             this.ExpenseList = response.data;
-            console.log("this.ExpenseList",this.ExpenseList);
+            // console.log("this.ExpenseList",this.ExpenseList);
         },
     },
 };

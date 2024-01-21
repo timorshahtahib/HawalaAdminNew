@@ -152,7 +152,7 @@ export default {
                 const response = await axios.get(`/api/currencies?page=${page}&limit=${this.limit}`);
                 this.currencies = response.data.currencies.data;
                 this.totalPages = response.data.currencies.last_page;
-                console.log("Currency",response.data);
+                // console.log("Currency",response.data);
                 this.currentPage = page; // Update the current page
             } catch (error) {
                 console.error('Error fetching Currency:', error);

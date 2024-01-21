@@ -89,7 +89,9 @@ class CustomerController extends Controller
 
     public function show(Customer $customer)
     {
-        return response()->json($customer,200);
+
+       $blances=$this->getCustomerBalance( $customer->id);
+        return response()->json(["customer"=>$customer,"balances"=>$blances],200);
     }
 
     public function update(Request $request,Customer $customer)
@@ -113,18 +115,16 @@ class CustomerController extends Controller
         'name.required' =>'نام ضروری است',
         'last_name.required'=>'نام خانوادگی ضروری است.',
         'phone.required'=>'شماره تماس ضروری است',
-        // 'username.required'=>'نام کاربری ضروری است',
-        // 'password.required'=>'رمز عبور را وارد کنید.',
     ]);
-        // if(!$validator->passes()){
-        //     return response()->json([
-        //         'status'=>false,
-        //         'error'=>$validator->errors()->toArray(),
-        //     ]);
-        // }else{
+        if(!$validator->passes()){
+            return response()->json([
+                'status'=>false,
+                'error'=>$validator->errors()->toArray(),
+            ]);
+        }else{
             $out_put = $customer->update($request->all());
             return response()->json([ 'status'=>true,'message' => 'User update successfully!', 'new_data' => $out_put], 200);
-        // }
+        }
         
      
     }
@@ -225,66 +225,40 @@ class CustomerController extends Controller
 
   
 
-    public function getCustomerBalance2($customerId) {
-        $customer = Customer::find($customerId);
-        
-       
-        // Fetch all transactions for the customer
-        $transactions=Transaction::where('status', '=', '1')->where('ref_id',$customer->id)->get();
-        
-        // Calculate the balance for each currency
-        $balances = [];
-        foreach ($transactions as $transaction) {
-            $currencyid = $transaction->currency_equal;
 
-            // Calculate the balance based on transaction type (credit or debit)
-            $amount = ($transaction->rasid_bord  == 'rasid') ? $transaction->amount_equal : -$transaction->amount_equal;
-    
-            if (!isset($balances[$currencyid])) {
-                $balances[$currencyid] = 0;
-            }
-    
-            $balances[$currencyid] += $amount;
-        }
-    
-        // Return the balances as JSON
-        return response()->json(['balances' => $balances]);
-        
-    }
+
 
     public function getCustomerBalance($customerId) {
-        $customer = Customer::find($customerId);
+        $transactions = Transaction::with('eq_transaction')
+            ->where('ref_id', $customerId)
+            ->get();
     
-        // Check if the customer exists
-        if (!$customer) {
-            return response()->json(['error' => 'Customer not found'], 404);
-        }
-    
-        // Use the transactions relationship
-        $transactions=Transaction::where('status', '=', '1')->where('ref_id',$customer->id)->get();
-    
-        // Fetch currency codes
-        $currencyCodes = Currency::pluck('id', 'id');
-    
-        // Calculate the balance for each currency
         $balances = [];
+    
         foreach ($transactions as $transaction) {
-            $currencyId = $transaction->currency_equal;
+            $currencyName = $transaction->eq_transaction->name; // Assuming 'name' is the field in the 'currency' table
+            $amount = $transaction->amount;
+            $type = $transaction->rasid_bord; // 'credit' or 'debit'
     
-            // Fetch the currency code from the $currencyCodes array
-            $currencyCode = $currencyCodes[$currencyId] ?? 'Unknown';
-    
-            // Calculate the balance based on transaction type (credit or debit)
-            $amount = ($transaction->rasid_bord  == 'rasid') ? $transaction->amount_equal : -$transaction->amount_equal;
-    
-            if (!isset($balances[$currencyCode])) {
-                $balances[$currencyCode] = 0;
+            if (!isset($balances[$currencyName])) {
+                $balances[$currencyName] = [
+                    'rasid' => 0,
+                    'bord' => 0,
+                    'balance' => 0,
+                ];
             }
     
-            $balances[$currencyCode] += $amount;
+            if ($type === 'rasid') {
+                $balances[$currencyName]['rasid'] += $amount;
+            } elseif ($type === 'bord') {
+                $balances[$currencyName]['bord'] += $amount;
+            }
+    
+            // Calculate balance
+            $balances[$currencyName]['balance'] = $balances[$currencyName]['rasid'] - $balances[$currencyName]['bord'];
         }
     
-        // Return the balances as JSON
-        return response()->json(['balances' => $balances]);
+        ///return response()->json($balances);
+        return $balances;
     }
 }

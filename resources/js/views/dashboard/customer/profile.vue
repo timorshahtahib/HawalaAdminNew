@@ -7,7 +7,7 @@ import {
 } from "../../contacts/data-profile";
 
 import profile from '../../../../images/profile-img.png';
-import avatar1 from '../../../../images/users/avatar-1.jpg';
+import avatar1 from '../../../../images/users/avatar-2.jpg';
 import axios from "axios";
 import Swal from 'sweetalert2'
 import DatePicker from '@alireza-ab/vue3-persian-datepicker';
@@ -68,18 +68,22 @@ export default {
             currentPage: 1,
             totalPages: 1,
             limit: 10,
+
+            // for getting customer balance
+         
+            customerbalances:[],
         };
     },
 
     mounted() {
         this.getTransactionbycid();
-
     },
     async created() {
         try {
             const response = await axios.get(`/api/customer/${this.$route.params.id}`);
-            this.customer = response.data;
-            // console.log("customer",this.customer);
+            this.customer = response.data.customer;
+            this.customerbalances = response.data.balances
+            console.log("cutomBalances",this.customerbalances);
         } catch (error) {
             console.error(error.message);
         }
@@ -404,8 +408,6 @@ export default {
                 console.log(error.message);
             }
         },
-
-
     },
 };
 </script>
@@ -421,8 +423,6 @@ export default {
                     <div class="row">
                         <div class="col-7">
                             <div class="text-primary p-3">
-                                <!-- <h5 class="text-primary">سلام خوش آمدید !</h5>
-                                <p>ساده به نظر می رسد</p> -->
                             </div>
                         </div>
                         <div class="col-5 align-self-end">
@@ -432,75 +432,96 @@ export default {
                 </div>
                 <div class="card-body pt-0">
                     <div class="row">
-                        <div class="col-sm-4">
-                            <div class="avatar-md profile-user-wid mb-4">
+                        <div class="col-md-12 col-sm-4">
+                            <div class="avatar-md profile-user-wid ">
                                 <img :src="avatar1" alt class="img-thumbnail rounded-circle" />
                             </div>
-                            <h5 class="font-size-15 text-truncate font-size-20">{{customer.name}}</h5>
-                            <p class="text-muted mb-0 text-truncate font-size-20" v-if="customer.type !=null">مشتری</p>
-                        </div>
-
-                        <div class="col-sm-8">
-                            <div class="pt-4">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <h5 class="font-size-15">125</h5>
-                                        <p class="text-muted mb-0">Projects</p>
+                           
+                            <div class="card-footer">
+                                <div class="contact-links d-flex font-size-18 gap-0.5">
+                                    <div class="flex-fill">
+                                        <b-button type="button" variant="primary" class="btn btn-primary btn-sm btn-rounded" @click="editCustomer(this.$route.params.id)">ویرایش پروفایل</b-button>
                                     </div>
-                                    <div class="col-6">
-
-                                        <h5 class="font-size-15">${{customerAmount}}</h5>
-                                        <p class="text-muted mb-0">Revenue</p>
+                                    <div class="flex-fill">
+                                        <b-button type="button" variant="primary" class="btn btn-primary btn-sm btn-rounded text-bold" @click="openEditUsernameModal">تغیر نام کاربری</b-button>
+                                    </div>
+                                    <div class="flex-fill">
+                                        <b-button type="button" variant="primary" class="btn btn-primary btn-sm btn-rounded text-bold" @click="openEditPasswordModal">تغیر رمز عبور</b-button>
+                                    </div>
+                                    <div class="flex-fill">
+                                        <b-button type="button" variant="primary" class="btn btn-primary btn-sm btn-rounded text-bold" >غیر فعال کردن</b-button>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
-                    </div>
-                    <div class="card-footer">
-                        <div class="contact-links d-flex font-size-18 gap-0.5">
-                            <div class="flex-fill">
-                                <b-button type="button" variant="primary" class="btn btn-primary btn-sm btn-rounded" @click="editCustomer(this.$route.params.id)">ویرایش پروفایل</b-button>
-                            </div>
-                            <div class="flex-fill">
-                                <b-button type="button" variant="primary" class="btn btn-primary btn-sm btn-rounded text-bold" @click="openEditUsernameModal">تغیر نام کاربری</b-button>
-                            </div>
-                            <div class="flex-fill">
-                                <b-button type="button" variant="primary" class="btn btn-primary btn-sm btn-rounded text-bold" @click="openEditPasswordModal">تغیر رمز عبور</b-button>
-                            </div>
-                            <div class="flex-fill">
-                                <b-button type="button" variant="primary" class="btn btn-primary btn-sm btn-rounded text-bold" >غیر فعال کردن</b-button>
+                       
+                        <div class="card" style="margin-bottom:-60px !important">
+                            <div class="card-body">
+                                <h4 class="card-title mb-4">اطلاعات شخصی</h4>
+            
+                               
+                                <div class="table-responsive mb-0">
+                                    <table class="table">
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row">نام کامل :</th>
+                                                <td>{{customer.name}} {{customer.last_name}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">شماره تماس :</th>
+                                                <td>{{customer.phone}}</td>
+                                            </tr>
+            
+                                            <tr>
+                                                <th scope="row">آدرس :</th>
+                                                <td v-if="customer.address > 0">{{customer.address}}</td>
+                                                <td v-else>آدرس وجود ندارد</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">توضیحات :</th>
+                                                 <p class="text-muted mb-4" v-if="customer!=null">{{customer.desc}}</p>
+                                              <p class="text-muted mb-4" v-else>توصیحاتی وجود ندارد</p>
+                                              
+                                             
+                                            </tr>
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
+                        <!-- end card -->
                     </div>
+                    
                 </div>
 
             </div>
 
             <!-- end card -->
-
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title mb-4">بلانس</h4>
+                    <h4 class="card-title ">بلانس</h4>
                     <div class="table-responsive mb-0">
-                        <table class="table">
-                            <tbody>
-                                <tr>
-                                    <th scope="row">رسید:</th>
-                                    <td>{{rasid}}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">برد :</th>
-                                    <td>{{bord}}</td>
-                                </tr>
-
-                                <tr>
-                                    <th scope="row">جمع کل :</th>
-                                    <td>{{totalAmount}}</td>
-
-                                </tr>
-                            </tbody>
+                      <div>
+                        <table class="table table-centered table-nowrap">
+                          <thead>
+                            <tr>
+                              <th>واحد</th>
+                              <th>کل رسید </th>
+                              <th>کل برداشتها</th>
+                              <th>بیلانس</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr v-for="(currency, key) in customerbalances" :key="key">
+                              <td>{{ key }}</td>
+                              <td>{{ currency.rasid }}</td>
+                              <td>{{ currency.bord }}</td>
+                              <td>{{ currency.balance }}</td>
+                            </tr>
+                          </tbody>
                         </table>
+                      </div>
                     </div>
                 </div>
             </div>
@@ -508,35 +529,7 @@ export default {
 
             <!-- end card -->
 
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title mb-4">اطلاعات شخصی</h4>
-
-                    <p class="text-muted mb-4" v-if="customer!=null">{{customer.desc}}</p>
-                    <p class="text-muted mb-4" v-else>توصیحاتی وجود ندارد</p>
-                    <div class="table-responsive mb-0">
-                        <table class="table">
-                            <tbody>
-                                <tr>
-                                    <th scope="row">نام کامل :</th>
-                                    <td>{{customer.name}} {{customer.last_name}}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">شماره تماس :</th>
-                                    <td>{{customer.phone}}</td>
-                                </tr>
-
-                                <tr>
-                                    <th scope="row">آدرس :</th>
-                                    <td v-if="customer.address > 0">{{customer.address}}</td>
-                                    <td v-else>آدرس وجود ندارد</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <!-- end card -->
+         
 
         </div>
 
@@ -584,7 +577,11 @@ export default {
                                                                         <td>{{transaction.id}}</td>
                                                                         <td v-if="transaction.customer!=null">{{ transaction.customer.name}}</td>
                                                                         <td v-else>{{ transaction.finance_account.account_name}}</td>
-                                                                        <td>{{transaction.rasid_bord}}</td>
+                                                                        <td>
+                                                                            <span class="badge  font-size-12" :class="transaction.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">
+                                                                            {{transaction.rasid_bord}}
+                                                                        </span>
+                                                                        </td>
                                                                         <td>{{transaction.check_number}}</td>
                                                                         <td>{{transaction.amount}}</td>
                                                                         <td>{{transaction.tr_currency.name}}</td>

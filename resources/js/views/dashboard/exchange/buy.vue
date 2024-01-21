@@ -272,7 +272,7 @@ export default {
                 desc: this.edit_rasid_desc,
               
             });
-            console.log("update buy",response.data);
+            // console.log("update buy",response.data);
 
             if (response.data != null) {
                 // console.log("in data!=null");

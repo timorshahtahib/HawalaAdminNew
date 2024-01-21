@@ -477,15 +477,21 @@ class ExchangeController extends Controller
                     })
                     ->orWhereHas('financeAccount', function ($query) use ($searchTerm) {
                         $query->where('account_name', 'like', '%' . $searchTerm . '%');
+                    
                     })
                     ->orWhereHas('tr_currency', function ($query) use ($searchTerm) {
                         $query->where('name', 'like', '%' . $searchTerm . '%');
                     })
+                    ->orWhere('id', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('rasid_bord', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('transaction_type', 'like', '%' . $searchTerm . '%')
                     ->orWhere('check_number', 'like', '%' . $searchTerm . '%')
                     ->orWhere('amount', 'like', '%' . $searchTerm . '%')
                     ->orWhere('amount_equal', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('currency', 'like', '%' . $searchTerm . '%')
                     ->orWhere('currency_equal', 'like', '%' . $searchTerm . '%')
                     ->orWhere('currency_rate', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('finance_acount_id', 'like', '%' . $searchTerm . '%')
                     ->orWhere('desc', 'like', '%' . $searchTerm . '%');
                 });
             }
@@ -671,7 +677,8 @@ class ExchangeController extends Controller
                 'error'=>$validator->errors()->toArray(),
             ]);
         }else {
-            $tr_rasidv = [
+            
+            $tr_bordv = [
                 'amount'=>$request->bord_amount,
                 'currency'=>$request->bord_currency,
                 'bank_acount_id'=>$request->bord_bank_acount_id,
@@ -679,7 +686,8 @@ class ExchangeController extends Controller
                 'date'=>$request->date,
                 'currency_rate'=>$request->currency_rate,
             ];
-            $tr_bordv = [
+            
+            $tr_rasidv = [
                 'amount'=>$request->rasid_amount,
                 'currency'=>$request->rasid_currency,
                 'bank_acount_id'=>$request->rasid_bank_acount_id,
@@ -688,6 +696,7 @@ class ExchangeController extends Controller
                 'currency_rate'=>$request->currency_rate,
             ];
 
+            // dd("$tr_rasidv",$tr_rasidv);
             DB::beginTransaction();
             try{
                 

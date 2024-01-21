@@ -213,8 +213,8 @@ export default {
                         this.address = '';
                         this.desc = '';
                         this.showModal = false;
-                       
                         this.showalert("مشتری با موفقیت ثبت شد!", 'success', 'success');
+                        // location.reload();
                        
                       
                     }
@@ -246,7 +246,7 @@ export default {
         telephoneCheck(str) {
             let isphone = /^(1\s|1|)?((\(\d{3}\))|\d{3})(\-|\s)?(\d{3})(\-|\s)?(\d{4})$/.test(str);
             if (!isphone) {
-                this.phoneError = 'لطفا شماره تماس وارد نمائید!';
+                this.phoneError = 'لطفا شماره  تماس عددی وارد نمائید!';
             } else {
                 this.phoneError = null;
             }

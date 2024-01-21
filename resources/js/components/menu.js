@@ -38,10 +38,6 @@ export const menuItems = [{
 
         ]
     },
-    {
-        id: 6,
-        isLayout: true
-    },
 
     {
         id: 19,

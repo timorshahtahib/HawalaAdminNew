@@ -46,6 +46,7 @@ Route::post('/updatecurrency', [CurrencyController::class, 'updateCurrency']);
 Route::post('/searchcurrency', [CurrencyController::class, 'searchCurrency']);
 
 Route::apiResource('finance_account',FinanceAccountController::class);
+
 Route::post('/searchfinanceaccount', [FinanceAccountController::class, 'searchFinanceAccount']);
 
 Route::apiResource('orders',OrderController::class);
@@ -103,7 +104,7 @@ Route::apiResource('/exchange',ExchangeController::class);
 Route::post('/buystoretransaction',[ExchangeController::class,'buyStoreExchange']);
 Route::post('/getexchangeforedit',[ExchangeController::class,'getExchangeforEdit']);
 Route::post('/updatebuyexchange',[ExchangeController::class,'updateBuyExchangeTransaction']);
-// Route::post('/updateexchange',[ExchangeController::class,'updateBuyExchangeTransaction']);
+
 Route::post('/deleteexchange',[ExchangeController::class,'deleteBuyExchange']);
 Route::post('/searchexchange',[ExchangeController::class,'getBuySearchTransaction']);
 

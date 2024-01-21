@@ -149,12 +149,13 @@ export default {
                     account:this.AccountType
                 });
                
+                console.log("response",response.data);
                 if (response.data != null) {
-                  console.log('response.data != null')
+                //   console.log('response.data != null')
                   if (response.data.status === false) {
                     if (response.data.message != null) {
-                            this.showalert(response.data.message, "error", "1توجه!");
-                            console.log('response.data.message != null')
+                            this.showalert(response.data.message, "error", "error");
+                            // console.log('response.data.message != null')
                         } else {
                             this.errors = response.data.error;
                             console.log("Errors", this.errors);
@@ -247,80 +248,7 @@ export default {
                 <div class="card-body">
                     <div class="row mb-2">
                     
-                        <!-- edit modal start -->
-                        <div class="col-sm-8">
-                            <div class="text-sm-end">
-                                <b-modal v-model="showModal" title="ویرایش مشتری" title-class="text-black font-18" body-class="p-3" hide-footer>
-                                    <b-alert v-model="isError" class="mb-4" variant="danger" dismissible>{{ this.formError
-        }}</b-alert>
-                                    <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
-                                        <div class="row flex justify-between">
-                                            <div class="row flex justify-between">
-                                                <div class="col-md-6 col-sm-12 col-lg-6">
-                                                    {{ editCust }}
-                                                    <div class="mb-3">
-                                                        <label for="editname">نام</label>
-                                                        <input id="editname" v-model="editname" type="text" class="form-control" placeholder="نام خود را وارد کنید" />
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-12 col-md-6 col-lg-6">
-                                                    <div class="mb-3">
-                                                        <label for="editLastName">نام خانواگی</label>
-                                                        <input id="editLastName" v-model="editLastName" type="text" class="form-control" placeholder="نام خانوادگی خود را وارکنید" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row flex justify-between">
-                                                <div class="col-md-6 col-sm-12 col-lg-6">
-                                                    <div class="mb-3">
-                                                        <label for="editUsername">نام کاربری</label>
-                                                        <input id="editUsername" v-model="editUsername" type="text" class="form-control" placeholder="نام کاربری خود را وارد کنید" />
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6 col-sm-12 col-lg-6">
-                                                    <div class="mb-3">
-                                                        <label for="editPassword">رمز عبور</label>
-                                                        <input id="editPassword" v-model="editPassword" type="editPassword" class="form-control" placeholder="رمز عبور خود را وارد کنید" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row flex justify-between">
-                                                <div class="col-md-6 col-sm-12 col-lg-6">
-                                                    <div class="mb-3">
-                                                        <label for="editImage">عکس</label>
-                                                        <input type="file" ref="editImage" class="form-control" @change="onChange" />
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6 col-sm-12 col-lg-6">
-                                                    <div class="mb-3">
-                                                        <label for="editPhone">شماره تماس</label>
-                                                        <input type="text" v-model="editPhone" class="form-control" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="mb-3">
-                                                    <label for="editAddress">آدرس</label>
-                                                    <textarea v-model="editAddress" id="editAddress" cols="30" rows="4" class="form-control" placeholder="آدرس خود را وارد کنید"></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="mb-1">
-                                                    <label for="editDesc">توضیحات</label>
-                                                    <textarea v-model="editDesc" id="editDesc" cols="30" rows="4" class="form-control" placeholder="توضیحات خود را وارد کنید"></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="text-end pt-5 mt-1 g-2">
-                                            <b-button variant="danger" @click="showModal = false">بستن</b-button>
-                                            <b-button type="submit" variant="success" class="ms-1 ml-2">ساختن</b-button>
-                                        </div>
-                                    </form>
-                                </b-modal>
-                            </div>
-                        </div>
-                        <!-- edit modal end -->
+                  
 
                         <div class="col-sm-12">
                             <div class="text-sm-end">

@@ -132,25 +132,25 @@ class FinanceAccountController extends Controller
      */
     public function update(Request $request,FinanceAccount $financeAccount)
     {
-        $validator = Validator::make($request->all(), [
-            'account_name' => 'required|max:50',
-            'type' => 'in:asset,equity,liablity',
-            'currency'=>'nullable|max:20',
-            'description' => '',
-            'user_id' => '',
-            'status'=>'',
-            'account'=>''
-    ]);
-  
-    if(!$validator->passes()){
-        return response()->json([
-            'error'=>$validator->errors()->toArray(),
-        ]);
-    }else{
-        $financeAccount->update($request->all());
-        return response()->json($financeAccount,201);
+    $validator = Validator::make($request->all(), [
+        'account_name' => 'required|max:50',
+        'type' => 'in:asset,equity,liablity',
+        'currency'=>'nullable|max:20',
+        'description' => '',
+        'user_id' => '',
+        'status'=>'',
+        'account'=>''
+]);
 
-    }
+if(!$validator->passes()){
+    return response()->json([
+        'error'=>$validator->errors()->toArray(),
+    ]);
+}else{
+    $financeAccount->update($request->all());
+    return response()->json($financeAccount,201);
+
+}
     }
 
     /**
@@ -217,7 +217,7 @@ class FinanceAccountController extends Controller
                     ->orWhere('currency', 'like', '%' . $searchTerm . '%')
                     ->orWhere('description', 'like', '%' . $searchTerm . '%')
                     ->orWhere('user_id', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('account', $searchTerm)
+                    ->orWhere('account', 'like', '%' . $searchTerm . '%')
                    ->with(['finance_currency'])->get();
             });
 
