@@ -152,6 +152,6 @@ class ReportFinanceController extends Controller
     
         $result = $getTransaction->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')->get();
     
-        return response()->json(['transaction' => $result]);
+        return response()->json(['transactions' => $result]);
     }
 }

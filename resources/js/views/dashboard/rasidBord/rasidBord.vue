@@ -52,7 +52,7 @@ export default {
 
             // does has an error 
             amount: 0,
-            currency_rate: 1,
+            currency_rate: 0.00,
             equal_amount: 0,
 
             // for setting the current date
@@ -74,8 +74,8 @@ export default {
             edit_rasid_bord: '',
             // edit amount
             editAmount: "",
-            editCurrency_rate: '',
-            editEqual_amount: '',
+            editCurrency_rate: 0.00,
+            editEqual_amount: 0,
             editDesc: '',
             editDate: '',
             editDateString: '',
@@ -428,7 +428,7 @@ export default {
                                         </div>
                                         <div class="col-sm-8 col-xs-12">
                                             <label for="name">مقدار پول :‌</label>
-                                            <input type="number" id="amount" v-model="editAmount" @input="editCalculateEqualAmount" class="form-control required">
+                                            <input type="number"  step="0.01" id="amount" v-model="editAmount" @input="editCalculateEqualAmount" class="form-control required">
                                             <span class="text-danger error-text amount_error"></span>
                                         </div>
                                     </div>
@@ -446,7 +446,7 @@ export default {
                                     <div class="row mb-2">
                                         <div class="col-sm-4 col-xs-12">
                                             <label for="name">نرخ ارز :‌</label>
-                                            <input type="number" id="editCurrency_rate" v-model="editCurrency_rate" @input="editCalculateEqualAmount" class="form-control required">
+                                            <input type="number" step="0.01" id="editCurrency_rate" v-model="editCurrency_rate" @input="editCalculateEqualAmount" class="form-control required">
                                             <span class="text-danger error-text currency_rate_error"></span>
 
                                         </div>
@@ -537,7 +537,7 @@ export default {
                                     </div>
                                     <div class="col-sm-8 col-xs-12">
                                         <label for="name">مقدار پول :‌</label>
-                                        <input type="number" id="amount" v-model="amount" @input="calculateEqualAmount" class="form-control required">
+                                        <input type="number" id="amount"  v-model="amount" @input="calculateEqualAmount" class="form-control required">
                                         <span class="text-danger error-text amount_error"></span>
                                     </div>
                                 </div>
@@ -557,7 +557,7 @@ export default {
                                 <div class="row">
                                     <div class="col-sm-4 col-xs-12">
                                         <label for="name">نرخ ارز :‌</label>
-                                        <input type="number" id="currency_rate" v-model="currency_rate" @input="calculateEqualAmount" class="form-control required">
+                                        <input type="number" step="0.01" id="currency_rate" v-model="currency_rate" @input="calculateEqualAmount" class="form-control required">
                                         <span class="text-danger error-text currency_rate_error"></span>
                                     </div>
                                     <div class="col-sm-8 col-xs-12">
