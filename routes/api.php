@@ -48,6 +48,8 @@ Route::post('/searchcurrency', [CurrencyController::class, 'searchCurrency']);
 Route::apiResource('finance_account',FinanceAccountController::class);
 
 Route::post('/searchfinanceaccount', [FinanceAccountController::class, 'searchFinanceAccount']);
+// filter finance Account by type
+Route::post('/financetypefilter', [FinanceAccountController::class, 'filterfinanceAccount']);
 
 Route::apiResource('orders',OrderController::class);
 Route::post('/searchorder', [OrderController::class, 'searchOrder']);

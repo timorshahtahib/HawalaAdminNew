@@ -97,7 +97,7 @@ export default {
             this.getAccountForEdit(this.newExpense.expense_acount.id);
             this.getBanksForEdit(this.newExpense.expense_bank.id)
             this.editExpenseExpenseCurrencyModel = this.newExpense.expense_currency.id;
-            // console.log("this.editExpenseExpenseCurrencyModel ",this.editExpenseExpenseCurrencyModel );
+            console.log("this.newExpense ",this.newExpense );
         },
 
         // showing data in the table
@@ -169,6 +169,7 @@ export default {
         // for updating the currency and dakhls in modal
         async updateEditedAccount() {
             try {
+             
                 const response = await axios.get('/api/financeAccWithCurrency/' + this.editfinmodel);
                 this.editExpenseCurrecies = response.data.financeAccCurrencies;
                 this.newExpense.expense_currency.id = this.editExpenseCurrecies.id;

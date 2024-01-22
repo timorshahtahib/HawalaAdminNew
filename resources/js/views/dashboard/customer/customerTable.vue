@@ -22,13 +22,13 @@
 
                             <div class="mb-3">
                                 <label for="editname">نام</label>
-                                <input id="editname" v-model="editname" type="text" class="form-control" placeholder="نام خود را وارد کنید" required />
+                                <input id="editname" v-model="editname" type="text" class="form-control" placeholder="نام خود را وارد کنید" />
                             </div>
                         </div>
                         <div class="col-sm-12 col-md-6 col-lg-6">
                             <div class="mb-3">
                                 <label for="editLastName">نام خانواگی</label>
-                                <input id="editLastName" v-model="editLastName" type="text" class="form-control" placeholder="نام خانوادگی خود را وارکنید" required />
+                                <input id="editLastName" v-model="editLastName" type="text" class="form-control" placeholder="نام خانوادگی خود را وارکنید" />
                             </div>
                         </div>
                     </div>
@@ -42,17 +42,14 @@
                         <div class="col-md-6 col-sm-12 col-lg-6">
                             <div class="mb-3">
                                 <label for="editPhone">شماره تماس</label>
-                                <input type="text" v-model="editPhone" class="form-control" @blur="phoneValidation('editPhone')" required />
-                                lklk';l
-                                <span class="text-danger error-text afrad_error" v-if="this.editphoneError">{{this.editphoneError}}</span>
-
+                                <input type="text" v-model="editPhone" class="form-control" />
                             </div>
                         </div>
                     </div>
                     <div class="col-12">
                         <div class="mb-3">
                             <label for="editAddress">آدرس</label>
-                            <textarea v-model="editAddress" id="editAddress" cols="30" rows="4" class="form-control" placeholder="آدرس خود را وارد کنید" required></textarea>
+                            <textarea v-model="editAddress" id="editAddress" cols="30" rows="4" class="form-control" placeholder="آدرس خود را وارد کنید"></textarea>
                         </div>
                     </div>
                     <div class="col-12">
@@ -149,9 +146,7 @@
 </template>
 
 <script>
-import {
-    ref
-} from 'vue';
+
 import axios from 'axios';
 import Swal from 'sweetalert2'
 export default {
@@ -226,9 +221,9 @@ export default {
         },
         async editCustomer(id) {
             const response = await axios.get(`/api/customer/${id}`);
-            this.editCust = response.data;
+            this.editCust = response.data.customer;
             this.openEditModal();
-            console.log("editCustomer", this.editCust);
+            // console.log("editCustomer", this.editCust);
             this.editname = this.editCust.name;
             this.editLastName = this.editCust.last_name;
             this.editPhone = this.editCust.phone;

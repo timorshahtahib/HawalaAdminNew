@@ -53,7 +53,7 @@
     <table class="table table-centered table-nowrap">
         <thead>
             <tr>
-                <th scope="col">#</th>
+                <th scope="col">آیدی</th>
                 <th scope="col">واحد پولی</th>
                 <th scope="col">نشان</th>
                 <th scope="col">وضعیت</th>

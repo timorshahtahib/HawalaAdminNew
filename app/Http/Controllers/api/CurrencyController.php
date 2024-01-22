@@ -195,9 +195,10 @@ class CurrencyController extends Controller
     public function searchCurrency(Request $request){
         $query=$request->input('query');
         $searchTerm = $request->input('query');
-          $currency =Currency::query()
+          $currency =Currency::query()->where('status',1)
           ->Where('name',  'like', '%' . $searchTerm . '%')
-          ->orWhere('sign',  'like', '%' . $searchTerm . '%')->get();
+          ->orWhere('sign',  'like', '%' . $searchTerm . '%')
+          ->orWhere('id',  'like', '%' . $searchTerm . '%')->get();
           
           return response()->json($currency);
 }

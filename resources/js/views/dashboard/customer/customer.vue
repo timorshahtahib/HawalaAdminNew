@@ -213,6 +213,8 @@ export default {
                         this.address = '';
                         this.desc = '';
                         this.showModal = false;
+
+                        // this.customers.push(response.data.)
                         this.showalert("مشتری با موفقیت ثبت شد!", 'success', 'success');
                         // location.reload();
                        

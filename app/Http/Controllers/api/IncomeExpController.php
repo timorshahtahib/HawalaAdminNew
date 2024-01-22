@@ -363,7 +363,6 @@ class IncomeExpController extends Controller
     public function updateExpense(Request $request){
 
         $validator = Validator::make($request->all(), [
-                "id"=>"required|max:20|exists:income_expense,id",
                 "finance_acount_id"=>"required|max:2|exists:finance_account,id",
                 "amount"=>"required|max:10",
                 "date"=>"required|string|max:15",
@@ -395,7 +394,6 @@ class IncomeExpController extends Controller
             DB::beginTransaction();
 
 
-            // dd($request);
             try{
                 ////transaction chek number generate
                 // $check_number = TransactionController::new_check_number();

@@ -1,8 +1,55 @@
 <template>
+
     
-<div class="col-sm-4 bg-red" style="
-    margin-top: -52px;
-">
+    <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title mb-4">جستجوی حسابات</h4>
+            <form class="repeater" enctype="multipart/form-data">
+              <div>
+                <div  class="row">
+
+
+                  <div class="mb-3 col-lg-2">
+                    <label for="email">نوع  بانک</label>
+                    <select class="form-control form-control-lg  required" v-model="type_of_banks">
+                        <option value="all">All</option>
+                        <option value="asset">Assets</option>
+                        <option value="equity">Equity</option>
+                        <option value="liablity">Liablity</option>
+                    </select>
+                  </div>
+                  <div class="mb-3 col-lg-2">
+                    <label for="email">تاریخ شروع</label>
+                    <date-picker @select="select_start_date" mode="single" type="date" locale="fa" :column="1" required>
+                    </date-picker>
+                  </div>
+
+                  <div class="mb-3 col-lg-2">
+                    <label for="email">تاریخ ختم</label>
+                    <date-picker @select="select_end_date" mode="single" type="date" locale="fa" :column="1" required>
+                    </date-picker>
+                  </div>    
+                  <div class="col-lg-2 align-self-center">
+                     <div class="d-grid">
+                    <input
+                      type="button"
+                      class="btn btn-primary btn-block"
+                      value="جستجو"
+                      @click="financetypefilter"
+                    />
+                     </div>
+                  </div>
+                </div>
+              </div>
+
+            </form>
+          </div>
+          <!-- end card-body -->
+        </div>
+        <!-- end card -->
+      </div>
+<div class="col-sm-12 bg-red" >
     <div class="search-box me-2 mb-2 d-inline-block">
         <div class="position-relative">
             <input type="text" class="form-control" v-model="searchQuery" placeholder="جستجوی مشتری..." @input="searchData" />
@@ -149,8 +196,12 @@
 <script>
 import axios from 'axios';
 import Swal from 'sweetalert2'
+import DatePicker from '@alireza-ab/vue3-persian-datepicker';
 export default {
     name: 'customerTable',
+    components: {
+        DatePicker
+    },
     data() {
         return {
             edit_showModal: false,
@@ -166,6 +217,10 @@ export default {
             editAccountType: '',
             errors: {},
            
+              // search
+              type_of_banks:'',
+            start_date:'',
+            end_date:'',
             // pagination
             currentPage: 1,
             totalPages: 1,
@@ -175,6 +230,7 @@ export default {
    
     mounted() {
         this.getFinanceAccount();
+        this.type_of_banks='all'
     },
 
     methods: {
@@ -332,9 +388,15 @@ export default {
             const response = await axios.post('/api/searchfinanceaccount', {
                 query: this.searchQuery
             });
-            // console.log(response.data);
             this.financeAccounts = response.data;
-            // console.log(this.searchQuery.length);
+        },
+        async financetypefilter() {
+            const response = await axios.post('/api/financetypefilter', {
+                type:this.type_of_banks ,
+                // start_date:this.start_date,
+                // end_date:this.end_date,
+            });
+            this.financeAccounts = response.data.financeAccounts;
         },
     },
 }

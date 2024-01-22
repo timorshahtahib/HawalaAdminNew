@@ -2,7 +2,6 @@
 import Layout from "../../../layouts/main.vue";
 import PageHeader from "../../../components/page-header.vue";
 import axios from 'axios';
-// import SweetAlert from '../../../SweetAlert.vue';
 import Swal from 'sweetalert2'
 import financeAccountTable from "./financeAccountTable.vue";
 import DatePicker from '@alireza-ab/vue3-persian-datepicker';
@@ -42,15 +41,12 @@ export default {
             AccountType:'',
             errors: {},
 
-            // search
-            type_of_banks:'',
-            start_date:'',
-            end_date:'',
+          
         };
     },
     mounted() {
         this.getFinanceAccounts();
-        this.type_of_banks='all'
+      
 
     },
     methods: {
@@ -149,7 +145,7 @@ export default {
                     account:this.AccountType
                 });
                
-                console.log("response",response.data);
+                // console.log("response",response.data);
                 if (response.data != null) {
                 //   console.log('response.data != null')
                   if (response.data.status === false) {
@@ -185,7 +181,7 @@ export default {
             }
        
         },
-      
+     
     },
 };
 </script>
@@ -196,54 +192,7 @@ export default {
 
     <div class="row">
         <div class="col-12">
-            <div class="col-12">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="card-title mb-4">جستجوی معامله</h4>
-                    <form class="repeater" enctype="multipart/form-data">
-                      <div>
-                        <div  class="row">
-    
-    
-                          <div class="mb-3 col-lg-2">
-                            <label for="email">نوع  بانک</label>
-                            <select class="form-control form-control-lg  required" v-model="type_of_banks">
-                                <option value="all">All</option>
-                                <option value="asset">Assets</option>
-                                <option value="equity">Equity</option>
-                                <option value="liablity">Liablity</option>
-                            </select>
-                          </div>
-                          <div class="mb-3 col-lg-2">
-                            <label for="email">تاریخ شروع</label>
-                            <date-picker @select="select_start_date" mode="single" type="date" locale="fa" :column="1" required>
-                            </date-picker>
-                          </div>
-    
-                          <div class="mb-3 col-lg-2">
-                            <label for="email">تاریخ ختم</label>
-                            <date-picker @select="select_end_date" mode="single" type="date" locale="fa" :column="1" required>
-                            </date-picker>
-                          </div>    
-                          <div class="col-lg-2 align-self-center">
-                             <div class="d-grid">
-                            <input
-                              type="button"
-                              class="btn btn-primary btn-block"
-                              value="جستجو"
-                              @click="searchBanksByType"
-                            />
-                             </div>
-                          </div>
-                        </div>
-                      </div>
-    
-                    </form>
-                  </div>
-                  <!-- end card-body -->
-                </div>
-                <!-- end card -->
-              </div>
+           
             <div class="card">
                 <div class="card-body">
                     <div class="row mb-2">
