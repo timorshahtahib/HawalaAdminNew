@@ -48,16 +48,16 @@
         </div>
     </div>
 </div>
-<div class="table-responsive" v-if="currencies.length > 0">
+<div class="table-responsive" v-if="currencies.length">
     
     <table class="table table-centered table-nowrap">
         <thead>
             <tr>
-                <th scope="col">آیدی</th>
-                <th scope="col">واحد پولی</th>
-                <th scope="col">نشان</th>
-                <th scope="col">وضعیت</th>
-                <th scope="col">اکشن</th>
+                <th>آیدی</th>
+                <th>واحد پولی</th>
+                <th>نشان</th>
+                <th>وضعیت</th>
+                <th>اکشن</th>
             </tr>
         </thead>
         <tbody>
@@ -140,7 +140,7 @@ export default {
                 title: title,
                 text: text,
                 icon: icon,
-                confirmButtonText: 'خوب'
+                confirmButtonText: 'بستن'
             })
         },
 
@@ -192,7 +192,7 @@ export default {
             if (response.data != null) {
                 if (response.data.status === false) {
                     if (response.data.message != null) {
-                        this.showalert(response.data.message, "error", "error");
+                        this.showalert(response.data.message, "موفقانه", "error");
                     } else {
                         this.errors = response.data.error;
 
@@ -224,12 +224,12 @@ export default {
                     const response = await axios.delete(`/api/currencies/${id}`);
                     this.customerSearch = response.data;
                     if (response.status === 204) {
-                        this.showalert('واحد پولی با موفقیت حذف شد!', 'ادامه دهید', 'success');
+                        this.showalert('واحد پولی با موفقیت حذف شد!', 'موفقانه', 'success');
                         this.getCurrencies();
                     }
 
                 } catch (error) {
-                    this.showalert('واحد پولی با موفقیت حذف نشد!', 'ادامه دهید', 'error');
+                    this.showalert('واحد پولی با موفقیت حذف نشد!', 'نا موفقانه', 'error');
                 }
             }
         },

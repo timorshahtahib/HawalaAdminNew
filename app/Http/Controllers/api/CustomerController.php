@@ -53,7 +53,7 @@ class CustomerController extends Controller
                 'type'=>'',
                 'acount_currency'=>'',
                 'desc'=>'',
-                'status'=>'',
+                'status'=>'1',
         ],
         [
             'name.required' =>'نام ضروری است',
@@ -94,42 +94,112 @@ class CustomerController extends Controller
         return response()->json(["customer"=>$customer,"balances"=>$blances],200);
     }
 
-    public function update(Request $request,Customer $customer)
-    {
-        $validator = Validator::make($request->all(),[
-            'name' => 'required',
-            'last_name' => 'required',
-            'cu_number'=>'',
-            'phone' => 'required',
-            // 'username' => 'required',
-            // 'password'=>'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:50',
-            'address'=>'',
-            'token' => '',
-            'type'=>'',
-            'acount_currency'=>'',
-            'desc'=>'',
-            'status'=>'',
-    ],
-    [
-        'name.required' =>'نام ضروری است',
-        'last_name.required'=>'نام خانوادگی ضروری است.',
-        'phone.required'=>'شماره تماس ضروری است',
-    ]);
-        if(!$validator->passes()){
-            return response()->json([
-                'status'=>false,
-                'error'=>$validator->errors()->toArray(),
-            ]);
-        }else{
-            $out_put = $customer->update($request->all());
-            return response()->json([ 'status'=>true,'message' => 'User update successfully!', 'new_data' => $out_put], 200);
-        }
+    // public function updateCustomer(Request $request)
+    // {
+    //     try {
+    //         $validator = Validator::make($request->all(),[
+    //             'name' => 'required',
+    //             'last_name' => 'required',
+    //             'cu_number'=>'nullable',
+    //             'phone' => 'required',
+    //             'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:50',
+    //             'address'=>'nullable',
+    //             'token' => 'nullable',
+    //             'type'=>'nullable',
+    //             'desc'=>'',
+    //     ]);
+    //         if(!$validator->passes()){
+    //             // dd("Hello");
+    //             return response()->json([
+    //                 'status'=>false,
+    //                 'error'=>$validator->errors()->toArray(),
+    //             ]);
+    //         }
+
+    //         $customer_values=[
+    //         'name' => $request->name,
+    //         'last_name' => $request->last_name,
+    //         'cu_number'=>$request->cu_number,
+    //         'phone' => $request->phone,
+    //         'image' => $request->image,
+    //         'address'=>$request->address,
+    //         'type'=>'',
+    //         'acount_currency'=>$request->acount_currency,
+    //         'desc'=>$request->desc
+    //         ];
+    //             $out_put = Customer::where('id',$request->id)->update($customer_values);
+
+    //             if($out_put){
+    //                 $output_data = Currency::where('id',$request->id)->first();
+    //                 return  response()->json([
+    //                     'status'=>true,
+    //                     'new_data'=>$out_put,
+    //                     'message'=>'اطلاعات موفقانه آپدیت شد.',
+    //                 ]);
         
-     
+    //             }else{
+           
+    //                 return  response()->json([
+    //                     'status'=>false,
+    //                     'message'=>'عملیات انجام نشد',
+    //                 ]);
+    //             }
+         
+    //     } catch (Throwable $e) {
+    //         return response()->json($e->getMessage());
+    //     }
+    // }
+
+    public function updateCustomer(Request $request)
+    {
+        try {
+            // $validator = Validator::make($request->all(), [
+            //     'name' => 'required',
+            //     'last_name' => 'required',
+            //     'cu_number' => 'nullable',
+            //     'phone' => 'required',
+            //     'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:50',
+            //     'address' => 'nullable',
+            //     'token' => 'nullable',
+            //     'type' => 'nullable', // or provide a specific rule if 'type' is required
+            //     'desc' => '',
+            // ],
+            // [
+            //     'name.required' =>'نام ضروری است',
+            //     'last_name.required'=>'نام خانوادگی ضروری است.',
+            //     'phone.required'=>'شماره تماس ضروری است',
+            // ]);
+    
+            // if (!$validator->passes()) {
+            //     return response()->json([
+            //         'status' => false,
+            //         'error' => $validator->errors()->toArray(),
+            //     ]);
+            // }
+    
+            $out_put = Customer::where('id', $request->id)->update($request->all());
+    
+            if ($out_put) {
+                $output_data = Customer::where('id', $request->id)->first(); // Change to Customer model
+                return response()->json([
+                    'status' => true,
+                    'new_data' => $out_put,
+                    'message' => 'اطلاعات موفقانه آپدیت شد.',
+                ]);
+    
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'عملیات انجام نشد',
+                ]);
+            }
+    
+        } catch (Throwable $e) {
+            return response()->json($e->getMessage());
+        }
     }
-
-
+    
+    
     public function ChangeUsernameFunc(Request $request, $id){
     $customer =  Customer::where('id', $id)->where('status', 1)->first();
     if (!$customer) {

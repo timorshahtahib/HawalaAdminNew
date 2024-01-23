@@ -300,7 +300,7 @@ export default {
                 title: title,
                 text: text,
                 icon: icon,
-                confirmButtonText: 'خوب'
+                confirmButtonText: 'بستن'
             })
         },
         async editfinanceAccount(id) {
@@ -351,13 +351,13 @@ export default {
                         this.user_id = '';
                         this.status = '';
                         this.edit_showModal = false;
-                        this.showalert("آپدیت حساب", "حساب موفقانه آپدیت شد", "success");
+                        this.showalert("حساب با موفقبت ویرایش شد", "موفقانه", "success");
                     }
 
                 }
             } catch (error) {
                 console.log(error);
-                this.showalert('حساب با موفقیت ویرایش نشد!', "error", "error");
+                this.showalert('حساب با موفقیت ویرایش نشد!', "ناموفقانه", "error");
             }
             this.edit_showModal = false;
             this.getFinanceAccount();
@@ -373,13 +373,13 @@ export default {
                     const response = await axios.delete(`/api/finance_account/${id}`);
                     this.financeAccounts = response.data;
                     if (response.status === 204) {
-                        this.showalert('حساب با موفقیت حذف شد!', 'ادامه دهید', 'success');
+                        this.showalert('حساب با موفقیت حذف شد!', 'موفقانه', 'success');
                         this.getFinanceAccount();
                     }
 
                 } catch (error) {
-                    console.log("inside catch");
-                    this.showalert('حساب با موفقیت حذف نشد!', 'ادامه دهید', 'error');
+                    // console.log("inside catch");
+                    this.showalert('حساب با موفقیت حذف نشد!', 'ناموفقانه', 'error');
                 }
             }
         },

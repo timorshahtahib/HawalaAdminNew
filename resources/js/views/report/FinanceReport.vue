@@ -13,6 +13,8 @@ export default {
       title: "گزارشات",
       showModal: false,
       bank_balance:[],
+      currency_count:0,
+      finance_count:0,
       // pagination
       currentPage: 1,
       totalPages: 1,
@@ -20,9 +22,7 @@ export default {
     };
   },
    mounted() {
-    setTimeout(() => {
-      this.showModal = true;
-    }, 1500);
+ 
   },
   mounted() {
     this.getBanksBalance();
@@ -32,9 +32,12 @@ export default {
             // console.log("getCustomerForEdit",id);
             try {
                 const response = await axios.get(`/api/bankbalance?page=${page}&limit=${this.limit}`);
-                this.bank_balance = response.data.bank_balance;
+                this.bank_balance = response.data.bank_balance.data;
                 this.totalPages = response.data.bank_balance.last_page;
+                this.currency_count=response.data.currency_counts;
+                this.finance_count=response.data.financeAcc_count;
                 this.currentPage = page;
+               
             } catch (error) {
                 console.log(error.message);
             }
@@ -70,7 +73,7 @@ export default {
                   <div class="d-flex">
                     <div class="flex-grow-1">
                       <p class="text-muted fw-medium">تعداد حسابات</p>
-                      <h4 class="mb-0">1,235</h4>
+                      <h4 class="mb-0">{{finance_count}}</h4>
                     </div>
             
                     <div class="mini-stat-icon avatar-sm align-self-center rounded-circle bg-primary">
@@ -90,7 +93,7 @@ export default {
                   <div class="d-flex">
                     <div class="flex-grow-1">
                       <p class="text-muted fw-medium">تعداد واحدات پولی</p>
-                      <h4 class="mb-0">5</h4>
+                      <h4 class="mb-0">{{currency_count}}</h4>
                     </div>
             
                     <div class="mini-stat-icon avatar-sm align-self-center rounded-circle bg-primary">
@@ -145,7 +148,7 @@ export default {
                     
                       <th class="align-middle">آیدی</th>
                       <th class="align-middle">نام حساب</th>
-                      <th class="align-middle">واحد پولی</th>
+                      <th class="align-middle">واحدات پولی</th>
                       <th class="align-middle">تمام رسیدها</th>
                       <th class="align-middle">تمام بردها</th>
                       <th class="align-middle">بیلانس</th>
@@ -154,18 +157,16 @@ export default {
                   </thead>
                   <tbody>
                     <tr v-for="bank in bank_balance" :key="bank.id">
-                  
-                      <td>
-                      
-                        <a href="javascript: void(0);" class="text-body fw-bold">1</a>
-                      </td>
+                      <td>{{bank.id}}</td>
                       <td>{{bank.account_name}}</td>
                       <td>{{bank.currencyname}}</td>
-                      <td>{{bank.total_rasid}}</td>
-                      <td>{{bank.total_bord}}</td>
-                      <td>{{bank.blance}}</td>
-                      
-                     
+                      <td> <span class="badge  font-size-13" :class="bank.total_rasid > 0 ? 'bg-success' : 'bg-warning' "> {{bank.total_rasid}}</span></td>
+                      <td><span class="badge  font-size-13" :class="bank.total_bord > 0 ? 'bg-danger' :  'bg-warning' "> {{bank.total_bord}}</span></td>
+                      <td style="direction:rtl !important">
+                        <span class="badge  font-size-13" :class="bank.blance > 0 ? 'bg-success' : bank.blance === 0 ? 'bg-warning' : 'bg-danger'">
+                          {{bank.blance}}
+                        </span>
+                      </td>
                       <td>
                         <button
                           type="button"

@@ -83,7 +83,7 @@ export default {
             const response = await axios.get(`/api/customer/${this.$route.params.id}`);
             this.customer = response.data.customer;
             this.customerbalances = response.data.balances
-            console.log("cutomBalances",this.customerbalances);
+            // console.log("cutomBalances",this.customerbalances);
         } catch (error) {
             console.error(error.message);
         }
@@ -122,7 +122,7 @@ export default {
             try {
                 const response = await axios.post(`/api/customerinfo`,{id:this.$route.params.id});
                 this.transactionslist = response.data.transactions?.data;
-                this.orderslist = response.data.orders;
+                this.orderslist = response.data?.orders;
                 this.rasid = response.data.rasid;
                 this.bord = response.data.bord;
                 this.totalAmount = response.data.total_amount;
@@ -148,7 +148,7 @@ export default {
         async editCustomer(id) {
             try {
                 const response = await axios.get(`/api/customer/${id}`);
-                this.editCust = response.data;
+                this.editCust = response.data.customer;
                 this.openEditModal(this.editCust);
                 //    console.log("editCustomer",this.editCust);
                 this.editname = this.editCust.name;
@@ -167,12 +167,11 @@ export default {
         },
         async editCustomerSubmitForm(id) {
             try {
-                const responseUpdate = await axios.put(`/api/customer/${id}`, {
+                const responseUpdate = await axios.post(`/api/updatecustomer`, {
+                    id:id,
                     name: this.editname,
                     last_name: this.editLastName,
                     phone: this.editPhone,
-                    // username: this.editUsername,
-                    // password: this.editPassword,
                     image: this.ediPhoto,
                     address: this.editAddress,
                     desc: this.editDesc,
@@ -299,7 +298,7 @@ export default {
             const response = await axios.get(`/api/transaction/${id}`);
             this.editTransaction = response.data;
             this.openEditModaltransaction();
-            console.log("this.editTransaction",this.editTransaction);
+            // console.log("this.editTransaction",this.editTransaction);
             this.edit_rasid_bord = this.editTransaction[0].rasid_bord
             this.editAmount = this.editTransaction[0].amount;
             this.editCurrency_rate = this.editTransaction[0].currency_rate;
@@ -474,8 +473,9 @@ export default {
             
                                             <tr>
                                                 <th scope="row">آدرس :</th>
-                                                <td v-if="customer.address > 0">{{customer.address}}</td>
-                                                <td v-else>آدرس وجود ندارد</td>
+                                                <td>{{customer.address}}</td>
+                                                <!-- <td v-if="customer.address > 0">{{customer.address}}</td> -->
+                                                <!-- <td v-else>آدرس وجود ندارد</td> -->
                                             </tr>
                                             <tr>
                                                 <th scope="row">توضیحات :</th>
@@ -500,7 +500,7 @@ export default {
             <!-- end card -->
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title ">بلانس</h4>
+                    <h4 class="card-titl badge  font-size-20 bg-primary">بیلانس</h4>
                     <div class="table-responsive mb-0">
                       <div>
                         <table class="table table-centered table-nowrap">
@@ -515,9 +515,13 @@ export default {
                           <tbody>
                             <tr v-for="(currency, key) in customerbalances" :key="key">
                               <td>{{ key }}</td>
-                              <td>{{ currency.rasid }}</td>
-                              <td>{{ currency.bord }}</td>
-                              <td>{{ currency.balance }}</td>
+                              <td>
+                                <span class="badge  font-size-13" :class="currency.rasid > 0 ? 'bg-success' : 'bg-danger'" >
+                                  {{ currency.rasid }}
+                                </span>
+                                </td>
+                              <td><span class="badge  font-size-13" :class="currency.bord > 0 ? 'bg-success' : 'bg-danger'" >{{ currency.bord }}</span></td>
+                              <td><span class="badge  font-size-13" :class="currency.balance > 0 ? 'bg-success' : 'bg-danger'" >{{ currency.balance }}</span></td>
                             </tr>
                           </tbody>
                         </table>
@@ -637,7 +641,7 @@ export default {
                                                 <div class="col-xl-12">
                                                     <!-- <h5>Archive</h5> -->
 
-                                                    <div class="mt-5" v-if="orderslist.length">
+                                                    <div class="mt-5" v-if="orderslist?.length">
                                                         <hr class="mt-2" />
                                                         <div class="table-responsive">
                                                             <table class="table table-centered table-nowrap">

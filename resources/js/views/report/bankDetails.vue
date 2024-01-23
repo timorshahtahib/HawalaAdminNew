@@ -170,24 +170,14 @@ export default {
         },
 
         async getCustomers(page =1) {
-            // try {
-            //     const response = await axios.get(`/api/customer?page=${page}&limit=${this.limit}`);
-            //     this.customers = response.data.customers.data;
-            //     console.log("Customers",this.customers.data);
-              
-            // } catch (error) {
-            //     console.error('Error fetching customers:', error);
-            // }
+       
             try {
                 const response = await axios.get(`/api/customer?page=${page}&limit=${this.limit}`);
                 this.customers = response.data.customers.data;
-
-                console.log("Customers",this.customers.data);
               
-
                 this.totalPages = response.data.customers.last_page;
                 this.currentPage = page; // Update the current page
-                console.log(this.customers);
+                // console.log(this.customers);
 
             } catch (error) {
                 console.error('Error fetching customers:', error);
@@ -223,23 +213,6 @@ export default {
             let d= this.$route.params.id
             const response = await axios.get('/api/bankdetails/'+d);
             this.transactions = response.data.banksTransaction;
-
-            // console.log("this.transactions",this.transactions);
-
-            // const response = await axios.post(`/api/bankdetails?page=${page}&limit=${this.limit}`,{id:d});
-            // this.transactions = response.data.transactions;
-            // // this.totalPages = response.data.transactions.last_page;
-            // this.currentPage = page; // Update the current page
-            // console.log("this response",response);
-
-            // console.log("Id ii",d);
-
-            // const response = await axios.post(`/api/bankdetails?page=${page}&limit=${this.limit}`,{id:d});
-            // this.transactions = response.data.transactions.data;
-            // this.totalPages = response.data.transactions.last_page;
-            // this.currentPage = page; // Update the current page
-            // console.log("this.transactions",this.transactions);
-
         },
         prevPage() {
             if (this.currentPage > 1) {

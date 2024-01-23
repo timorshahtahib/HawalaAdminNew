@@ -248,7 +248,7 @@ class TransactionController extends Controller
                 return  response()->json([
                     'status'=>true,
                     'new_data'=>$output_data,
-                    'message'=>'اطلاعات موفقانه آپدیت شد.',
+                    'message'=>'اطلاعات موفقانه ویرایش شد.',
                 ]);
 
             }else{
@@ -340,7 +340,7 @@ class TransactionController extends Controller
                 return  response()->json([
                     'status'=>true,
                     'new_data'=>$output_data,
-                    'message'=>'اطلاعات موفقانه آپدیت شد.',
+                    'message'=>'اطلاعات موفقانه ویرایش شد.',
                 ]);
 
             }else{

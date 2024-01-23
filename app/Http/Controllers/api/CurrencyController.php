@@ -186,7 +186,6 @@ class CurrencyController extends Controller
     public function destroy(Request $request,$id)
     {
         $currency = Currency::findOrFail($id);
-        $currency->status = $request->input('status');
         $currency->update(['status'=>0]);
         return response()->json(['message' => 'Currency deleted successfully', 'data' => $currency], 204);
     }

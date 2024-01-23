@@ -1,4 +1,84 @@
 <template>
+    <div class="col-sm-12">
+        <div class="text-sm-end">
+            <button type="button" class="btn btn-success btn-rounded mb-2 me-2" @click="openModal">
+                <i class="mdi mdi-plus me-1"></i>مشتری جدید
+            </button>
+            <b-modal v-model="showModal" title="اضافه کردن مشتری جدید" title-class="text-black font-18" body-class="p-3" hide-footer>
+                <b-alert v-model="isError" class="mb-4" variant="danger" dismissible>{{ this.formError
+}}</b-alert>
+                <form @submit.prevent="storeCustomer" enctype="multipart/form-data">
+                    <div class="row flex justify-between">
+                        <div class="row flex justify-between">
+                            <div class="col-md-6 col-sm-12 col-lg-6">
+                                <div class="mb-3">
+                                    <label for="name">نام</label>
+                                    <input id="name" v-model="name" type="text" class="form-control" placeholder="نام خود را وارد کنید" @blur="phoneValidation('name')" required/>
+                                </div>
+                                <!-- <span class="text-danger error-text afrad_error" v-if="nameError">{{errors.name}}</span> -->
+                            </div>
+                            <div class="col-sm-12 col-md-6 col-lg-6">
+                                <div class="mb-3">
+                                    <label for="last_name">نام خانواگی</label>
+                                    <input id="lastName" v-model="last_name" type="text" class="form-control" placeholder="نام خانوادگی خود را وارکنید" required/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row flex justify-between">
+                            <div class="col-md-6 col-sm-12 col-lg-6">
+                                <div class="mb-3">
+                                    <label for="username">نام کاربری</label>
+                                    <input id="username" v-model="username" type="text" class="form-control" placeholder="نام کاربری خود را وارد کنید" required/>
+                                    <span class="text-danger error-text afrad_error" v-if="errors.username">{{errors.username[0]}}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-md-6 col-lg-6">
+                                <div class="mb-3">
+                                    <label for="password">رمز عبور</label>
+                                    <input id="password" v-model="password" type="password" class="form-control" placeholder="رمز خود را وارکنید" required/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row flex justify-between">
+                            <div class="col-md-6 col-sm-12 col-lg-6">
+                                <div class="mb-3">
+                                    <label for="image">عکس</label>
+                                    <input type="file" ref="image" class="form-control" @change="handleFileChange" />
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-12 col-lg-6">
+                                <div class="mb-3">
+                                    <label for="phone">شماره تماس</label>
+                                    <input type="text" v-model="phone" class="form-control" required @blur="phoneValidation('phone')"/>
+                                    <span class="text-danger error-text afrad_error" v-if="errors.phone">{{errors.phone[0]}}</span>
+                                 
+                                    <span class="text-danger error-text afrad_error" v-if="this.phoneError">{{this.phoneError}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="address">آدرس</label>
+                                <textarea v-model="address" id="address" cols="30" rows="4" class="form-control" placeholder="آدرس خود را وارد کنید" required></textarea>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-1">
+                                <label for="desc">توضیحات</label>
+                                <textarea v-model="desc" id="desc" cols="30" rows="4" class="form-control" placeholder="توضیحات خود را وارد کنید"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-end pt-5 mt-1 g-2">
+                        <b-button variant="danger" @click="closeModal">بستن</b-button>
+                        <b-button type="submit" variant="success" class="ms-1 ml-2">ساختن</b-button>
+                    </div>
+                </form>
+            </b-modal>
+        </div>
+    </div>
 <div class="col-sm-4 bg-red" style="
     margin-top: -52px;
 ">
@@ -12,23 +92,23 @@
 <!-- edit modal start -->
 <div class="col-sm-8">
     <div class="text-sm-end">
-        <b-modal v-model="showModal" title="ویرایش مشتری" title-class="text-black font-18" body-class="p-3" hide-footer>
+        <b-modal v-model="editshowModal" title="ویرایش مشتری" title-class="text-black font-18" body-class="p-3" hide-footer>
             <b-alert v-model="isError" class="mb-4" variant="danger" dismissible>{{ this.formError
 }}</b-alert>
-            <form @submit.prevent="editCustomerForm(editCust.id)" enctype="multipart/form-data">
+            <form @submit.prevent="editSubmitCustomerForm" enctype="multipart/form-data">
                 <div class="row flex justify-between">
                     <div class="row flex justify-between">
                         <div class="col-md-6 col-sm-12 col-lg-6">
 
                             <div class="mb-3">
                                 <label for="editname">نام</label>
-                                <input id="editname" v-model="editname" type="text" class="form-control" placeholder="نام خود را وارد کنید" />
+                                <input id="editname" v-model="editname" type="text" class="form-control" placeholder="نام خود را وارد کنید" required/>
                             </div>
                         </div>
                         <div class="col-sm-12 col-md-6 col-lg-6">
                             <div class="mb-3">
                                 <label for="editLastName">نام خانواگی</label>
-                                <input id="editLastName" v-model="editLastName" type="text" class="form-control" placeholder="نام خانوادگی خود را وارکنید" />
+                                <input id="editLastName" v-model="editLastName" type="text" class="form-control" placeholder="نام خانوادگی خود را وارکنید" required/>
                             </div>
                         </div>
                     </div>
@@ -42,7 +122,7 @@
                         <div class="col-md-6 col-sm-12 col-lg-6">
                             <div class="mb-3">
                                 <label for="editPhone">شماره تماس</label>
-                                <input type="text" v-model="editPhone" class="form-control" />
+                                <input type="text" v-model="editPhone" class="form-control" required/>
                             </div>
                         </div>
                     </div>
@@ -61,7 +141,7 @@
                 </div>
 
                 <div class="text-end pt-5 mt-1 g-2">
-                    <b-button variant="danger" @click="showModal = false">بستن</b-button>
+                    <b-button variant="danger" @click="editshowModal = false">بستن</b-button>
                     <b-button type="submit" variant="success" class="ms-1 ml-2">آپدیت</b-button>
                 </div>
             </form>
@@ -75,15 +155,15 @@
     <table class="table table-centered table-nowrap">
         <thead>
             <tr>
-                <th scope="col">آیدی</th>
-                <th scope="col">نام</th>
-                <th scope="col">نام خانواگی</th>
-                <th scope="col">شماره مسلسل مشتری</th>
-                <th scope="col">شماره تماس</th>
-                <th scope="col">توضیحات</th>
-                <th scope="col">پروفایل کاربر</th>
-                <th scope="col">وضیعت</th>
-                <th scope="col">اکشن</th>
+                <th>آیدی</th>
+                <th>نام</th>
+                <th>نام خانواگی</th>
+                <th>شماره مسلسل مشتری</th>
+                <th>شماره تماس</th>
+                <th>توضیحات</th>
+                <th>پروفایل کاربر</th>
+                <th>وضیعت</th>
+                <th>اکشن</th>
             </tr>
         </thead>
         <tbody>
@@ -153,11 +233,31 @@ export default {
     name: 'customerTable',
     data() {
         return {
-            showModal: false,
+           
             customers: [],
             searchQuery: null,
+
+
+            showModal: false,
+            submitted: false,
+            isError: false,
+            formError: "",
+
+            name: '',
+            phoneError:'',
+            last_name: '',
+            phone: '',
+            username: '',
+            password: '',
+            image: null,
+            address: '',
+            desc: '',
+            errors: {},
+
             notFoundMessage: '',
             // edit modal
+            editshowModal: false,
+
             editname: '',
             editLastName: '',
             editUsername: '',
@@ -205,78 +305,147 @@ export default {
             this.editImage = img.name;
 
         },
-        openEditModal() {
+
+        openModal() {
             this.showModal = true;
         },
-        closeModal() {
-            this.showModal = false;
+        closeModal(){
+            this.showModal=false;
+            this.name = '';
+            this.last_name = '';
+            this.phone = '';
+            this.username = '';
+            this.password = '';
+            this.image = null;
+            this.address = '';
+            this.desc = '';
         },
+
+        handleFileChange(event) {
+            const img = event.target.files[0];
+            this.image = img.name;
+            // console.log('Selected file:', this.image);
+        },
+        openEditModal() {
+            this.editshowModal = true;
+        },
+      
         showalert(title, text, icon) {
             Swal.fire({
                 title: title,
                 text: text,
                 icon: icon,
-                confirmButtonText: 'خوب'
+                confirmButtonText: 'بستن'
             })
         },
+        async storeCustomer() {
+            this.submitted = true;
+            if (this.name && this.last_name && this.phone && this.username && this.password) {
+
+                const response = await axios.post("/api/customer", {
+                    name: this.name,
+                    last_name: this.last_name,
+                    phone: this.phone,
+                    username: this.username,
+                    password: this.password,
+                    image: this.image,
+                    address: this.address,
+                    desc: this.desc,
+                });
+        
+                if (response.data != null) {
+                    if (response.data.status === false) {
+
+                        if (response.data.message != null) {
+                            // console.log(response.data.message, "error", "error!");
+                            this.showalert(response.data.message, "error", "error!");
+                        } else {
+                            this.errors = response.data.error;
+
+                        }
+                    } else {
+
+                        this.errors = {};
+                        this.name = '';
+                        this.last_name = '';
+                        this.phone = '';
+                        this.username = '';
+                        this.password = '';
+                        this.image = null;
+                        this.address = '';
+                        this.desc = '';
+                        this.showModal = false;
+
+                        this.customers.unshift(response.data.new_data);
+                        this.showalert("مشتری با موفقیت ثبت شد!", 'موفقانه', 'success');
+                        // location.reload();
+                       
+                      
+                    }
+
+                }
+
+        
+            } else {
+                this.isError = true;
+                this.formError = "فیلد ها خالی است";
+            }
+            // stop here if form is invalid
+
+        },
+  
+
         async editCustomer(id) {
             const response = await axios.get(`/api/customer/${id}`);
             this.editCust = response.data.customer;
             this.openEditModal();
-            // console.log("editCustomer", this.editCust);
             this.editname = this.editCust.name;
             this.editLastName = this.editCust.last_name;
             this.editPhone = this.editCust.phone;
-            // this.editUsername = this.editCust.username;
-            // this.editPassword = this.editCust.password;
-            this.ediPhoto = this.editCust.image;
+
+            this.editImage = this.editCust.image;
             this.editAddress = this.editCust.address;
             this.editDesc = this.editCust.desc;
 
             //    console.log("inside editcustomer ", this.editDesc);
         },
-        async editCustomerForm(id) {
-            const responseUpdate = await axios.put(`/api/customer/${id}`, {
+        async editSubmitCustomerForm() {
+            
+            // console.log("id",id);
+            const responseUpdate = await axios.post('/api/updatecustomer', {
+                id:this.editCust.id,
                 name: this.editname,
                 last_name: this.editLastName,
                 phone: this.editPhone,
-                image: this.ediPhoto,
+                image: this.editImage,
                 address: this.editAddress,
                 desc: this.editDesc,
             });
-            // console.log(this.responseUpdate);
             if (responseUpdate.data != null) {
+                // console.log("responseUpdate.data != null");
                 if (responseUpdate.data.status === false) {
                     if (responseUpdate.data.message != null) {
-                        this.showalert(responseUpdate.data.message, "error", "error");
+                        this.showalert(responseUpdate.data.message, "بستن", "error");
                     } else {
                         this.errors = responseUpdate.data.error;
+                        this.showalert(this.errors, 'error', 'error');
 
                     }
                 } else {
                     this.errors = {};
-                    this.name = null;
-                    this.last_name = null;
-                    this.phone = null;
-                    this.username = null;
-                    this.password = null;
+                    this.editname = '';
+                    this.editLastName = '';
+                    this.editPhone = null;
                     this.image = null;
-                    this.address = null;
-                    this.desc = null;
-                    this.showModal = false;
-                    // console.log(response.code);
-                    this.showalert("مشتری با موفقیت ویرایش شد!", 'success', 'success');
+                    this.editAddress = null;
+                    this.editImage = null;
+                    this.editshowModal = false;
+                    this.getCustomers();
+                    this.showalert("مشتری با موفقیت ویرایش شد!", 'موفقانه', 'success');
                 }
-                // console.log("Customer updated successfully");   
-            } else {
-                this.errors = {};
-                this.closeModal();
-                this.customers.push(response.data.new_data);
-                this.showalert(responseUpdate.data.message, "success", "success");
-            }
+            } 
 
-            this.showModal = false;
-            this.getCustomers();
+          
 
         },
         async deleteCustomer(id) {
@@ -287,12 +456,12 @@ export default {
                     const response = await axios.delete(`/api/customer/${id}`);
                     this.customers = response.data;
                     if (response.status === 204) {
-                        this.showalert('مشتری با موفقیت حذف شد!', 'ادامه دهید', 'success');
                         this.getCustomers();
+                        this.showalert('مشتری با موفقیت حذف شد!', 'موفقانه', 'success');
                     }
 
                 } catch (error) {
-                    this.showalert('مشتری با موفقیت حذف نشد!', 'ادامه دهید', 'error');
+                    this.showalert('مشتری با موفقیت حذف نشد!', 'ناموفقانه', 'error');
                 }
             }
         },
@@ -309,7 +478,7 @@ export default {
         },
 
         phoneValidation(field) {
-            console.log("phon3e validation");
+            // console.log("phon3e validation");
             if (field === 'editPhone') {
                 if (this.editPhone === '') {
                     this.editphoneError = 'شماره تماس ضروری است';

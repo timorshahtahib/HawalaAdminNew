@@ -180,9 +180,9 @@ export default {
 
                     } else {
 
-                        this.transfers.push(response.data.new_data1);
-                        this.transfers.push(response.data.new_data2);
-                        this.transfers.push(response.data.new_data3);
+                        this.transfers.unshift(response.data.new_data1);
+                        this.transfers.unshift(response.data.new_data2);
+                        this.transfers.unshift(response.data.new_data3);
 
                         this.errors = {}
                         this.transfer_amount = ''
@@ -373,10 +373,7 @@ export default {
 
                     } else {
 
-                        this.transfers.push(response.data.new_data1);
-                        this.transfers.push(response.data.new_data2);
-                        this.transfers.push(response.data.new_data3);
-
+                
                         this.edit_transfer_amount = ''
                         this.edit_transfer_currency_model = ''
                         this.edit_source_selectedDakhl = ''
@@ -389,7 +386,7 @@ export default {
                         this.edit_transfer_desc = ''
 
                         this.showModal = false;
-
+                        this.getTransferTransaction();
                         this.showalert(response.data.message, "success", "success");
 
                     }
@@ -412,8 +409,8 @@ export default {
 
                     if (response.status === 204) {
 
-                        this.showalert(' با موفقیت حذف شد!', 'success', 'success');
                         this.getTransferTransaction();
+                        this.showalert(' با موفقیت حذف شد!', 'success', 'success');
 
                     }
 

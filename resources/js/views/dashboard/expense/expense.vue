@@ -33,7 +33,7 @@ export default {
             selectedFinanceAccount: '',
             gettedFinanceCurrencyId: [],
             selectedCurrency: '',
-
+            amount:0,
             banks: [],
             selectedDakhl: '',
 
@@ -204,7 +204,6 @@ export default {
 
             try {
                 const response = await axios.post('/api/storeExpense', {
-                    // type: "expense",
                     amount: this.amount,
                     currency: this.selectedCurrency,
                     amount_equal: this.amount,
@@ -224,7 +223,7 @@ export default {
                     if (response.data.status === false) {
 
                         if (response.data.message != null) {
-                            this.showalert(response.data.message, "error", "1توجه!");
+                            this.showalert(response.data.message, "error", "error");
                         } else {
                             this.errors = response.data.error;
                             console.log("Errors", this.errors);
@@ -236,20 +235,16 @@ export default {
 
                         this.errors = {};
                         this.getAccounts();
-                        this.ExpenseList.push(response.data.new_data);
-                        this.type = null
-                        this.amount = null
-                        this.currency = null,
-                        this.amount_equal = null,
-                        this.currency_equal = null,
-                        this.date = null,
-                        this.transaction_id = null,
-                        this.finance_acount_id = null,
-                        this.user_id = null,
-                        this.ref_type = null,
-                        this.state = null,
-                        this.desc = null
-                        this.showalert(response.data.message, "success", "موفقانه ساخته شد");
+                        this.ExpenseList.unshift(response.data.new_data);
+                        this.amount = '';
+                        this.selectedCurrency = '';
+                        this.amount_equal = '';
+                        this.currency_equal = '';
+                        // this.rasid_date = '';
+                        this.select('');
+                        this.selectedDakhl='';
+                        this.desc = '';
+                        this.showalert(response.data.message, "success", "بستن");
                     }
 
                 }
@@ -292,7 +287,7 @@ export default {
                         // this.getAccounts();
                         this.ExpenseList.push(response.data.new_data);
 
-                        this.showalert(response.data.message, "success", "موفقانه");
+                        this.showalert(response.data.message, "success", "بستن");
                     }
 
                 }
@@ -315,13 +310,13 @@ export default {
                     });
                     this.expenseSearch = response.data;
                     if (response.status === 204) {
-                        this.showalert('ترانزکشن با موفقیت حذف شد!', 'success', 'موفقانه حذف شد');
+                        this.showalert('ترانزکشن با موفقیت حذف شد!', 'success', 'موفقانه');
                         this.ExpenseList.pop(id);
                         this.showExpenses();
                     }
 
                 } catch (error) {
-                    this.showalert('ترانزکشن با موفقیت حذف نشد!', 'ادامه دهید', 'error');
+                    this.showalert('ترانزکشن با موفقیت حذف نشد!', 'error', 'نا موفقانه');
                 }
             }
         },
@@ -414,7 +409,7 @@ export default {
                                     <div class="col-sm-12 col-xs-12">
                                         <br>
 
-                                        <textarea id="desc" autocomplete="on" class="form-control" v-model="editDesc" rows="4" placeholder="توضیحات"></textarea>
+                                        <textarea id="desc" autocomplete="on" class="form-control" v-model="editDesc" rows="4" placeholder="توضیحات" required></textarea>
                                         <span class="text-danger error-text disc_error" v-if="errors.desc">{{errors.desc[0]}}</span>
 
                                     </div>
@@ -497,7 +492,7 @@ export default {
                                </div>
                                 <div class="col-sm-12 col-xs-12">
                                     <br>
-                                    <textarea id="desc" autocomplete="on" class="form-control" v-model="desc" rows="4" placeholder="توضیحات"></textarea>
+                                    <textarea id="desc" autocomplete="on" class="form-control" v-model="desc" rows="4" placeholder="توضیحات" required></textarea>
                                     <span class="text-danger error-text disc_error" v-if="errors.desc">{{errors.desc[0]}}</span>
 
                                 </div>

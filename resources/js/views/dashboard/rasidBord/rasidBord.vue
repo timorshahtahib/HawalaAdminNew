@@ -212,7 +212,7 @@ export default {
 
                     } else {
 
-                        this.transactions.push(response.data.new_data);
+                        this.transactions.unshift(response.data.new_data);
 
                         this.errors = {}
                         this.rasid_bord = ''
@@ -226,7 +226,7 @@ export default {
                         this.currencyModel = ''
                         this.desc = ''
                         this.equalcurrencyModel = ''
-                        this.showalert(response.data.message, "success", "success");
+                        this.showalert(response.data.message, "success", "بستن");
                        
                     }
 
@@ -276,8 +276,8 @@ export default {
             let id = this.editTransaction[0].id;
             const response = await axios.post(`/api/updateTransaction`, {
                 id: this.editTransaction[0].id,
-                rasid_bord: this.editasid_bord,
-                transaction_type: this.editasid_bord,
+                rasid_bord: this.edit_rasid_bord,
+                transaction_type: this.edit_rasid_bord,
                 ref_id: this.editSelectedCustomer.id,
                 amount: this.editAmount,
                 currency: this.editCurrencyModel,
@@ -309,7 +309,8 @@ export default {
                     this.errors = {};
                     this.transactions.push(response.data.new_data);
                     this.showModal=false;
-                    this.showalert(response.data.message, "success", "success");
+                    this.showalert(response.data.message, "success", "بستن");
+                    this.getTransaction();
 
                     // console.log(response.data);
                 }
@@ -353,13 +354,13 @@ export default {
                     // this.transactions = response.data;
                     if (response.status === 204) {
                         // this.transactions.push(response.data.new_data)
-                        this.showalert(' با موفقیت حذف شد!', 'success', 'success');
+                        this.showalert(' با موفقیت حذف شد!', 'success', 'بستن');
                         this.getTransaction();
 
                     }
 
                 } catch (error) {
-                    this.showalert(' با موفقیت حذف نشد!', 'error', 'error');
+                    this.showalert(' با موفقیت حذف نشد!', 'error', 'بستن');
                 }
             }
         },
@@ -412,7 +413,8 @@ export default {
                                         <div>
 
                                             <div>
-                                                <v-select v-model="editSelectedCustomer" :options="editCustomers" label="name" placeholder="مشتری مورد نظر خود را سرچ کنید" class="searchCustomer" />
+                                                <v-select v-model="editSelectedCustomer" :options="editCustomers" label="name" 
+                                                placeholder="مشتری مورد نظر خود را سرچ کنید" class="searchCustomer" required/>
                                             </div>
                                         </div>
 
@@ -522,7 +524,7 @@ export default {
                                     </label>
 
                                     <div class="bg-red me-auto">
-                                        <v-select name="customerName" v-model="selectedCustomer" :options="customers" label="name" placeholder="مشتری مورد نظر خود را سرچ کنید" class="searchCustomer" style="width:105%;margin:0 -10px;height:4rem;padding:10px" />
+                                        <v-select name="customerName" v-model="selectedCustomer" :options="customers" label="name" placeholder="مشتری مورد نظر خود را سرچ کنید" class="searchCustomer" style="width:105%;margin:0 -10px;height:4rem;padding:10px" required/>
                                     </div>
 
                                 </div>

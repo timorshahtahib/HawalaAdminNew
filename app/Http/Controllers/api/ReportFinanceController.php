@@ -26,8 +26,23 @@ class ReportFinanceController extends Controller
 
         public function getBankBalance(Request $request){
              
-            $bankBalance = BankBalance::get();
-            return response()->json(['bank_balance'=>$bankBalance]);
+         try {
+            $limit = $request->has('limit') ? $request->limit : 10;
+
+            $bankBalance = BankBalance::paginate($limit);
+            $currency_count= Currency::where('status',1)->count();
+            $financeAcc_count= FinanceAccount::where('status',1)->count();
+
+            if($bankBalance->isEmpty()){
+                return response()->json([]);
+            }
+            $totalPages = $bankBalance->lastPage();
+            return response()->json(['bank_balance'=>$bankBalance,'currency_counts'
+            =>$currency_count,'financeAcc_count'=>$financeAcc_count,'total_pages'=>$totalPages]);
+        
+         } catch (Throwable $e) {
+            return response()->json(['message'=>$e->getMessage()],500);
+         }
         }
 
 
@@ -39,6 +54,7 @@ class ReportFinanceController extends Controller
             
             return response()->json(['banksTransaction'=>$bankTransaction]);
         }
+
 
 
         public function filterBankTransactions(Request $request) {
@@ -153,5 +169,10 @@ class ReportFinanceController extends Controller
         $result = $getTransaction->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')->get();
     
         return response()->json(['transactions' => $result]);
+    }
+
+    public function getCurrencyCounts(){
+        $currency_count= Currency::where('status',1)->count();
+        return response()->json($currency_count);
     }
 }

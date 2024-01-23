@@ -37,6 +37,7 @@ Route::post('/reset-password', [APIController::class, 'reset_pass']);
 
 
 Route::apiResource('customer',CustomerController::class);
+Route::post('/updatecustomer', [CustomerController::class, 'updateCustomer']);
 Route::post('/searchCustomer', [CustomerController::class, 'searchCustomer']);
 Route::post('/changeusername/{id}', [CustomerController::class, 'ChangeUsernameFunc']);
 Route::post('/changepassword/{id}', [CustomerController::class, 'ChangePasswordFunc']);
@@ -50,6 +51,7 @@ Route::apiResource('finance_account',FinanceAccountController::class);
 Route::post('/searchfinanceaccount', [FinanceAccountController::class, 'searchFinanceAccount']);
 // filter finance Account by type
 Route::post('/financetypefilter', [FinanceAccountController::class, 'filterfinanceAccount']);
+
 
 Route::apiResource('orders',OrderController::class);
 Route::post('/searchorder', [OrderController::class, 'searchOrder']);
@@ -101,7 +103,8 @@ Route::post('/filterBankTransactions',[ReportFinanceController::class, 'filterBa
 Route::get('/customerblance/{customerId}', [CustomerController::class, 'getCustomerBalance']);
 // for gettting all transaction
 Route::post('/filteralltransaction',[ReportFinanceController::class, 'filterAllTransaction']);
-
+// for getting all currency counts
+Route::get('/getcurrencycount', [ReportFinanceController::class, 'getCurrencyCounts']);
 // Exchange Buy Controller
 Route::apiResource('/exchange',ExchangeController::class);
 Route::post('/buystoretransaction',[ExchangeController::class,'buyStoreExchange']);

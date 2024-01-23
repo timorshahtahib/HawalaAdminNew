@@ -178,7 +178,6 @@ export default {
                 });
 
                 if (response.data != null) {
-
                     // console.log("in data!=null", response.data);
                     if (response.data.status === false) {
 
@@ -203,7 +202,7 @@ export default {
                         this.buy_currency_model = '';
                         this.rasid_desc = '';
                         this.bord_currency_Model = '';
-                        this.buy_date = null;
+                        this.buy_date = {};
                         this.showalert(response.data.message, "success", "success");
 
                     }
@@ -239,7 +238,6 @@ export default {
             this.openModaledit();
             this.rasid_id=rasid_list.id;
             this.bord_id=bord_list.id;
-
             this.edit_getrasidBanks(bord_list.currency,bord_list.bank_acount_id);
             this.edit_getRasidBanks(rasid_list.currency,rasid_list.bank_acount_id);
             this.edit_buy_amount = bord_list.amount;
@@ -287,8 +285,9 @@ export default {
 
                 } else {
                     this.errors = {};
-                    this.transactions.push(response.data.new_data);
+                    // this.transactions.push(response.data.new_data);
                     this.showModal = false;
+                    this.getTransaction();
                     this.showalert(response.data.message, "success", "success");
                 }
             }

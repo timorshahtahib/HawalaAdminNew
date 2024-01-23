@@ -190,8 +190,8 @@ export default {
 
                     } else {
 
-                        this.transactions.push(response.data.new_data1);
-                        this.transactions.push(response.data.new_data2);
+                        this.transactions.unshift(response.data.new_data1);
+                        this.transactions.unshift(response.data.new_data2);
 
                         this.errors = {}
                         this.sale_currency_model = '';
@@ -264,7 +264,7 @@ export default {
 
                 currency_rate: this.edit_currency_rate,
                 date: this.edit_sale_date,
-                desc: this.edit_edit_rasid_desc,
+                desc: this.edit_rasid_desc,
               
             });
             // console.log(response.data);
@@ -283,7 +283,7 @@ export default {
                 } else {
 
                     this.errors = {};
-                    this.transactions.push(response.data.new_data);
+                    this.getTransaction();
                     this.showModal = false;
                     this.showalert(response.data.message, "success", "success");
                 }
