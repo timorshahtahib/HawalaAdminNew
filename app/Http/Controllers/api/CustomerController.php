@@ -94,61 +94,7 @@ class CustomerController extends Controller
         return response()->json(["customer"=>$customer,"balances"=>$blances],200);
     }
 
-    // public function updateCustomer(Request $request)
-    // {
-    //     try {
-    //         $validator = Validator::make($request->all(),[
-    //             'name' => 'required',
-    //             'last_name' => 'required',
-    //             'cu_number'=>'nullable',
-    //             'phone' => 'required',
-    //             'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:50',
-    //             'address'=>'nullable',
-    //             'token' => 'nullable',
-    //             'type'=>'nullable',
-    //             'desc'=>'',
-    //     ]);
-    //         if(!$validator->passes()){
-    //             // dd("Hello");
-    //             return response()->json([
-    //                 'status'=>false,
-    //                 'error'=>$validator->errors()->toArray(),
-    //             ]);
-    //         }
 
-    //         $customer_values=[
-    //         'name' => $request->name,
-    //         'last_name' => $request->last_name,
-    //         'cu_number'=>$request->cu_number,
-    //         'phone' => $request->phone,
-    //         'image' => $request->image,
-    //         'address'=>$request->address,
-    //         'type'=>'',
-    //         'acount_currency'=>$request->acount_currency,
-    //         'desc'=>$request->desc
-    //         ];
-    //             $out_put = Customer::where('id',$request->id)->update($customer_values);
-
-    //             if($out_put){
-    //                 $output_data = Currency::where('id',$request->id)->first();
-    //                 return  response()->json([
-    //                     'status'=>true,
-    //                     'new_data'=>$out_put,
-    //                     'message'=>'اطلاعات موفقانه آپدیت شد.',
-    //                 ]);
-        
-    //             }else{
-           
-    //                 return  response()->json([
-    //                     'status'=>false,
-    //                     'message'=>'عملیات انجام نشد',
-    //                 ]);
-    //             }
-         
-    //     } catch (Throwable $e) {
-    //         return response()->json($e->getMessage());
-    //     }
-    // }
 
     public function updateCustomer(Request $request)
     {
@@ -269,6 +215,7 @@ class CustomerController extends Controller
           if($searchTerm){
             $query->where(function ($query) use ($searchTerm) {
                 $query->where('name',  'like', '%' . $searchTerm . '%')
+                ->orWhere('id',  'like', '%' . $searchTerm . '%')
                 ->orWhere('last_name',  'like', '%' . $searchTerm . '%')
                     ->orWhere('cu_number',  'like', '%' . $searchTerm . '%')
                     ->orWhere('phone',  'like', '%' . $searchTerm . '%')
@@ -307,7 +254,8 @@ class CustomerController extends Controller
     
         foreach ($transactions as $transaction) {
             $currencyName = $transaction->eq_transaction->name; // Assuming 'name' is the field in the 'currency' table
-            $amount = $transaction->amount;
+            // $amount = $transaction->amount;
+            $amount = $transaction->amount_equal;
             $type = $transaction->rasid_bord; // 'credit' or 'debit'
     
             if (!isset($balances[$currencyName])) {

@@ -41,6 +41,8 @@ export default {
                     active: true
                 }
             ],
+            isLoading: false,
+            notFound: false,
             showModal: false,
             showEditUserModal: false,
             showEditPasswordModal: false,
@@ -79,6 +81,7 @@ export default {
         this.getTransactionbycid();
     },
     async created() {
+        this.isLoading = true;
         try {
             const response = await axios.get(`/api/customer/${this.$route.params.id}`);
             this.customer = response.data.customer;
@@ -86,7 +89,9 @@ export default {
             // console.log("cutomBalances",this.customerbalances);
         } catch (error) {
             console.error(error.message);
-        }
+        }finally {
+                this.isLoading = false;
+     }
     },
     methods: {
 
@@ -292,7 +297,7 @@ export default {
                 query: this.searchQuery
             });
             this.transactions = response.data;
-            
+            this.notFound = this.transactions.length===0
         },
         async editTransactionFunc(id) {
             const response = await axios.get(`/api/transaction/${id}`);
@@ -453,12 +458,14 @@ export default {
                                 </div>
                             </div>
                         </div>
-                       
-                        <div class="card" style="margin-bottom:-60px !important">
+                       <div class="">
+                        <div v-if="isLoading">
+                            <!-- Loader or loading message here -->
+                            <p class="text-center font-size-20">Loading...</p>
+                          </div>
+                           <div class="card" style="margin-bottom:-60px !important">
                             <div class="card-body">
                                 <h4 class="card-title mb-4">اطلاعات شخصی</h4>
-            
-                               
                                 <div class="table-responsive mb-0">
                                     <table class="table">
                                         <tbody>
@@ -490,6 +497,8 @@ export default {
                                 </div>
                             </div>
                         </div>
+                       </div>
+                       
                         <!-- end card -->
                     </div>
                     
@@ -498,40 +507,47 @@ export default {
             </div>
 
             <!-- end card -->
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-titl badge  font-size-20 bg-primary">بیلانس</h4>
-                    <div class="table-responsive mb-0">
-                      <div>
-                        <table class="table table-centered table-nowrap">
-                          <thead>
-                            <tr>
-                              <th>واحد</th>
-                              <th>کل رسید </th>
-                              <th>کل برداشتها</th>
-                              <th>بیلانس</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr v-for="(currency, key) in customerbalances" :key="key">
-                              <td>{{ key }}</td>
-                              <td>
-                                <span class="badge  font-size-13" :class="currency.rasid > 0 ? 'bg-success' : 'bg-danger'" >
-                                  {{ currency.rasid }}
-                                </span>
-                                </td>
-                              <td><span class="badge  font-size-13" :class="currency.bord > 0 ? 'bg-success' : 'bg-danger'" >{{ currency.bord }}</span></td>
-                              <td><span class="badge  font-size-13" :class="currency.balance > 0 ? 'bg-success' : 'bg-danger'" >{{ currency.balance }}</span></td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
+            <div class="">
+                <div v-if="isLoading">
+                    <!-- Loader or loading message here -->
+                    <p class="text-center font-size-20">Loading...</p>
+                  </div>
+                  <div class="card" v-else>
+                    <div class="card-body">
+                        <h4 class="card-titl badge  font-size-20 bg-primary">بیلانس</h4>
+                        <div class="table-responsive mb-0">
+                          <div>
+                            <table class="table table-centered table-nowrap">
+                              <thead>
+                                <tr>
+                                  <th>واحد</th>
+                                  <th>کل رسید </th>
+                                  <th>کل برداشتها</th>
+                                  <th>بیلانس</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr v-for="(currency, key) in customerbalances" :key="key">
+                                  <td>{{ key }}</td>
+                                  <td>
+                                    <span class="badge  font-size-13" :class="currency.rasid > 0 ? 'bg-success' : 'bg-danger'" >
+                                      {{ currency.rasid }}
+                                    </span>
+                                    </td>
+                                  <td><span class="badge  font-size-13" :class="currency.bord > 0 ? 'bg-success' : 'bg-danger'" >{{ currency.bord }}</span></td>
+                                  <td><span class="badge  font-size-13" :class="currency.balance > 0 ? 'bg-success' : 'bg-danger'" >{{ currency.balance }}</span></td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
                     </div>
                 </div>
             </div>
+          
             <!-- end card -->
 
-            <!-- end card -->
+  
 
          
 
@@ -559,77 +575,89 @@ export default {
                                                 <div class="col-xl-12">
                                                     <div >
                                                         <hr class="mb-4" />
-                                                        <div class="table-responsive" v-if="transactionslist?.length">
-                                                            <table class="table table-centered table-nowrap">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th class="text-center">آیدی</th>
-                                                                        <th class="text-center">نام مشتری</th>
-                                                                        <th class="text-center">رسید برد</th>
-                                                                        <th class="text-center">نمبر چک</th>
-                                                                        <th class="text-center">مقدار پول</th>
-                                                                        <th class="text-center">واحد</th>
-                                                                        <th class="text-center">دخل</th>
-                                                                        <th class="text-center">تفصیلات</th>
-                                                                        <th class="text-center">توسط</th>
-                                                                        <th class="text-center">عملیه</th>
+                                                        <div v-if="isLoading">
+                                                            <!-- Loader or loading message here -->
+                                                            <p class="text-center font-size-20">Loading...</p>
+                                                          </div>
+                                                            <div class="" v-else>
+                                                                <div class="table-responsive" v-if="transactionslist?.length ">
+                                                                    <div  class="text-center font-size-20" v-if="notFound">
+                                                                        نتیجه مورد نظر یافت نشد!
+                                                                    </div>
+                                                                    <table class="table table-centered table-nowrap" v-else>
+                                                                      
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th class="text-center">آیدی</th>
+                                                                                <th class="text-center">نام مشتری</th>
+                                                                                <th class="text-center">رسید برد</th>
+                                                                                <th class="text-center">نمبر چک</th>
+                                                                                <th class="text-center">مقدار پول</th>
+                                                                                <th class="text-center">واحد</th>
+                                                                                <th class="text-center">دخل</th>
+                                                                                <th class="text-center">تفصیلات</th>
+                                                                                <th class="text-center">توسط</th>
+                                                                                <th class="text-center">عملیه</th>
+        
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            <tr v-for="transaction in transactionslist" :key="transaction?.id">
+                                                                                <td>{{transaction.id}}</td>
+                                                                                <td v-if="transaction.customer!=null">{{ transaction.customer.name}}</td>
+                                                                                <td v-else>{{ transaction.finance_account.account_name}}</td>
+                                                                                <td>
+                                                                                    <span class="badge  font-size-12" :class="transaction.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">
+                                                                                    {{transaction.rasid_bord}}
+                                                                                </span>
+                                                                                </td>
+                                                                                <td>{{transaction.check_number}}</td>
+                                                                                <td>{{transaction.amount}}</td>
+                                                                                <td>{{transaction.tr_currency.name}}</td>
+                                                                                <td v-if="transaction.bank_account!=null">{{transaction.bank_account.account_name}}</td>
+        
+                                                                                <td v-else>{{ transaction.finance_account.account_name}}</td>
+        
+                                                                                <td>{{transaction.desc}}</td>
+                                                                                <td>{{transaction.user_id}}</td>
+        
+                                                                                <td>
+                                                                                    
+                                                                                            <button class="btn btn-xs">
+                                                                                                <i class="fas fa-pencil-alt text-success me-1" @click="editTransactionFunc(transaction.id)"></i>
+                                                                                            </button>
+                                            
+                                                                                            <button class="btn btn-xs">
+                                                                                                <i class="fas fa-trash-alt text-danger me-1" @click="deleteTransaction(transaction.id)"></i>
+                                                                                            </button>
+                                                                                </td>
+        
+                                                                            </tr>
+        
+                                                                        </tbody>
+                                                                    </table>
+                                                                  
+                                                                    <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
+                                                                        <li class="page-item">
+                                                                            <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
+                                                                                <i class="mdi mdi-chevron-left"></i>
+                                                                            </a>
+                                                                        </li>
+                                                                        <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
+                                                                            <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
+                                                                        </li>
+                                                                        <li class="page-item">
+                                                                            <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
+                                                                                <i class="mdi mdi-chevron-right"></i>
+                                                                            </a>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                               
+                                                            </div>
 
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    <tr v-for="transaction in transactionslist" :key="transaction?.id">
-                                                                        <td>{{transaction.id}}</td>
-                                                                        <td v-if="transaction.customer!=null">{{ transaction.customer.name}}</td>
-                                                                        <td v-else>{{ transaction.finance_account.account_name}}</td>
-                                                                        <td>
-                                                                            <span class="badge  font-size-12" :class="transaction.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">
-                                                                            {{transaction.rasid_bord}}
-                                                                        </span>
-                                                                        </td>
-                                                                        <td>{{transaction.check_number}}</td>
-                                                                        <td>{{transaction.amount}}</td>
-                                                                        <td>{{transaction.tr_currency.name}}</td>
-                                                                        <td v-if="transaction.bank_account!=null">{{transaction.bank_account.account_name}}</td>
-
-                                                                        <td v-else>{{ transaction.finance_account.account_name}}</td>
-
-                                                                        <td>{{transaction.desc}}</td>
-                                                                        <td>{{transaction.user_id}}</td>
-
-                                                                        <td>
-                                                                            
-                                                                                    <button class="btn btn-xs">
-                                                                                        <i class="fas fa-pencil-alt text-success me-1" @click="editTransactionFunc(transaction.id)"></i>
-                                                                                    </button>
-                                    
-                                                                                    <button class="btn btn-xs">
-                                                                                        <i class="fas fa-trash-alt text-danger me-1" @click="deleteTransaction(transaction.id)"></i>
-                                                                                    </button>
-                                                                        </td>
-
-                                                                    </tr>
-
-                                                                </tbody>
-                                                            </table>
-                                                            <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
-                                                                <li class="page-item">
-                                                                    <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
-                                                                        <i class="mdi mdi-chevron-left"></i>
-                                                                    </a>
-                                                                </li>
-                                                                <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
-                                                                    <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
-                                                                </li>
-                                                                <li class="page-item">
-                                                                    <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
-                                                                        <i class="mdi mdi-chevron-right"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-
-                                                        <h3 class="text-center" v-else>این مشتری ترانزکشنی انجام نداده است</h3>
-                                                       
+                                                        <!-- <h3 class="text-center" v-else>این مشتری ترانزکشنی انجام نداده است</h3> -->
+                                                      
                                                     </div>
                                                 </div>
                                             </div>

@@ -31,6 +31,7 @@ export default {
                     active: true
                 }
             ],
+            isLoading:false,
             showModal: false,
             searchQuery: '',
             //  V-Select Customer
@@ -113,10 +114,17 @@ export default {
             this.editDate = date.toString();
         },
         async getTransaction(page=1) {
-            const response = await axios.get(`/api/transaction?page=${page}&limit=${this.limit}`);
-            this.transactions = response.data.transactions.data;
-            this.totalPages = response.data.transactions.last_page;
-            this.currentPage = page; // Update the current page
+            this.isLoading=true;
+                try {
+                    const response = await axios.get(`/api/transaction?page=${page}&limit=${this.limit}`);
+                    this.transactions = response.data.transactions.data;
+                    this.totalPages = response.data.transactions.last_page;
+                    this.currentPage = page; 
+                } catch (error) {
+                    console.log(error.message);
+                }finally{
+                    this.isLoading=false;
+                }
 
         },
         prevPage() {
@@ -630,8 +638,11 @@ export default {
                     </div>
                     <div class="row">
                         <div class="col-sm-12 ">
-
-                            <div class="table-responsive" v-if="transactions.length">
+                            <div v-if="isLoading">
+                                <p class="text-center font-size-20">Loading...</p>
+                              </div>
+                           <div v-else>
+                            <div class="table-responsive" v-if="transactions?.length">
                                 <table class="table table-centered table-nowrap">
                                     <thead>
                                         <tr>
@@ -705,6 +716,7 @@ export default {
                             <div v-else class="text-center font-size-20">
                                 نتیجه مورد نظر یافت نشد!
                             </div>
+                           </div>
                         </div>
                     </div>
                 </div>

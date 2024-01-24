@@ -150,79 +150,84 @@
 </div>
 <!-- edit modal end -->
 
-<div class="table-responsive" v-if="customers.length">
+    <div v-if="isLoading">
+        <p class="text-center font-size-20">Loading...</p>
+      </div>
+      <div class="table-responsive" v-else>
 
-    <table class="table table-centered table-nowrap">
-        <thead>
-            <tr>
-                <th>آیدی</th>
-                <th>نام</th>
-                <th>نام خانواگی</th>
-                <th>شماره مسلسل مشتری</th>
-                <th>شماره تماس</th>
-                <th>توضیحات</th>
-                <th>پروفایل کاربر</th>
-                <th>وضیعت</th>
-                <th>اکشن</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="customer in customers" :key="customer.id" style="text-center">
-                <td>
-                    {{ customer.id }}
-                </td>
-                <td>{{ customer.name }}</td>
-                <td>
-                    <p class="mb-1">{{ customer.last_name }}</p>
-                </td>
-                <td>{{ customer.cu_number }}</td>
-                <td>{{ customer.phone }}</td>
-                <td>{{ customer.desc }}</td>
-                <td>
-                    <router-link class="btn btn-xs btn-primary" :to="`/dashboard/customer/${customer.id}`">پروفایل</router-link>
-                </td>
-                <td>
-                    <!-- <span class="badge bg-success font-size-12"> -->
-                    <span class="badge  font-size-12" :class="customer.status === 0 ? 'bg-warning' :'bg-primary'">
-                        <i class="mdi mdi-star me-1"></i>
-                        {{ customer.status }}
-                    </span>
-                </td>
+        <table class="table table-centered table-nowrap">
+            <thead>
+                <tr>
+                    <th>آیدی</th>
+                    <th>نام</th>
+                    <th>نام خانواگی</th>
+                    <th>شماره مسلسل مشتری</th>
+                    <th>شماره تماس</th>
+                    <th>توضیحات</th>
+                    <th>پروفایل کاربر</th>
+                    <th>وضیعت</th>
+                    <th>اکشن</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="customer in customers" :key="customer.id" style="text-center">
+                    <td>
+                        {{ customer.id }}
+                    </td>
+                    <td>{{ customer.name }}</td>
+                    <td>
+                        <p class="mb-1">{{ customer.last_name }}</p>
+                    </td>
+                    <td>{{ customer.cu_number }}</td>
+                    <td>{{ customer.phone }}</td>
+                    <td>{{ customer.desc }}</td>
+                    <td>
+                        <router-link class="btn btn-xs btn-primary" :to="`/dashboard/customer/${customer.id}`">پروفایل</router-link>
+                    </td>
+                    <td>
+                        <!-- <span class="badge bg-success font-size-12"> -->
+                        <span class="badge  font-size-12" :class="customer.status === 0 ? 'bg-warning' :'bg-primary'">
+                            <i class="mdi mdi-star me-1"></i>
+                            {{ customer.status }}
+                        </span>
+                    </td>
+    
+                    <td>
+                        <button class="btn btn-xs">
+                            <i class="fas fa-pencil-alt text-success me-1" @click="editCustomer(customer.id)"></i>
+                        </button>
+    
+                        <button class="btn btn-xs">
+                            <i class="fas fa-trash-alt text-danger me-1" @click="deleteCustomer(customer.id)"></i>
+    
+                        </button>
+                    </td>
+    
+                </tr>
+            </tbody>
+        </table>
+        <div  class="text-center font-size-20" v-if="notFound">
+            نتیجه مورد نظر یافت نشد!
+        </div>
+        <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
+            <li class="page-item">
+                <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
+                    <i class="mdi mdi-chevron-left"></i>
+                </a>
+            </li>
+            <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
+                <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
+                    <i class="mdi mdi-chevron-right"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+  
 
-                <td>
-                    <button class="btn btn-xs">
-                        <i class="fas fa-pencil-alt text-success me-1" @click="editCustomer(customer.id)"></i>
-                    </button>
 
-                    <button class="btn btn-xs">
-                        <i class="fas fa-trash-alt text-danger me-1" @click="deleteCustomer(customer.id)"></i>
-
-                    </button>
-                </td>
-
-            </tr>
-        </tbody>
-    </table>
-
-    <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
-        <li class="page-item">
-            <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
-                <i class="mdi mdi-chevron-left"></i>
-            </a>
-        </li>
-        <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
-            <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
-        </li>
-        <li class="page-item">
-            <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
-                <i class="mdi mdi-chevron-right"></i>
-            </a>
-        </li>
-    </ul>
-</div>
-<div v-else class="text-center font-size-20">
-    نتیجه مورد نظر یافت نشد!
-</div>
 </template>
 
 <script>
@@ -236,8 +241,8 @@ export default {
            
             customers: [],
             searchQuery: null,
-
-
+            isLoading: false,
+            notFound: false,
             showModal: false,
             submitted: false,
             isError: false,
@@ -254,7 +259,7 @@ export default {
             desc: '',
             errors: {},
 
-            notFoundMessage: '',
+         
             // edit modal
             editshowModal: false,
 
@@ -281,6 +286,7 @@ export default {
     methods: {
 
         async getCustomers(page = 1) {
+            this.isLoading = true;
             try {
                 const response = await axios.get(`/api/customer?page=${page}&limit=${this.limit}`);
                 this.customers = response.data.customers.data;
@@ -288,7 +294,9 @@ export default {
                 this.currentPage = page; // Update the current page
             } catch (error) {
                 console.error('Error fetching customers:', error);
-            }
+            }finally {
+                this.isLoading = false;
+                 }
         },
         prevPage() {
             if (this.currentPage > 1) {
@@ -472,6 +480,8 @@ export default {
                 });
 
                 this.customers = response.data;
+                this.notFound = this.customers.length === 0;
+                // console.log(this.notFound);
            } catch (error) {
                 console.log(error.message);
            }

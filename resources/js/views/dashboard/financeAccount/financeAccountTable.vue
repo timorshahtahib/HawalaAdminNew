@@ -127,70 +127,76 @@
     </div>
 </div>
 <!-- edit modal end -->
-<div class="table-responsive" v-if="financeAccounts.length > 0">
-    <table class="table table-centered table-nowrap">
-        <thead>
-            <tr>
-             <th>آیدی</th>
-             <th>نام حساب</th>
-             <th>نوعیت</th>
-             <th>پول</th>
-             <th>حساب</th>
-             <th>توضیحات</th>
-             <th>وضیعت</th>
-             <th>آکشن</th>
-             </tr>
-        </thead>
-        <tbody>
-         <tr v-for="financeAccount in financeAccounts" :key="financeAccount.id">
-        
-               <td>{{ financeAccount.id }}</td>
-               <td>{{ financeAccount.account_name }}</td>
-               <td>{{ financeAccount.type }}</td>
-               <td>{{ financeAccount.finance_currency?.name }}</td>
-               <td>{{ financeAccount?.account }}</td>
-               <td>{{ financeAccount.description }}</td>
-               <!-- <td>{{ financeAccount.user_id }}</td> -->
-              <td>
-                 <span class="badge  font-size-12" :class="financeAccount.status === 0 ? 'bg-warning' :'bg-primary'">
-                   <i class="mdi mdi-star me-1"></i>
-                   {{ financeAccount.status }}
-                 </span>
-               </td>
-               <td>
-                <button class="btn btn-xs"><i class="fas fa-pencil-alt text-success me-1" 
-                    @click="editfinanceAccount(financeAccount.id)"></i></button> 
-    
-                <button class="btn btn-xs"> <i class="fas fa-trash-alt text-danger me-1" 
-                    @click="deleteFinanceAccount(financeAccount.id)"></i></button>
-             </td>
-           
-            
-             </tr>
-            </tbody>
-     
-    </table>
-    
-
-    <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
-        <li class="page-item">
-            <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
-                <i class="mdi mdi-chevron-left"></i>
-            </a>
-        </li>
-        <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
-            <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
-        </li>
-        <li class="page-item">
-            <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
-                <i class="mdi mdi-chevron-right"></i>
-            </a>
-        </li>
-    </ul>
-</div>
-<div v-else class="text-center font-size-20">
-    نتیجه مورد نظر یافت نشد!
+<div v-if="isLoading">
+    <!-- Loader or loading message here -->
+    <p class="text-center font-size-20">Loading...</p>
   </div>
+<div class="" v-else>
+    <div class="table-responsive" v-if="financeAccounts.length > 0">
+        <table class="table table-centered table-nowrap">
+            <thead>
+                <tr>
+                 <th>آیدی</th>
+                 <th>نام حساب</th>
+                 <th>نوعیت</th>
+                 <th>پول</th>
+                 <th>حساب</th>
+                 <th>توضیحات</th>
+                 <th>وضیعت</th>
+                 <th>آکشن</th>
+                 </tr>
+            </thead>
+            <tbody>
+             <tr v-for="financeAccount in financeAccounts" :key="financeAccount.id">
+            
+                   <td>{{ financeAccount.id }}</td>
+                   <td>{{ financeAccount.account_name }}</td>
+                   <td>{{ financeAccount.type }}</td>
+                   <td>{{ financeAccount.finance_currency?.name }}</td>
+                   <td>{{ financeAccount?.account }}</td>
+                   <td>{{ financeAccount.description }}</td>
+                   <!-- <td>{{ financeAccount.user_id }}</td> -->
+                  <td>
+                     <span class="badge  font-size-12" :class="financeAccount.status === 0 ? 'bg-warning' :'bg-primary'">
+                       <i class="mdi mdi-star me-1"></i>
+                       {{ financeAccount.status }}
+                     </span>
+                   </td>
+                   <td>
+                    <button class="btn btn-xs"><i class="fas fa-pencil-alt text-success me-1" 
+                        @click="editfinanceAccount(financeAccount.id)"></i></button> 
+        
+                    <button class="btn btn-xs"> <i class="fas fa-trash-alt text-danger me-1" 
+                        @click="deleteFinanceAccount(financeAccount.id)"></i></button>
+                 </td>
+               
+                
+                 </tr>
+                </tbody>
+         
+        </table>
+        
+    
+        <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
+            <li class="page-item">
+                <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
+                    <i class="mdi mdi-chevron-left"></i>
+                </a>
+            </li>
+            <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
+                <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
+                    <i class="mdi mdi-chevron-right"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div v-else class="text-center font-size-20">
+        نتیجه مورد نظر یافت نشد!
+      </div>
+</div>
 </template>
 
 <script>
@@ -204,6 +210,7 @@ export default {
     },
     data() {
         return {
+            isLoading:false,
             edit_showModal: false,
             financeAccounts: [],
             currencies: [],
@@ -236,6 +243,7 @@ export default {
     methods: {
 
         async getFinanceAccount(page = 1) {
+            this.isLoading=true;
             try {
                 const response = await axios.get(`/api/finance_account?page=${page}&limit=${this.limit}`);
                 this.financeAccounts = response.data.financeAccounts.data;
@@ -243,6 +251,8 @@ export default {
                 this.currentPage = page; // Update the current page
             } catch (error) {
                 console.error('Error fetching finance Account:', error);
+            }finally{
+                this.isLoading=false;
             }
         },
         prevPage() {

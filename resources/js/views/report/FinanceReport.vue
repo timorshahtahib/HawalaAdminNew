@@ -15,6 +15,7 @@ export default {
       bank_balance:[],
       currency_count:0,
       finance_count:0,
+      isLoading:false,
       // pagination
       currentPage: 1,
       totalPages: 1,
@@ -29,7 +30,7 @@ export default {
   },
   methods:{
     async getBanksBalance(page = 1) {
-            // console.log("getCustomerForEdit",id);
+            this.isLoading=true;
             try {
                 const response = await axios.get(`/api/bankbalance?page=${page}&limit=${this.limit}`);
                 this.bank_balance = response.data.bank_balance.data;
@@ -40,6 +41,8 @@ export default {
                
             } catch (error) {
                 console.log(error.message);
+            }finally{
+              this.isLoading=false;
             }
         },
 
@@ -141,7 +144,11 @@ export default {
           <div class="card-body">
             <h4 class="card-title mb-4">جدول بانک ها</h4>
             <!-- Transactions table -->
-            <div class="table-responsive mb-0">
+            <div v-if="isLoading">
+              <p class="text-center font-size-20">Loading...</p>
+            </div>
+            <div v-else>
+              <div class="table-responsive mb-0">
                 <table class="table table-centered table-nowrap align-middle">
                   <thead class="table-light">
                     <tr>
@@ -182,7 +189,6 @@ export default {
                
               </div>
               <!-- end table -->
-
               <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
                 <li class="page-item">
                     <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
@@ -198,6 +204,7 @@ export default {
                     </a>
                 </li>
             </ul>
+            </div>
           </div>
         </div>
       </div>

@@ -110,9 +110,14 @@ Route::apiResource('/exchange',ExchangeController::class);
 Route::post('/buystoretransaction',[ExchangeController::class,'buyStoreExchange']);
 Route::post('/getexchangeforedit',[ExchangeController::class,'getExchangeforEdit']);
 Route::post('/updatebuyexchange',[ExchangeController::class,'updateBuyExchangeTransaction']);
+// for get buy transactions
+Route::get('/getbuytransaction',[ExchangeController::class,'getBuyTransaction']);
+// for get sale transactions
+Route::get('/getsaletransaction',[ExchangeController::class,'getSaleTransaction']);
 
 Route::post('/deleteexchange',[ExchangeController::class,'deleteBuyExchange']);
 Route::post('/searchexchange',[ExchangeController::class,'getBuySearchTransaction']);
+Route::post('/searchsaleexchange',[ExchangeController::class,'getSaleSearchTransaction']);
 
 
 Route::post('/salestore',[ExchangeController::class,'saleStoreExchange']);

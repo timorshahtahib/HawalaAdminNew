@@ -30,7 +30,7 @@ export default {
             ],
             showModal: false,
             searchQuery: '',
-
+            isLoading:false,
             sale_amount: 0,
             sale_currency_model: '',
             rasid_amount: '',
@@ -110,11 +110,18 @@ export default {
             });
         },
         async getTransaction(page=1) {
-            const response = await axios.get(`/api/exchange?page=${page}&limit=${this.limit}`);
+           try {
+            this.isLoading=true;
+            const response = await axios.get(`/api/getsaletransaction?page=${page}&limit=${this.limit}`);
             this.transactions = response.data.transactions.data;
             this.totalPages = response.data.transactions.last_page;
             this.currentPage = page;
-            // console.log("this.transactions",this.transactions);
+           } catch (error) {
+            console.log(error.message);
+           }finally{
+                this.isLoading=false;
+           }
+           
 
         },
         prevPage() {
@@ -191,7 +198,7 @@ export default {
                     } else {
 
                         this.transactions.unshift(response.data.new_data1);
-                        this.transactions.unshift(response.data.new_data2);
+                        // this.transactions.unshift(response.data.new_data2);
 
                         this.errors = {}
                         this.sale_currency_model = '';
@@ -370,7 +377,7 @@ export default {
             }
         },
         async searchData() {
-            const response = await axios.post('/api/searchexchange', {
+            const response = await axios.post('/api/searchsaleexchange', {
                 query: this.searchQuery
             });
 
@@ -612,7 +619,10 @@ export default {
                     </div>
                     <div class="row">
                         <div class="col-sm-12 ">
-
+                            <div v-if="isLoading">
+                                <p class="text-center font-size-20">Loading...</p>
+                              </div>
+                         <div v-else>
                             <div class="table-responsive" v-if="transactions.length">
                                 <table class="table table-centered table-nowrap">
                                     <thead>
@@ -687,6 +697,7 @@ export default {
                             <div v-else class="text-center font-size-20">
                                 نتیجه مورد نظر یافت نشد!
                             </div>
+                         </div>
                         </div>
                     </div>
                 </div>

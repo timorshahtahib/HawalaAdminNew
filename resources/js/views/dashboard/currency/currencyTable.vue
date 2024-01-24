@@ -48,64 +48,69 @@
         </div>
     </div>
 </div>
-<div class="table-responsive" v-if="currencies.length">
-    
-    <table class="table table-centered table-nowrap">
-        <thead>
-            <tr>
-                <th>آیدی</th>
-                <th>واحد پولی</th>
-                <th>نشان</th>
-                <th>وضعیت</th>
-                <th>اکشن</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="currency in currencies" :key="currency.id">
-                <td>
-                   {{ currency.id }}
-                </td>
-                <td>{{ currency.name }}</td>
-                <td>{{ currency.sign }}</td>
-                <td>
-                    <span class="badge  font-size-12" :class="currency.status === 0 ? 'bg-warning' :'bg-primary'">
-                        <i class="mdi mdi-star me-1"></i>
-                        {{ currency.status }}
-                    </span>
-                </td>
-                <td>
-                    <button class="btn btn-xs">
-                        <i class="fas fa-pencil-alt text-success me-1" @click="editCurrencyFunction(currency.id)"></i>
-                    </button>
-
-                    <button class="btn btn-xs">
-                        <i class="fas fa-trash-alt text-danger me-1" @click="deleteCurrency(currency.id)"></i>
-
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-    <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
-        <li class="page-item">
-            <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
-                <i class="mdi mdi-chevron-left"></i>
-            </a>
-        </li>
-        <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
-            <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
-        </li>
-        <li class="page-item">
-            <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
-                <i class="mdi mdi-chevron-right"></i>
-            </a>
-        </li>
-    </ul>
-</div>
-<div v-else class="text-center font-size-20">
-    نتیجه مورد نظر یافت نشد!
+<div v-if="isLoading">
+    <p class="text-center font-size-20">Loading...</p>
   </div>
+        <div v-else>
+            <div class="table-responsive" v-if="currencies.length">
+    
+                <table class="table table-centered table-nowrap">
+                    <thead>
+                        <tr>
+                            <th>آیدی</th>
+                            <th>واحد پولی</th>
+                            <th>نشان</th>
+                            <th>وضعیت</th>
+                            <th>اکشن</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="currency in currencies" :key="currency.id">
+                            <td>
+                               {{ currency.id }}
+                            </td>
+                            <td>{{ currency.name }}</td>
+                            <td>{{ currency.sign }}</td>
+                            <td>
+                                <span class="badge  font-size-12" :class="currency.status === 0 ? 'bg-warning' :'bg-primary'">
+                                    <i class="mdi mdi-star me-1"></i>
+                                    {{ currency.status }}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-xs">
+                                    <i class="fas fa-pencil-alt text-success me-1" @click="editCurrencyFunction(currency.id)"></i>
+                                </button>
+            
+                                <button class="btn btn-xs">
+                                    <i class="fas fa-trash-alt text-danger me-1" @click="deleteCurrency(currency.id)"></i>
+            
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            
+                <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
+                    <li class="page-item">
+                        <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
+                            <i class="mdi mdi-chevron-left"></i>
+                        </a>
+                    </li>
+                    <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
+                        <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div v-else class="text-center font-size-20">
+                نتیجه مورد نظر یافت نشد!
+              </div>
+        </div>
 </template>
 
 <script>
@@ -115,6 +120,7 @@ export default {
     name: 'currencyTable',
     data() {
         return {
+            isLoading:false,
             showModal: false,
             currencies: [],
             searchQuery:'',
@@ -148,6 +154,7 @@ export default {
             this.showModal = false;
         },
         async getCurrencies(page = 1) {
+            this.isLoading=true;
             try {
                 const response = await axios.get(`/api/currencies?page=${page}&limit=${this.limit}`);
                 this.currencies = response.data.currencies.data;
@@ -156,6 +163,8 @@ export default {
                 this.currentPage = page; // Update the current page
             } catch (error) {
                 console.error('Error fetching Currency:', error);
+            }finally{
+                this.isLoading=false;
             }
 
         },

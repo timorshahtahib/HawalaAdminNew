@@ -27,6 +27,7 @@ export default {
                     active: true
                 }
             ],
+            isLoading:false,
             showModal: false,
             searchQuery: '',
             financeAccounts: [],
@@ -102,7 +103,7 @@ export default {
 
         // showing data in the table
         async showExpenses(page = 1) {
-
+                    this.isLoading=true;
             try {
                 const response = await axios.get(`/api/showExpenses?page=${page}&limit=${this.limit}`);
                 this.ExpenseList = response.data.expenses.data;
@@ -110,6 +111,8 @@ export default {
                 this.currentPage = page; // Update the current page
             } catch (error) {
                 console.error('Error fetching IncomeExpenses:', error);
+            }finally{
+                this.isLoading=false;
             }
          
         },
@@ -524,72 +527,77 @@ export default {
                     <div class="row">
                         <div class="col-sm-12 ">
 
-                            <div class="table-responsive" v-if="ExpenseList.length">
-                                <table class="table table-centered table-nowrap">
-                                    <thead>
-                                        <tr>
-                                            <th>آیدی</th>
-                                            <th class="text-center">تاریخ</th>
-                                            <th class="text-center">حساب</th>
-                                            <th class="text-center">نوع</th>
-                                            <th class="text-center">مقدار پول</th>
-                                            <th class="text-center">واحد</th>
-                                            <th class="text-center">دخل</th>
-                                            <th class="text-center">تفصیلات</th>
-                                            <th class="text-center">توسط</th>
-                                            <th class="text-center">عملیه</th>
-
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="expenesel in ExpenseList" :key="expenesel.id" style="text-center">
-                                        
-                                            <td>{{expenesel.id}}</td>
-                                            <td>{{expenesel.date}}</td>
-                                            <td>{{expenesel.expense_acount?.account_name}}</td>
-                                            <td>{{expenesel.type ? "مصرف" :""}}</td>
-                                            <td>{{expenesel.amount}}</td>
-                                            <td>{{expenesel.expense_currency.name}}</td>
-                                            <td>{{expenesel.expense_bank?.account_name}}</td>
-                                            <td>{{expenesel.desc}}</td>
-                                            <td>{{expenesel.user_id}}</td>
-
-                                            <td>
-                                             
-
-                                                    <button class="btn btn-xs">
-                                                        <i class="fas fa-pencil-alt text-success me-1" @click="editExpense(expenesel.id)"></i>
-                                                    </button>
-
-                                                    <button class="btn btn-xs">
-                                                        <i class="fas fa-trash-alt text-danger me-1" @click="deleteExpense(expenesel.id)"></i>
-                                                    </button>
-                                               
-                                            </td>
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            
-                                <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
-                                    <li class="page-item">
-                                        <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
-                                            <i class="mdi mdi-chevron-left"></i>
-                                        </a>
-                                    </li>
-                                    <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
-                                        <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
-                                            <i class="mdi mdi-chevron-right"></i>
-                                        </a>
-                                    </li>
-                                </ul>
-                        </div>
-                            <div v-else class="text-center font-size-20">
-                                نتیجه مورد نظر یافت نشد!
+                            <div v-if="isLoading">
+                                <p class="text-center font-size-20">Loading...</p>
                               </div>
+                                <div v-else>
+                                    <div class="table-responsive" v-if="ExpenseList?.length">
+                                        <table class="table table-centered table-nowrap">
+                                            <thead>
+                                                <tr>
+                                                    <th>آیدی</th>
+                                                    <th class="text-center">تاریخ</th>
+                                                    <th class="text-center">حساب</th>
+                                                    <th class="text-center">نوع</th>
+                                                    <th class="text-center">مقدار پول</th>
+                                                    <th class="text-center">واحد</th>
+                                                    <th class="text-center">دخل</th>
+                                                    <th class="text-center">تفصیلات</th>
+                                                    <th class="text-center">توسط</th>
+                                                    <th class="text-center">عملیه</th>
+        
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="expenesel in ExpenseList" :key="expenesel.id" style="text-center">
+                                                
+                                                    <td>{{expenesel.id}}</td>
+                                                    <td>{{expenesel.date}}</td>
+                                                    <td>{{expenesel.expense_acount?.account_name}}</td>
+                                                    <td>{{expenesel.type ? "مصرف" :""}}</td>
+                                                    <td>{{expenesel.amount}}</td>
+                                                    <td>{{expenesel.expense_currency.name}}</td>
+                                                    <td>{{expenesel.expense_bank?.account_name}}</td>
+                                                    <td>{{expenesel.desc}}</td>
+                                                    <td>{{expenesel.user_id}}</td>
+        
+                                                    <td>
+                                                     
+        
+                                                            <button class="btn btn-xs">
+                                                                <i class="fas fa-pencil-alt text-success me-1" @click="editExpense(expenesel.id)"></i>
+                                                            </button>
+        
+                                                            <button class="btn btn-xs">
+                                                                <i class="fas fa-trash-alt text-danger me-1" @click="deleteExpense(expenesel.id)"></i>
+                                                            </button>
+                                                       
+                                                    </td>
+        
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    
+                                        <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
+                                            <li class="page-item">
+                                                <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
+                                                    <i class="mdi mdi-chevron-left"></i>
+                                                </a>
+                                            </li>
+                                            <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
+                                                <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
+                                                    <i class="mdi mdi-chevron-right"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                     </div>
+                                    <div v-else class="text-center font-size-20">
+                                        نتیجه مورد نظر یافت نشد!
+                                      </div>
+                                </div>
                         </div>
                     </div>
                 </div>

@@ -30,7 +30,7 @@ export default {
             ],
             showModal: false,
             searchQuery: '',
-
+            isLoading:false,
             transfer_amount: '',
             transfer_currency_model: '',
             commission: 'darad',
@@ -96,7 +96,6 @@ export default {
         openModaledit() {
             this.showModal = true;
             this.get_edit_Currency();
-
         },
         // closeModaledit() {
         //     this.showModal = false;
@@ -114,12 +113,15 @@ export default {
         },
         async getTransferTransaction(page=1) {
                 try {
+                    this.isLoading=true;
                     const response = await axios.get(`/api/gettransfers?page=${page}&limit=${this.limit}`);
                     this.transfers = response.data.transactions.data;
                     this.totalPages = response.data.transactions.last_page;
                     this.currentPage = page;
                 } catch (error) {
                     console.log(error.message);
+                }finally{
+                    this.isLoading=false;
                 }
             // console.log(this.transfers);
         },
@@ -332,7 +334,7 @@ export default {
             } else {
                 commission1.checked = false;
                 nocommission.checked = true;
-                console.log("Commission nadarad");
+                // console.log("Commission nadarad");
             }
                 });
            
@@ -357,7 +359,7 @@ export default {
                     date: this.edit_transfer_date,
                     desc: this.edit_transfer_desc,
                 });
-
+                console.log("this.edit_transfer_desc",this.edit_transfer_desc);
                 if (response.data != null) {
 
                     // console.log("in data!=null", response.data);
@@ -426,6 +428,7 @@ export default {
                 query: this.searchQuery
             });
             this.transfers = response.data;
+          
         
         },
     },
@@ -693,8 +696,11 @@ export default {
                     </div>
                     <div class="row">
                         <div class="col-sm-12 ">
-
-                            <div class="table-responsive" v-if="transfers.length > 0">
+                            <div v-if="isLoading">
+                                <p class="text-center font-size-20">Loading...</p>
+                              </div>
+                          <div v-else>
+                            <div class="table-responsive" v-if="transfers?.length">
                                 <table class="table table-centered table-nowrap">
                                     <thead>
                                         <tr>
@@ -765,7 +771,9 @@ export default {
                             </div>
                             <div v-else class="text-center font-size-20">
                                 نتیجه مورد نظر یافت نشد!
-                            </div>
+                            </div>  
+                
+                          </div>
                         </div>
                     </div>
                 </div>

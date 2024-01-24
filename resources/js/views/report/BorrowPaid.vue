@@ -34,7 +34,7 @@ export default {
             ],
             showModal: false,
             searchQuery: '',
-
+            isLoading:false,
             transactions: [],
             banks:[],
             transaction_type:'',
@@ -106,6 +106,7 @@ export default {
         },
   
         async getFinanceAccount(page = 1) {
+            this.isLoading=true;
             try {
                 const response = await axios.get(`/api/finance_account?page=${page}&limit=${this.limit}`);
                 this.banks = response.data.financeAccounts.data;
@@ -114,6 +115,8 @@ export default {
                 // console.log(this.financeAccounts);
             } catch (error) {
                 console.error('Error fetching finance Account:', error);
+            }finally{
+                this.isLoading=false;
             }
         },
    
@@ -275,9 +278,11 @@ export default {
                     </div>
                     <div class="row">
                         <div class="col-sm-12 ">
-
-                            <!-- <div class="table-responsive" v-if="transactions.length"> -->
-                            <div class="table-responsive">
+                            <div v-if="isLoading">
+                                <p class="text-center font-size-20">Loading...</p>
+                              </div>
+                          <div v-else>
+                            <div class="table-responsive" v-if="transactions?.length">
                                 <table class="table table-centered table-nowrap">
                                     <thead>
                                         <tr>
@@ -318,7 +323,6 @@ export default {
                                             <td>{{transaction.desc}}</td>
                                             <td>{{transaction.user_id}}</td>
 
-                                        
 
                                         </tr>
                                     </tbody>
@@ -340,9 +344,10 @@ export default {
                                     </li>
                                 </ul>
                             </div>
-                            <!-- <div v-else class="text-center font-size-20">
+                            <div v-else class="text-center font-size-20">
                                 نتیجه مورد نظر یافت نشد!
-                            </div> -->
+                            </div>
+                          </div>
                         </div>
                     </div>
                 </div>
