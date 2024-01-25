@@ -28,7 +28,7 @@ class Transaction extends Model
     {
         return $this->belongsTo(Currency::class,'currency');
     }
-    public function eq_transaction()
+    public function eq_currency()
     {
         return $this->belongsTo(Currency::class,'currency_equal');
     }
