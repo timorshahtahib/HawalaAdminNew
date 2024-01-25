@@ -11,7 +11,7 @@
       </div>
   </div>
   <div v-if="isLoading">
-    <p class="text-center font-size-20">Loading...</p>
+    <p class="text-center font-size-20">کمی صبر نمائید...</p>
   </div>
     <div v-else>
         <div class="table-responsive" v-if="orders?.length">

@@ -620,44 +620,36 @@ export default {
                     <div class="row">
                         <div class="col-sm-12 ">
                             <div v-if="isLoading">
-                                <p class="text-center font-size-20">Loading...</p>
-                              </div>
+                                <p class="text-center font-size-20">کمی صبر نمائید...</p>
+                               </div>
                          <div v-else>
                             <div class="table-responsive" v-if="transactions.length">
                                 <table class="table table-centered table-nowrap">
-                                    <thead>
+                                    <thead class="text-end">
                                         <tr>
-                                            <th class="text-center">آیدی</th>
-                                            <th class="text-center">رسید برد</th>
-                                            <th class="text-center">ترانزکشن تایپ</th>
                                             <th class="text-center">نمبر چک</th>
+                                            <th class="text-center">رسید برد</th>
                                             <th class="text-center">مقدار پول</th>
-                                            <th class="text-center">واحد</th>
-                                            <th class="text-center">دخل</th>
                                             <th class="text-center">تفصیلات</th>
                                             <th class="text-center">توسط</th>
                                             <th class="text-center">عملیه</th>
 
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody class="text-center">
                                         <tr v-for="transaction in transactions" :key="transaction?.id">
-
-
-                                            <td>{{transaction?.id}}</td>
-
+                                            
+                                            <td>{{transaction?.check_number}}</td>
                                             <td>
                                                 <span class="badge  font-size-12" :class="transaction?.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">
                                                     {{transaction?.rasid_bord}}
                                                     </span>
                                                 </td>
-
-                                            <td>{{transaction?.transaction_type}}</td>
-                                            <td>{{transaction?.check_number}}</td>
-                                            <td>{{transaction?.amount}}</td>
-                                            <td>{{transaction?.tr_currency.name}}</td>
-                                            <td v-if="transaction?.bank_account!=null">{{transaction?.bank_account.account_name}}</td>
-                                            <td v-else>{{ transaction?.finance_account.account_name}}</td>
+                                            <td>{{transaction?.amount}} {{transaction?.tr_currency.name}}
+                                                به 
+                                                <span v-if="transaction?.bank_account!=null">{{transaction?.bank_account.account_name}}</span>
+                                                <span v-else>{{ transaction?.finance_account.account_name}}</span>
+                                            </td>
                                             <td>{{transaction?.desc}}</td>
                                             <td>{{transaction?.user_id}}</td>
 

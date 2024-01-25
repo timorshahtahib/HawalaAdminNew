@@ -293,8 +293,8 @@ export default {
         },
 
         async edit_transfer_func(id, type) {
-           
-            const response = await axios.post(`/api/gettransferforedit/`, {
+            
+            const response = await axios.post('/api/gettransferforedit', {
                 id: id,
                 rasid_bord: type
             });
@@ -323,25 +323,17 @@ export default {
             this.edit_transfer_date = bord_list.date;
             this.edit_transfer_desc = bord_list.desc;
 
-            const commission1 = document.getElementById('commission');
-            const nocommission = document.getElementById('nocommission');
-            console.log(this.commission);
-
-            document.addEventListener('DOMContentLoaded', function() {
-                if (this.commission.value="darad") {
-                commission1.checked = true;
-                nocommission.checked = false;
-            } else {
-                commission1.checked = false;
-                nocommission.checked = true;
-                // console.log("Commission nadarad");
-            }
-                });
-           
+            this.setCommissionCheckboxes(this.edit_commission);
 
         },
+        setCommissionCheckboxes(value) {
+    const commission = document.getElementById('Commission');
+    const nocommission = document.getElementById('nocommission');
 
-        async editSubmitTransfer() {
+    commission.checked = value === 'darad';
+    nocommission.checked = value !== 'darad';
+},
+    async editSubmitTransfer() {
 
             try {
                 const response = await axios.post('/api/updateTransferTransaction', {
@@ -398,15 +390,16 @@ export default {
             } catch (error) {
                 console.log("Store in catch", error.message);
             }
-        },
-
-        async deleteTransfer(id) {
+            },
+        async deleteTransfer() {
             if (!window.confirm('آیا میخواهید که رسید حذف شود؟')) {
                 return;
             } else {
                 try {
-                    const response = await axios.post(`/api/deletetransfer`, {
-                        id: id,
+                    const response = await axios.post('/api/deletetransfer', {
+                        rasid_id:this.rasid_id,
+                        bord_id:this.bord_id,
+                        commission_id:this.commission_id,
                     });
 
                     if (response.status === 204) {
@@ -484,7 +477,7 @@ export default {
                                     </select>
                                     <span class="text-danger error-text dakhl_error"></span>
                                 </div>
-                                <div class="row mt-3 ">
+                                <!-- <div class="row mt-3 ">
                                     <div class="col-sm-12">
                                         <span class="">
                                             <label for="Commission" class="mx-1">کمیشن دارد:‌</label>
@@ -495,8 +488,20 @@ export default {
                                             <input class="form-check-input" type="radio" id="nocommission" v-model="edit_commission" name="Commission" value="nadarad" />
                                         </span>
                                     </div>
+                                </div> -->
+                                <div class="row mt-3">
+                                    <div class="col-sm-12">
+                                        <span class="">
+                                            <label for="Commission" class="mx-1">کمیشن دارد:‌</label>
+                                            <input class="form-check-input" type="radio" id="Commission" v-model="edit_commission" value="darad" name="Commission" />
+                                        </span>
+                                        <span>
+                                            <label for="nocommission" class="mx-1">کمیشن ندارد:‌</label>
+                                            <input class="form-check-input" type="radio" id="nocommission" v-model="edit_commission" name="Commission" value="nadarad" />
+                                        </span>
+                                    </div>
                                 </div>
-
+                                
                                 <div class="row">
                                     <div class="col-sm-6 col-xs-12">
                                         <label for="supplier">واحد پول کمیشن:</label>
@@ -697,43 +702,39 @@ export default {
                     <div class="row">
                         <div class="col-sm-12 ">
                             <div v-if="isLoading">
-                                <p class="text-center font-size-20">Loading...</p>
+                                <p class="text-center font-size-20">کمی صبر نمائید...</p>
                               </div>
                           <div v-else>
                             <div class="table-responsive" v-if="transfers?.length">
                                 <table class="table table-centered table-nowrap">
                                     <thead>
                                         <tr>
-                                            <th class="text-center">آیدی</th>
-                                            <th class="text-center">رسید برد</th>
-                                            <th class="text-center">ترانزکشن تایپ</th>
                                             <th class="text-center">نمبر چک</th>
+                                            <th class="text-center">رسید برد</th>
                                             <th class="text-center">مقدار پول</th>
-                                            <th class="text-center">واحد</th>
-                                            <th class="text-center">دخل</th>
                                             <th class="text-center">تفصیلات</th>
                                             <th class="text-center">توسط</th>
                                             <th class="text-center">عملیه</th>
 
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr v-for="transaction in transfers" :key="transaction?.id">
+                                    <tbody class="text-center">
+                                        <tr v-for="transaction in transfers" :key="transaction?.id" >
 
-                                            <td>{{transaction?.id}}</td>
-
+                                            <td>{{transaction?.check_number}}</td>
                                             <td>
                                                 <span class="badge  font-size-12" :class="transaction?.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">
                                                     {{transaction?.rasid_bord}}
                                                 </span>
                                             </td>
 
-                                            <td>{{transaction?.transaction_type}}</td>
-                                            <td>{{transaction?.check_number}}</td>
-                                            <td>{{transaction?.amount}}</td>
-                                            <td>{{transaction?.tr_currency.name}}</td>
-                                            <td v-if="transaction?.bank_account!=null">{{transaction.bank_account?.account_name}}</td>
-                                            <td v-else>{{ transaction?.finance_account?.account_name}}</td>
+                                            <td>{{transaction?.amount}} {{transaction?.tr_currency.name}}
+                                                به
+                                                <span v-if="transaction?.bank_account!=null">{{transaction.bank_account?.account_name}}</span>
+                                                <span v-else>{{ transaction?.finance_account?.account_name}}</span>
+                                            </td>
+                                           
+                                           
                                             <td>{{transaction?.desc}}</td>
                                             <td>{{transaction?.user_id}}</td>
 

@@ -33,6 +33,11 @@ class Transaction extends Model
         return $this->belongsTo(Currency::class,'currency_equal');
     }
 
+    public function referencedTransaction()
+    {
+        return $this->belongsTo(Transaction::class, 'ref_tra', 'id');
+    }
+
    public function financeAccount(){
             return $this->belongsTo(FinanceAccount::class,'finance_acount_id');
          

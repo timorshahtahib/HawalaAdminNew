@@ -151,7 +151,7 @@
 <!-- edit modal end -->
 
     <div v-if="isLoading">
-        <p class="text-center font-size-20">Loading...</p>
+        <p class="text-center font-size-20">کمی صبر نمائید...</p>
       </div>
       <div class="table-responsive" v-else>
 

@@ -77,8 +77,8 @@ class ExchangeController extends Controller
         try {
             $limit = $request->has('limit') ? $request->limit : 10;
 
-            $transaction = Transaction::where('status', '=', '1')->where('transaction_type','transfer')
-                ->orWhere('transaction_type','commission')
+            $transaction = Transaction::where('transaction_type','transfer')
+                ->orWhere('transaction_type','commission')->where('status', '=', '1')
             ->with(['financeAccount','customer','tr_currency','bank_account'])
             ->orderBy('id','desc')->paginate($limit);
 
@@ -123,7 +123,7 @@ class ExchangeController extends Controller
             'currency_equal'=>'nullable',
             'currency_rate'=>'required',
             // 'ref_id'=>"required|max:20",
-            'order_id'=>'nullable',
+            'ref_tra'=>'nullable',
             'rasid_bank_acount_id'=>'required',
             'bord_bank_acount_id'=>'required',
             'desc'=>'nullable',
@@ -181,10 +181,10 @@ class ExchangeController extends Controller
                 if($transaction_id && $transaction_id2 ){
 
                     $update_values1 = [
-                        'order_id'=>$transaction_id2,
+                        'ref_tra'=>$transaction_id2,
                     ];
                     $update_values2 = [
-                        'order_id'=>$transaction_id,
+                        'ref_tra'=>$transaction_id,
                     ];
                     Transaction::where('id',$transaction_id)->update($update_values1);
                     Transaction::where('id',$transaction_id2)->update($update_values2);
@@ -192,8 +192,8 @@ class ExchangeController extends Controller
                     $update_values = ['transaction_id'=>$transaction_id,];
                     $update_values2 = ['transaction_id2'=>$transaction_id2,];
                  
-                    $output_data = Transaction::where('id',$transaction_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
-                    $output_data2 = Transaction::where('id',$transaction_id2)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
+                    $output_data = Transaction::where('id',$transaction_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account','referencedTransaction'])->first();
+                    $output_data2 = Transaction::where('id',$transaction_id2)->with(['financeAccount','customer_exchange','tr_currency','bank_account','referencedTransaction'])->first();
 
                     DB::commit();
                     return  response()->json([
@@ -255,7 +255,7 @@ class ExchangeController extends Controller
             'amount_equal'=>'nullable',
             'currency_equal'=>'nullable',
             'currency_rate'=>'required',
-            'order_id'=>'nullable',
+            'ref_tra'=>'nullable',
             'bord_bank_acount_id'=>'required',
             'rasid_bank_acount_id'=>'required',
             'desc'=>'nullable',
@@ -313,10 +313,10 @@ class ExchangeController extends Controller
                 if($transaction_id && $transaction_id2 ){
 
                     $update_values1 = [
-                        'order_id'=>$transaction_id2,
+                        'ref_tra'=>$transaction_id2,
                     ];
                     $update_values2 = [
-                        'order_id'=>$transaction_id,
+                        'ref_tra'=>$transaction_id,
                     ];
                     Transaction::where('id',$transaction_id)->update($update_values1);
                     Transaction::where('id',$transaction_id2)->update($update_values2);
@@ -324,8 +324,8 @@ class ExchangeController extends Controller
                     $update_values = ['transaction_id'=>$transaction_id,];
                     $update_values2 = ['transaction_id2'=>$transaction_id2,];
                  
-                    $output_data = Transaction::where('id',$transaction_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
-                    $output_data2 = Transaction::where('id',$transaction_id2)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
+                    $output_data = Transaction::where('id',$transaction_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account','referencedTransaction'])->first();
+                    $output_data2 = Transaction::where('id',$transaction_id2)->with(['financeAccount','customer_exchange','tr_currency','bank_account','referencedTransaction'])->first();
 
                     DB::commit();
                     return  response()->json([
@@ -369,7 +369,7 @@ class ExchangeController extends Controller
                     ->where('rasid_bord','rasid')
                     ->with(['financeAccount','customer','tr_currency','bank_account'])->first();
            
-                    $bord_transaction = Transaction::where('status', '=', '1')->where('id',$rasid_transaction->order_id)->where('transaction_type','exchange')
+                    $bord_transaction = Transaction::where('status', '=', '1')->where('id',$rasid_transaction->ref_tra)->where('transaction_type','exchange')
                     ->where('rasid_bord','bord')
                     ->with(['financeAccount','customer','tr_currency','bank_account'])->first();
            
@@ -380,7 +380,7 @@ class ExchangeController extends Controller
                    $bord_transaction = Transaction::where('status', '=', '1')->where('id',$id)->where('transaction_type','exchange')
                    ->where('rasid_bord','bord')
                    ->with(['financeAccount','customer','tr_currency','bank_account'])->first();
-                   $rasid_transaction = Transaction::where('status', '=', '1')->where('id',$bord_transaction->order_id)->where('transaction_type','exchange')
+                   $rasid_transaction = Transaction::where('status', '=', '1')->where('id',$bord_transaction->ref_tra)->where('transaction_type','exchange')
                    ->where('rasid_bord','rasid')
                    ->with(['financeAccount','customer','tr_currency','bank_account'])->first();
                    return response()->json(['bord'=>$bord_transaction,'rasid'=>$rasid_transaction]);
@@ -445,8 +445,8 @@ class ExchangeController extends Controller
 
                if($tr_rasid && $tr_bord){
 
-                $output_data = Transaction::where('id',$request->rasid_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
-                $output_data2 = Transaction::where('id',$request->bord_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
+                $output_data = Transaction::where('id',$request->rasid_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account','referencedTransaction'])->first();
+                $output_data2 = Transaction::where('id',$request->bord_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account','referencedTransaction'])->first();
                 DB::commit();
                 return  response()->json([
                     'status'=>true,
@@ -481,14 +481,14 @@ class ExchangeController extends Controller
     {
                     $id=$request->id;
                     $exchange_tr1= Transaction::where('status', '=', '1')->where('transaction_type','exchange')->where('id',$request->id)->first();
-                    $exchange_tr2= Transaction::where('status', '=', '1')->where('transaction_type','exchange')->where('order_id',$request->id)->first();
+                    $exchange_tr2= Transaction::where('status', '=', '1')->where('transaction_type','exchange')->where('ref_tra',$request->id)->first();
                    
                     $exchange_tr1->update(['status'=>0]);
                     $exchange_tr2->update(['status'=>0]);
                     $exchange_tr1->save();
                     $exchange_tr2->save();
-                   $output_data = Transaction::where('id',$request->id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->get();
-                   $output_data2 = Transaction::where('id',$request->order_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->get();
+                   $output_data = Transaction::where('id',$request->id)->with(['financeAccount','customer_exchange','tr_currency','bank_account','referencedTransaction'])->get();
+                   $output_data2 = Transaction::where('id',$request->ref_tra)->with(['financeAccount','customer_exchange','tr_currency','bank_account','referencedTransaction'])->get();
                     
 
                 return  response()->json([
@@ -615,7 +615,7 @@ class ExchangeController extends Controller
             'amount_equal'=>'nullable',
             'currency_equal'=>'nullable',
             'currency_rate'=>'required',
-            'order_id'=>'nullable',
+            'ref_tra'=>'nullable',
             'bord_bank_acount_id'=>'required',
             'rasid_bank_acount_id'=>'required',
             'desc'=>'nullable',
@@ -673,10 +673,10 @@ class ExchangeController extends Controller
                 if($transaction_id && $transaction_id2 ){
 
                     $update_values1 = [
-                        'order_id'=>$transaction_id2,
+                        'ref_tra'=>$transaction_id2,
                     ];
                     $update_values2 = [
-                        'order_id'=>$transaction_id,
+                        'ref_tra'=>$transaction_id,
                     ];
                     Transaction::where('id',$transaction_id)->update($update_values1);
                     Transaction::where('id',$transaction_id2)->update($update_values2);
@@ -684,8 +684,8 @@ class ExchangeController extends Controller
                     $update_values = ['transaction_id'=>$transaction_id,];
                     $update_values2 = ['transaction_id2'=>$transaction_id2,];
                  
-                    $output_data = Transaction::where('id',$transaction_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
-                    $output_data2 = Transaction::where('id',$transaction_id2)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
+                    $output_data = Transaction::where('id',$transaction_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account','referencedTransaction','referencedTransaction'])->first();
+                    $output_data2 = Transaction::where('id',$transaction_id2)->with(['financeAccount','customer_exchange','tr_currency','bank_account','referencedTransaction'])->first();
 
                     DB::commit();
                     return  response()->json([
@@ -730,7 +730,7 @@ class ExchangeController extends Controller
                     ->where('rasid_bord','rasid')
                     ->with(['financeAccount','customer','tr_currency','bank_account'])->first();
            
-                    $bord_transaction = Transaction::where('status', '=', '1')->where('id',$rasid_transaction->order_id)->where('transaction_type','exchange')
+                    $bord_transaction = Transaction::where('status', '=', '1')->where('id',$rasid_transaction->ref_tra)->where('transaction_type','exchange')
                     ->where('rasid_bord','bord')
                     ->with(['financeAccount','customer','tr_currency','bank_account'])->first();
            
@@ -741,7 +741,7 @@ class ExchangeController extends Controller
                    $bord_transaction = Transaction::where('status', '=', '1')->where('id',$id)->where('transaction_type','exchange')
                    ->where('rasid_bord','bord')
                    ->with(['financeAccount','customer','tr_currency','bank_account'])->first();
-                   $rasid_transaction = Transaction::where('status', '=', '1')->where('id',$bord_transaction->order_id)->where('transaction_type','exchange')
+                   $rasid_transaction = Transaction::where('status', '=', '1')->where('id',$bord_transaction->ref_tra)->where('transaction_type','exchange')
                    ->where('rasid_bord','rasid')
                    ->with(['financeAccount','customer','tr_currency','bank_account'])->first();
                    return response()->json(['bord'=>$bord_transaction,'rasid'=>$rasid_transaction]);
@@ -805,8 +805,8 @@ class ExchangeController extends Controller
 
                if($tr_rasid && $tr_bord){
 
-                $output_data = Transaction::where('id',$request->rasid_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
-                $output_data2 = Transaction::where('id',$request->bord_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
+                $output_data = Transaction::where('id',$request->rasid_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account','referencedTransaction'])->first();
+                $output_data2 = Transaction::where('id',$request->bord_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account','referencedTransaction'])->first();
                 DB::commit();
                 return  response()->json([
                     'status'=>true,
@@ -836,14 +836,14 @@ class ExchangeController extends Controller
     {
                     $id=$request->id;
                     $exchange_tr1= Transaction::where('status', '=', '1')->where('transaction_type','exchange')->where('id',$request->id)->first();
-                    $exchange_tr2= Transaction::where('status', '=', '1')->where('transaction_type','exchange')->where('order_id',$request->id)->first();
+                    $exchange_tr2= Transaction::where('status', '=', '1')->where('transaction_type','exchange')->where('ref_tra',$request->id)->first();
                    
                     $exchange_tr1->update(['status'=>0]);
                     $exchange_tr2->update(['status'=>0]);
                     $exchange_tr1->save();
                     $exchange_tr2->save();
-                   $output_data = Transaction::where('id',$request->id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->get();
-                   $output_data2 = Transaction::where('id',$request->order_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->get();
+                   $output_data = Transaction::where('id',$request->id)->with(['financeAccount','customer_exchange','tr_currency','bank_account','referencedTransaction'])->get();
+                   $output_data2 = Transaction::where('id',$request->ref_tra)->with(['financeAccount','customer_exchange','tr_currency','bank_account','referencedTransaction'])->get();
                     
 
                 return  response()->json([
@@ -939,17 +939,17 @@ class ExchangeController extends Controller
                         
                     ];
                     $commission_transaction = Transaction::insertGetId($commission_transaction_values);
-                    $output_data3 = Transaction::where('id',$commission_transaction)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
+                    $output_data3 = Transaction::where('id',$commission_transaction)->with(['financeAccount','customer_exchange','tr_currency','bank_account','referencedTransaction'])->first();
 
                 }
                
                 if($source_transaction_id && $destination_tansaction_id ){
 
                     $update_values1 = [
-                        'order_id'=>$destination_tansaction_id,
+                        'ref_tra'=>$destination_tansaction_id,
                     ];
                     $update_values2 = [
-                        'order_id'=>$source_transaction_id,
+                        'ref_tra'=>$source_transaction_id,
                     ];
                     
 
@@ -962,8 +962,8 @@ class ExchangeController extends Controller
 
                  
                  
-                    $output_data = Transaction::where('id',$source_transaction_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
-                    $output_data2 = Transaction::where('id',$destination_tansaction_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
+                    $output_data = Transaction::where('id',$source_transaction_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account','referencedTransaction'])->first();
+                    $output_data2 = Transaction::where('id',$destination_tansaction_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account','referencedTransaction'])->first();
 
                       
                   
@@ -1006,42 +1006,76 @@ class ExchangeController extends Controller
 
     public function getTransferforEdit(Request $request)
     {
-        $tr_type=$request->rasid_bord;
-        $id=$request->id;
-                
+        $tr_type = $request->rasid_bord;
+        $id = $request->id;  
         try {
-
-            if($tr_type ==='rasid'){
-                $rasid_transfer = Transaction::where('status', '=', '1')->where('id',$id)->where('transaction_type','transfer')->orWhere('transaction_type','commission')
-                ->where('rasid_bord','rasid')
-                ->with(['financeAccount','customer','tr_currency','bank_account'])->first();
-       
-                $bord_transfer = Transaction::where('status', '=', '1')->where('id',$rasid_transfer->order_id)->where('transaction_type','transfer')
-                ->where('rasid_bord','bord')
-                ->with(['financeAccount','customer','tr_currency','bank_account'])->first();
-                $commission_transafer = Transaction::where('status', '=', '1')->where('id',$rasid_transfer->order_id)->where('transaction_type','commission')->orWhere('transaction_type','commission')
-                ->where('rasid_bord','bord')
-                ->with(['financeAccount','customer','tr_currency','bank_account'])->first();
-                return response()->json(['bord'=>$bord_transfer,'rasid'=>$rasid_transfer,'commissiom'=>$commission_transafer]);
-           }
-              else if($tr_type ==='bord'){
-                   $bord_transaction = Transaction::where('status', '=', '1')->where('id',$id)->where('transaction_type','transfer')->orWhere('transaction_type','commission')
-                   ->where('rasid_bord','bord')
-                   ->with(['financeAccount','customer','tr_currency','bank_account'])->first();
-                   $rasid_transfer = Transaction::where('status', '=', '1')->where('id',$bord_transaction->order_id)->where('transaction_type','transfer')->orWhere('transaction_type','commission')
-                   ->where('rasid_bord','rasid')
-                   ->with(['financeAccount','customer','tr_currency','bank_account'])->first();
-                   $commission_transfer = Transaction::where('status', '=', '1')->where('id',$bord_transaction->order_id)->where('transaction_type','transfer')->orWhere('transaction_type','commission')
-                   ->where('rasid_bord','rasid')
-                   ->with(['financeAccount','customer','tr_currency','bank_account'])->first();
-                   return response()->json(['bord'=>$bord_transaction,'rasid'=>$rasid_transfer,'commission'=>$commission_transfer]);
-               }
-        }
-        catch (Exception $e) {
+            if ($tr_type === 'rasid') {
+                $rasid_transfer = Transaction::where('status', '=', '1')
+                    ->where('id', $id)
+                    ->where(function ($query) {
+                        $query->where('transaction_type', 'transfer')
+                              ->orWhere('transaction_type', 'commission');
+                    })
+                    ->where('rasid_bord', 'rasid')
+                    ->with(['financeAccount', 'customer', 'tr_currency', 'bank_account'])
+                    ->first();
+    
+                $bord_transfer = Transaction::where('status', '=', '1')
+                    ->where('id', $rasid_transfer->ref_tra)
+                    ->where('transaction_type', 'transfer')
+                    ->where('rasid_bord', 'bord')
+                    ->with(['financeAccount', 'customer', 'tr_currency', 'bank_account'])
+                    ->first();
+    
+                $commission_transafer = Transaction::where('status', '=', '1')
+                    ->where('id', $rasid_transfer->ref_tra)
+                    ->where(function ($query) {
+                        $query->where('transaction_type', 'commission')
+                              ->orWhere('transaction_type', 'commission');
+                    })
+                    ->where('rasid_bord', 'bord')
+                    ->with(['financeAccount', 'customer', 'tr_currency', 'bank_account'])
+                    ->first();
+    
+                return response()->json(['bord' => $bord_transfer, 'rasid' => $rasid_transfer, 'commissiom' => $commission_transafer]);
+            } else if ($tr_type === 'bord') {
+                $bord_transaction = Transaction::where('status', '=', '1')
+                    ->where('id', $id)
+                    ->where(function ($query) {
+                        $query->where('transaction_type', 'transfer')
+                              ->orWhere('transaction_type', 'commission');
+                    })
+                    ->where('rasid_bord', 'bord')
+                    ->with(['financeAccount', 'customer', 'tr_currency', 'bank_account'])
+                    ->first();
+    
+                $rasid_transfer = Transaction::where('status', '=', '1')
+                    ->where('id', $bord_transaction->ref_tra)
+                    ->where(function ($query) {
+                        $query->where('transaction_type', 'transfer')
+                              ->orWhere('transaction_type', 'commission');
+                    })
+                    ->where('rasid_bord', 'rasid')
+                    ->with(['financeAccount', 'customer', 'tr_currency', 'bank_account'])
+                    ->first();
+    
+                $commission_transfer = Transaction::where('status', '=', '1')
+                    ->where('id', $bord_transaction->ref_tra)
+                    ->where(function ($query) {
+                        $query->where('transaction_type', 'transfer')
+                              ->orWhere('transaction_type', 'commission');
+                    })
+                    ->where('rasid_bord', 'rasid')
+                    ->with(['financeAccount', 'customer', 'tr_currency', 'bank_account'])
+                    ->first();
+    
+                return response()->json(['bord' => $bord_transaction, 'rasid' => $rasid_transfer, 'commission' => $commission_transfer]);
+            }
+        } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
-         
     }
+    
 
 
 
@@ -1109,7 +1143,7 @@ class ExchangeController extends Controller
                 ];
                 $tr_commission= Transaction::where('id',$commission_id)->update($commission_transaction_values);
                 $output_data3 = Transaction::where('id',$commission_id)->
-                with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
+                with(['financeAccount','customer_exchange','tr_currency','bank_account','referencedTransaction'])->first();
                 
             }
            
@@ -1121,8 +1155,8 @@ class ExchangeController extends Controller
            
             if($tr_rasid && $tr_bord){
 
-                $output_data = Transaction::where('id',$request->rasid_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
-                $output_data2 = Transaction::where('id',$request->bord_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account'])->first();
+                $output_data = Transaction::where('id',$request->rasid_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account','referencedTransaction'])->first();
+                $output_data2 = Transaction::where('id',$request->bord_id)->with(['financeAccount','customer_exchange','tr_currency','bank_account','referencedTransaction'])->first();
                 DB::commit();
                 return  response()->json([
                     'status'=>true,
@@ -1154,39 +1188,51 @@ class ExchangeController extends Controller
     
     }
 
+
+    
     public function deleteTransfer(Request $request)
     {
-        DB::beginTransaction();
-            
-            try {
-              
-                $id=$request->id;
-                $transfer_tr1= Transaction::where('status', '=', '1')->where('transaction_type','transfer')->where('id',$id)->first();
-                $transfer_tr2= Transaction::where('status', '=', '1')->where('transaction_type','transfer')->where('order_id',$id)->first();
-                $transfer_tr3= Transaction::where('status', '=', '1')->where('transaction_type','commission')->where('order_id',$transfer_tr1->id)->first();
-
-                // if ($request->) {
-
+                        try {
+                            $rasid_id = $request->rasid_id;
+                            $bord_id = $request->bord_id;
+                            $commission_id = $request->commission_id;
+        
+                            $transfer_tr1= Transaction::where('status', '=', '1')->where('transaction_type','transfer')->where('id',$rasid_id)->first();
+                            $transfer_tr2= Transaction::where('status', '=', '1')->where('transaction_type','transfer')->where('ref_tra',$bord_id)->first();
+                            $transfer_tr3 = null;
+                            if ($commission_id) {
+                                $transfer_tr3 = Transaction::where('status', '=', '1')->where('transaction_type', 'commission')->where('id', $commission_id)->first();
+                            }
+        
+                            $transfer_tr1->update(['status'=>0]);
+                            $transfer_tr2->update(['status'=>0]);
+                            $transfer_tr3->update(['status'=>0]);
+                            $transfer_tr1->save();
+                            $transfer_tr2->save();
+                            $transfer_tr3->save();
                     
-                    // }
-                    $transfer_tr1->update(['status'=>0]);
-                    $transfer_tr2->update(['status'=>0]);
-                    $transfer_tr3->update(['status'=>0]);
- 
+                            DB::commit();
+                            return response()->json([
+                                            'status' => true,
+                                            'message' => 'عملیات انجام شد',
+                                        ], 204);
+                        } catch (Throwable $e) {
+                            DB::rollback();
+                            return response()->json([
+                                'status' => false,
+                                'message' => $e->getMessage(),
+                            ]);
+                        }
+
             
-                DB::commit();
-            return  response()->json([
-                        'status'=>true,
-                        'message'=>'عملیات انجام شد',
-                    ],204);
-            } catch (Throwable $e) {
-                DB::rollback();
-                return response()->json([
-                    'status' => false,
-                    'message' => $e->getMessage(),
-                ]);
-            }
+
+                        
+
+        
     }
+
+
+
     public function searchTransfers(Request $request){
     
         try {

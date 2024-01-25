@@ -41,7 +41,7 @@ class TransactionController extends Controller
             $limit = $request->has('limit') ? $request->limit : 10;
 
             $transaction = Transaction::where('status', '=', '1')
-            ->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')
+            ->with(['financeAccount','customer','tr_currency','bank_account','referencedTransaction'])->orderBy('id','desc')
             ->paginate($limit);
 
             if ($transaction->isEmpty()) {
@@ -64,10 +64,10 @@ class TransactionController extends Controller
                     $limit = $request->has('limit') ? $request->limit : 10;
 
                     $transaction_rasid_bord = Transaction::where('status', '=', '1')->where('ref_id',$id)
-                    ->with(['financeAccount','tr_currency','bank_account'])->paginate($limit);
+                    ->with(['financeAccount','tr_currency','bank_account','referencedTransaction'])->paginate($limit);
                     $customer = Customer::where('id',$id)->paginate($limit);
                     $transaction_order = Transaction::where('status', '=', '1')
-                    ->where('ref_id',$id)->where('transaction_type','order')->with(['financeAccount','tr_currency','bank_account'])->paginate($limit);
+                    ->where('ref_id',$id)->where('transaction_type','order')->with(['financeAccount','tr_currency','bank_account','referencedTransaction','referencedTransaction'])->paginate($limit);
                 
                     $rasid=Transaction::where('status', '=', '1')->where('ref_id',$id)->sum('amount');
                     $bord=Transaction::where('status', '=', '1')->where('ref_id',$id)->sum('amount_equal');
@@ -208,7 +208,6 @@ class TransactionController extends Controller
             'currency_equal'=>'nullable',
             'currency_rate'=>'required',
             'ref_id'=>'required',
-            'order_id'=>'nullable',
             'finance_acount_id'=>'required',
             'bank_acount_id'=>'nullable',
             'user_id'=>'required',
@@ -242,7 +241,7 @@ class TransactionController extends Controller
             $transaction_update = Transaction::where('id',$request->id)->update($transaction_values);
             if($transaction_update){
               
-                $output_data = Transaction::where('id',$request->id)->with(['financeAccount','customer','tr_currency','bank_account'])->first();
+                $output_data = Transaction::where('id',$request->id)->with(['financeAccount','customer','tr_currency','bank_account','referencedTransaction'])->first();
 
                 DB::commit();
                 return  response()->json([

@@ -33,6 +33,7 @@ export default {
             ],
             showModal: false,
             searchQuery: '',
+            isLoading:false,
             start_date:'',
             end_date:'',
             rasid_bord_type:'',
@@ -72,25 +73,6 @@ export default {
             // Equals v-model
             equalcurrencyModel: '',
 
-            // for edit
-
-            edit_rasid_bord: '',
-            // edit amount
-            editAmount: "",
-            editCurrency_rate: '',
-            editEqual_amount: '',
-            editDesc: '',
-            editDate: '',
-            editDateString: '',
-            editCurrencyModel: '',
-            editSelectedDakhl: '',
-            editbanks: [],
-            editSelectedCustomer: null,
-            editCustomer: [],
-            editEqualcurrencyModel: '',
-
-            newExpense: [],
-
             // pagination
             currentPage: 1,
             totalPages: 1,
@@ -105,16 +87,10 @@ export default {
     },
 
     methods: {
-        // select(date) {
-        //     this.transaction_date = date.toString();
-
-
-        // },
-
+    
         //   this is for getting the jalali date value
         select_start_date(date) {
             this.start_date = date.toString();
-
         },
 
         select_end_date(date) {
@@ -205,14 +181,18 @@ export default {
             this.getBanks(this.currencyModel);
         },
 
-        editChange_currency() {
-            this.getBanksForEdit(this.editCurrencyModel);
-        },
-
+    
         async getTransaction(page = 1) {
+            this.isLoading=true;
+           try {
             let d= this.$route.params.id
             const response = await axios.get('/api/bankdetails/'+d);
             this.transactions = response.data.banksTransaction;
+           } catch (error) {
+            console.log(error.message);
+           }finally{
+            this.isLoading=false;
+           }
         },
         prevPage() {
             if (this.currentPage > 1) {
@@ -233,92 +213,7 @@ export default {
             // console.log(this.transactions);
         },
 
-        async editTransactionFunc(id) {
-            const response = await axios.get(`/api/transaction/${id}`);
-            this.editTransaction = response.data;
-            this.openModaledit();
-            this.edit_rasid_bord = this.editTransaction[0].rasid_bord
-            this.editAmount = this.editTransaction[0].amount;
-            this.editCurrency_rate = this.editTransaction[0].currency_rate;
-            this.editEqual_amount = this.editTransaction[0].amount_equal;
-            this.editDesc = this.editTransaction[0].desc;
-            this.editDate = this.editTransaction[0].date;
-            this.editCurrencyModel = this.editTransaction[0].currency;
-            this.editEqualcurrencyModel = this.editTransaction[0].currency_equal;
-            this.getBanksForEdit(this.editCurrencyModel)
-            this.getCustomerForEdit(this.editTransaction[0].ref_id);
-
-
-        },
-        async submitEditTransaction() {
-            // console.log("Submit edit transaction", this.editSelectedCustomer.id);
-            const response = await axios.post(`/api/updateTransaction/${id}`, {
-                id: this.editTransaction[0].id,
-                rasid_bord: this.editasid_bord,
-                transaction_type: this.editasid_bord,
-                ref_id: this.editSelectedCustomer.id,
-                amount: this.editAmount,
-                currency: this.editCurrencyModel,
-                amount_equal: this.editEqual_amount,
-                currency_equal: this.editEqualcurrencyModel,
-                currency_rate: this.editCurrency_rate,
-                bank_acount_id: this.editSelectedDakhl,
-                date: this.editDate,
-                desc: this.editDesc,
-                user_id: 1,
-            });
-
-
-            if (response.data != null) {
-
-                // console.log("in data!=null");
-                if (response.data.status === false) {
-
-                    if (response.data.message != null) {
-                        this.showalert(response.data.message, "error", "error!");
-                    } else {
-                        this.errors = response.data.error;
-
-                    }
-
-                } else {
-                    // console.log("else true");
-
-                    this.errors = {};
-                    this.transactions.push(response.data.new_data);
-                    this.showModal=false;
-                    this.showalert(response.data.message, "success", "success");
-
-                    // console.log(response.data);
-                }
-            }
-            //  console.log("Successfully updated", this.editTransaction);
-
-        },
-
-        async getBanksForEdit(id) {
-            try {
-                const response = await axios.get('/api/getbankbyid/' + id);
-                this.editbanks = response.data.banks;
-                // console.log("getNBanks",this.editbanks);
-                this.editSelectedDakhl = this.editbanks[0].id;
-
-            } catch (error) {
-                console.log(error.message);
-            }
-        },
-        async getCustomerForEdit(id) {
-            // console.log("getCustomerForEdit",id);
-            try {
-                const response = await axios.get('/api/customer');
-                this.editCustomer = response.data.customers;
-                this.editSelectedCustomer = this.editCustomer.length > 0 ? this.editCustomer.find(custom => custom.id === id) : '';
-                // console.log(this.editCustomer.length > 0 ? this.editCustomer.find(custom => custom.id === id).name : '');
-
-            } catch (error) {
-                console.log(error.message);
-            }
-        },
+    
         async deleteTransaction(id) {
             if (!window.confirm('آیا میخواهید که رسید برد حذف شود؟')) {
                 return;
@@ -415,128 +310,7 @@ export default {
             </div>
             <!-- end card -->
           </div>
-        <div class="col-xl-4">
-            <div class="card">
-
-                <!-- edit modal start -->
-                <div class="col-sm-8">
-                    <div class="text-sm-end">
-                        <b-modal v-model="showModal" title="ویرایش مصرف" title-class="text-black font-18" body-class="p-3" hide-footer>
-                            <b-alert v-model="isError" class="mb-4" variant="danger" dismissible>{{ this.formError
-        }}</b-alert>
-
-                            <form id="category_insert" autocomplete="on" class="form-horizontal form-label-left" @submit.prevent="storeTransaction">
-
-                                <div class="form-group">
-                                    <div class="col-sm-12 col-xs-12">
-                                        <label for="supplier">نوعیت:
-                                        </label>
-                                        <select class="form-control form-control-lg  required" v-model="edit_rasid_bord" required>
-                                            <option disabled value="">ابتدا نوعیت را انتخاب کنید.</option>
-                                            <option value="rasid">رسید</option>
-                                            <option value="bord">برد</option>
-                                        </select>
-                                        <span class="text-danger error-text currency_error"></span>
-                                    </div>
-                                    <div class="col-sm-12 col-xs-12">
-
-                                        <label for="supplier">انتخاب شخص / حساب :
-                                        </label>
-
-                                        <div>
-
-                                            <div>
-                                                <v-select v-model="editSelectedCustomer" :options="editCustomer" label="name" placeholder="مشتری مورد نظر خود را سرچ کنید" class="searchCustomer" />
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-4 col-xs-12">
-                                            <label for="supplier">واحد پول :</label>
-                                            <select class="form-control form-control-lg select2 required" @change="editChange_currency" v-model="editCurrencyModel" required>
-                                                <option disabled selected> واحد</option>
-                                                <option v-for="currency in currencies" :key="currency.id" :value="currency.id">{{currency.name}} {{currency.sign}}</option>
-                                            </select>
-                                            <span class="text-danger error-text currency_error"></span>
-                                        </div>
-                                        <div class="col-sm-8 col-xs-12">
-                                            <label for="name">مقدار پول :‌</label>
-                                            <input type="number" id="amount" v-model="editAmount" @input="editCalculateEqualAmount" class="form-control required">
-                                            <span class="text-danger error-text amount_error"></span>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-sm-12 col-xs-12">
-                                        <label for="supplier">انتخاب دخل :
-                                        </label>
-                                        <select class="form-control form-control-lg select2 required" v-model="editSelectedDakhl">
-                                            <option disabled selected>ابتدا واحد پول را انتخاب کنید.</option>
-                                            <option v-for="editbank in editbanks" :key="editbank.id" :value="editbank.id">{{editbank.account_name}}</option>
-                                        </select>
-                                        <span class="text-danger error-text dakhl_error"></span>
-                                    </div>
-
-                                    <div class="row mb-2">
-                                        <div class="col-sm-4 col-xs-12">
-                                            <label for="name">نرخ ارز :‌</label>
-                                            <input type="number" id="editCurrency_rate" v-model="editCurrency_rate" @input="editCalculateEqualAmount" class="form-control required">
-                                            <span class="text-danger error-text currency_rate_error"></span>
-
-                                        </div>
-                                        <div class="col-sm-8 col-xs-12">
-                                            <label for="factore_date">تاریخ :
-                                            </label>
-                                            <div class="input-group ">
-                                                <!-- @alireza-ab/vue3-persian-datepicker -->
-                                                <date-picker @select="editSelect" mode="single" type="date" locale="fa" :column="1">
-                                                </date-picker>
-                                                <span class="">{{editDate}}</span>
-                                            </div>
-                                            <span class="text-danger error-text afrad_error" v-if="errors.date">{{errors.date[0]}}</span>
-                                        </div>
-                                    </div>
-                                    <!-- <label>رسید به حساب مشتری :‌ </label> -->
-                                    <div class="row">
-                                        <div class="col-sm-4 col-xs-12">
-                                            <label for="supplier">واحد پول رسید:</label>
-                                            <select class="form-control form-control-lg select2 required" v-model="editEqualcurrencyModel">
-                                                <option disabled selected> واحد</option>
-                                                <option v-for="currency in currencies" :key="currency.id" :value="currency.id">{{currency.name}} {{currency.sign}}</option>
-                                            </select>
-                                            <span class="text-danger error-text currency_error"></span>
-                                        </div>
-                                        <div class="col-sm-8 col-xs-12">
-                                            <label for="name"> مقدار پول رسید:‌</label>
-                                            <input type="number" id="amount" v-model="editEqual_amount" class="form-control required">
-                                            <span class="text-danger error-text amount_error"></span>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-12 col-xs-12">
-                                        <br>
-
-                                        <textarea id="disc" class="form-control" autocomplete="on" v-model="editDesc" rows="4" placeholder="توضیحات"></textarea>
-                                        <span class="text-danger error-text disc_error"></span>
-
-                                    </div>
-
-                                </div>
-                                <div class="text-end pt-5 mt-1 g-2">
-                                    <b-button variant="danger" @click="closeModal">بستن</b-button>
-                                    <b-button type="submit" variant="success" class="ms-1 ml-2">ساختن</b-button>
-                                </div>
-                            </form>
-
-                        </b-modal>
-                    </div>
-                </div>
-                <!-- edit modal end -->
-
-
-            </div>
-        </div>
-        <!-- end col -->
-
+   
         <div class="col-xl-12">
             <div class="card">
 
@@ -554,81 +328,69 @@ export default {
                     </div>
                     <div class="row">
                         <div class="col-sm-12 ">
+                            <div v-if="isLoading">
+                                <p class="text-center font-size-20">کمی صبر نمائید...</p>
+                              </div>
+                            <div v-else>
+                                <div class="table-responsive" v-if="transactions.length">
+                                    <table class="table table-centered table-nowrap">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center">آیدی</th>
+                                                <th class="text-center">تاریخ</th>
+                                                <th class="text-center">نام مشتری</th>
+                                                <th class="text-center">رسید برد</th>
+                                                <th class="text-center">نمبر چک</th>
+                                                <th class="text-center">مقدار پول</th>
+                                                <th class="text-center">واحد</th>
+                                                <th class="text-center">دخل</th>
+                                                <th class="text-center">تفصیلات</th>
+                                                <th class="text-center">توسط</th>
+    
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="transaction in transactions" :key="transaction?.id">
+                                                <td>{{transaction?.id}}</td>
+                                                <td>{{transaction?.date}}</td>
+                                                <td v-if="transaction.customer!=null">{{ transaction.customer?.name}}</td>
+                                                <td v-else>{{ transaction.finance_account?.account_name}}</td>
+                                                <td>
+                                                    <span class="badge  font-size-12" :class="transaction.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">
+                                                    {{transaction.rasid_bord}}
+                                                    </span>
+                                                </td>
+                                                <td>{{transaction.check_number}}</td>
+                                                <td>{{transaction.amount}}</td>
+                                                <td>{{transaction.tr_currency.name}}</td>
+                                                <td v-if="transaction.bank_account!=null">{{transaction.bank_account?.account_name}}</td>
 
-                            <div class="table-responsive" v-if="transactions.length">
-                                <table class="table table-centered table-nowrap">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center">آیدی</th>
-                                            <th class="text-center">تاریخ</th>
-                                            <th class="text-center">نام مشتری</th>
-                                            <th class="text-center">رسید برد</th>
-                                            <th class="text-center">نمبر چک</th>
-                                            <th class="text-center">مقدار پول</th>
-                                            <th class="text-center">واحد</th>
-                                            <th class="text-center">دخل</th>
-                                            <th class="text-center">تفصیلات</th>
-                                            <th class="text-center">توسط</th>
-                                            <th class="text-center">عملیه</th>
-
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="transaction in transactions" :key="transaction?.id">
-                                            <td>{{transaction?.id}}</td>
-                                            <td>{{transaction?.date}}</td>
-                                            <td v-if="transaction.customer!=null">{{ transaction.customer?.name}}</td>
-                                            <td v-else>{{ transaction.finance_account?.account_name}}</td>
-                                            <td>
-                                                <span class="badge  font-size-12" :class="transaction.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">
-                                                {{transaction.rasid_bord}}
-                                                </span>
-                                            </td>
-                                            <td>{{transaction.check_number}}</td>
-                                            <td>{{transaction.amount}}</td>
-                                            <td>{{transaction.tr_currency.name}}</td>
-                                            <td v-if="transaction.bank_account!=null">{{transaction.bank_account?.account_name}}</td>
-
-
-                                            <td v-else>{{ transaction.finance_account?.account_name}}</td>
-
-                                            <td>{{transaction.desc}}</td>
-                                            <td>{{transaction.user_id}}</td>
-
-                                            <td>
-
-                                                <button class="btn btn-xs">
-                                                    <i class="fas fa-pencil-alt text-success me-1" @click="editTransactionFunc(transaction.id)"></i>
-                                                </button>
-
-                                                <button class="btn btn-xs">
-                                                    <i class="fas fa-trash-alt text-danger me-1" @click="deleteTransaction(transaction.id)"></i>
-                                                </button>
-
-                                            </td>
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-
-                                <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
-                                    <li class="page-item">
-                                        <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
-                                            <i class="mdi mdi-chevron-left"></i>
-                                        </a>
-                                    </li>
-                                    <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
-                                        <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
-                                            <i class="mdi mdi-chevron-right"></i>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div v-else class="text-center font-size-20">
-                                نتیجه مورد نظر یافت نشد!
+                                                <td v-else>{{ transaction.finance_account?.account_name}}</td>
+                                                <td>{{transaction.desc}}</td>
+                                                <td>{{transaction.user_id}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+    
+                                    <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
+                                        <li class="page-item">
+                                            <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
+                                                <i class="mdi mdi-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                        <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
+                                            <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
+                                                <i class="mdi mdi-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div v-else class="text-center font-size-20">
+                                    نتیجه مورد نظر یافت نشد!
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -128,11 +128,10 @@
 </div>
 <!-- edit modal end -->
 <div v-if="isLoading">
-    <!-- Loader or loading message here -->
-    <p class="text-center font-size-20">Loading...</p>
+    <p class="text-center font-size-20">کمی صبر نمائید...</p>
   </div>
 <div class="" v-else>
-    <div class="table-responsive" v-if="financeAccounts.length > 0">
+    <div class="table-responsive" v-if="financeAccounts?.length">
         <table class="table table-centered table-nowrap">
             <thead>
                 <tr>
