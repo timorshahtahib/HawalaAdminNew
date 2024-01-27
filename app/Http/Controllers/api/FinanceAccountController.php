@@ -233,59 +233,36 @@ if(!$validator->passes()){
             return response()->json(['message'=>$e->getMessage()]);
         }
 }
-    public function searchBanksByType(Request $request){
-        $tr_type = $request->tr_type;
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
+
 
     
-        // Building the query
-        $searchBank = FinanceAccount::where('type', $tr_type);
-    
-       
-    }
+public function filterFinanceAccount(Request $request) {
+   
+            try {
+                $limit = $request->has('limit') ? $request->limit : 10;
+                $finance_type = $request->type;
+                $bank_type = $request->account;
+            
+                $financeAcc = FinanceAccount::where('status', 1);
+            
+                if ($finance_type != 'all') {
+                    $financeAcc->where('type', '=', $finance_type);
+                }
+                
+                if ($bank_type != 'all') {
+                    $financeAcc->where('account', '=', $bank_type);
+                }
+            
+                $totalPages = $financeAcc->paginate($limit)->lastPage();
+                $result = $financeAcc->paginate($limit);
+                return response()->json(['financeAccounts' => $result, 'total_pages' => $totalPages]);
 
-    // public function filterfinanceAccount(Request $request) {
-    //     $finance_type = $request->type;
-    //     // $start_date = $request->start_date;
-    //     // $end_date = $request->end_date;
-    
-    //     // Building the query
-    //     $financeAcc = FinanceAccount::where('status',1);
+            } catch (Throwable $e) {
+               return response()->json(['status'=>false,"message"=>$e->getMessage()]);
+            }
+}
 
-    //     if ($finance_type!='all') {
-    //         $financeAcc->where('type', $finance_type);
-    //     }
-    // // because finance account doesn't
-    //     // if ($start_date) {
-    //     //     $$financeAcc->whereDate('date', '>=', $start_date);
-    //     // }
-    
-    //     // if ($end_date) {
-    //     //     $$financeAcc->whereDate('date', '<=', $end_date);
-    //     // }
-    
-    //     $result = $financeAcc->orderBy('id','desc')->get();
-    
-    //     return response()->json(['financeAccounts' => $result]);
-    // }
-    public function filterfinanceAccount(Request $request) {
-        if ($request->has('type')) {
-            $finance_type = $request->type;
-        } else {
-            // Set a default value or handle the case when 'type' is not present in the request.
-            $finance_type = 'all';
-        }
-    
-        $financeAcc = FinanceAccount::where('status', 1);
-    
-        if ($finance_type != 'all') {
-            $financeAcc->where('type', $finance_type);
-        }
-    
-        $result = $financeAcc->get();
-    
-        return response()->json(['financeAccounts' => $result]);
-    }
+
+
     
 }

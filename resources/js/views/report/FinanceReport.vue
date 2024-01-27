@@ -16,6 +16,7 @@ export default {
       currency_count:0,
       finance_count:0,
       isLoading:false,
+      allbalances:[],
       // pagination
       currentPage: 1,
       totalPages: 1,
@@ -27,6 +28,7 @@ export default {
   },
   mounted() {
     this.getBanksBalance();
+    this.getAllBalances();
   },
   methods:{
     async getBanksBalance(page = 1) {
@@ -58,6 +60,15 @@ export default {
         },
         gobankDesc(id){
             this.$router.push({ name: 'bankDetails', params: { id } });
+        },
+
+        async getAllBalances(){
+              try {
+                const response = await axios.get('/api/getallbalances');
+                this.allbalances = response.data;
+              } catch (error) {
+                console.log(error.message);
+              }
         }
   }
 };
@@ -111,21 +122,46 @@ export default {
         </div>
 
         <div class="col-md-4">
-            <div class="card mini-stats-wid">
-                <div class="card-body">
+            <div class="card ">
+                <!-- <div class="card-body"> -->
                   <div class="d-flex">
-                    <div class="flex-grow-1">
-                      <p class="text-muted fw-medium">کل سرمایه</p>
-                      <h4 class="mb-0">$1,235</h4>
+                    <div class="">
+                      <div v-if="isLoading">
+                        <!-- Loader or loading message here -->
+                        <p class="text-center font-size-20">....کمی صبر نمائید</p>
+                      </div>
+                      <div class="card text-center" v-else>
+                        <div class="card-body">
+                          <h4 class="card-titl badge  font-size-20 text-center text-black-50">بیلانس</h4>
+                          <div class="table-responsive mb-0">
+                            <div>
+                              <table class="table table-centered table-nowrap">
+                                <thead>
+                                  <tr>
+                                    <th>واحد</th>
+                                    <th>کل رسید </th>
+                                    <th>کل برداشتها</th>
+                                    <th>بیلانس</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  
+                                  <tr v-for="(item, index) in allbalances" :key="index">
+                                    <td>{{ item.currency }}</td>
+                                    <td><span class="badge  font-size-11" :class="item.rasid > 0 ? 'bg-success' : 'bg-danger'">{{ item.rasid }} </span></td>
+                                    <td> <span class="badge font-size-11" :class="item.bord > 0 ? 'bg-success' : 'bg-danger'"> {{ item.bord }}</span></td>
+                                    <td><span class="badge font-size-11" :class="item.balance > 0 ? 'bg-success': 'bg-danger'"> {{ item.balance }}</span></td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
             
-                    <div class="mini-stat-icon avatar-sm align-self-center rounded-circle bg-primary">
-                      <span class="avatar-title">
-                        <i class="bx bx-purchase-tag-alt font-size-24"></i>
-                      </span>
-                    </div>
                   </div>
-                </div>
+                <!-- </div> -->
                 <!-- end card-body -->
               </div>
         </div>

@@ -37,4 +37,9 @@ class Currency extends Model
     {
         return $this->hasMany(IncomeExp::class);
     }
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+  
 }

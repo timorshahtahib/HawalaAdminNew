@@ -41,7 +41,7 @@ class CustomerController extends Controller
     {
         $validator = Validator::make($request->all(),[
                 'name' => 'required',
-                'last_name' => 'required',
+                // 'last_name' => 'required',
                 'cu_number'=>'',
                 'phone' => 'required|unique:customer,phone',
                 'username' => 'required|unique:customer,username',
@@ -57,7 +57,7 @@ class CustomerController extends Controller
         ],
         [
             'name.required' =>'نام ضروری است',
-            'last_name.required'=>'نام خانوادگی ضروری است.',
+            // 'last_name.required'=>'نام خانوادگی ضروری است.',
             'phone.required'=>'شماره تماس ضروری است',
             'phone.unique'=>'شماره تماس از قبل موجود است',
             'username.required'=>'نام کاربری ضروری است',
@@ -216,7 +216,6 @@ class CustomerController extends Controller
             $query->where(function ($query) use ($searchTerm) {
                 $query->where('name',  'like', '%' . $searchTerm . '%')
                 ->orWhere('id',  'like', '%' . $searchTerm . '%')
-                ->orWhere('last_name',  'like', '%' . $searchTerm . '%')
                     ->orWhere('cu_number',  'like', '%' . $searchTerm . '%')
                     ->orWhere('phone',  'like', '%' . $searchTerm . '%')
                     ->orWhere('address',  'like', '%' . $searchTerm . '%')
@@ -246,14 +245,14 @@ class CustomerController extends Controller
 
 
     public function getCustomerBalance($customerId) {
-        $transactions = Transaction::with('eq_transaction')
+        $transactions = Transaction::with('eq_currency')
             ->where('ref_id', $customerId)
             ->get();
     
         $balances = [];
     
         foreach ($transactions as $transaction) {
-            $currencyName = $transaction->eq_transaction->name; // Assuming 'name' is the field in the 'currency' table
+            $currencyName = $transaction->eq_currency->name; // Assuming 'name' is the field in the 'currency' table
             // $amount = $transaction->amount;
             $amount = $transaction->amount_equal;
             $type = $transaction->rasid_bord; // 'credit' or 'debit'
@@ -279,4 +278,9 @@ class CustomerController extends Controller
         ///return response()->json($balances);
         return $balances;
     }
+
+  
+    
+
+
 }

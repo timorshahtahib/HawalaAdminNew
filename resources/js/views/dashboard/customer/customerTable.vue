@@ -8,21 +8,15 @@
                 <b-alert v-model="isError" class="mb-4" variant="danger" dismissible>{{ this.formError
 }}</b-alert>
                 <form @submit.prevent="storeCustomer" enctype="multipart/form-data">
-                    <div class="row flex justify-between">
+                    <div class="row flex" style="justify-content: center;">
                         <div class="row flex justify-between">
-                            <div class="col-md-6 col-sm-12 col-lg-6">
+                            <div class="col-md-12 col-sm-12 col-lg-12">
                                 <div class="mb-3">
-                                    <label for="name">نام</label>
-                                    <input id="name" v-model="name" type="text" class="form-control" placeholder="نام خود را وارد کنید" @blur="phoneValidation('name')" required/>
-                                </div>
-                                <!-- <span class="text-danger error-text afrad_error" v-if="nameError">{{errors.name}}</span> -->
-                            </div>
-                            <div class="col-sm-12 col-md-6 col-lg-6">
-                                <div class="mb-3">
-                                    <label for="last_name">نام خانواگی</label>
-                                    <input id="lastName" v-model="last_name" type="text" class="form-control" placeholder="نام خانوادگی خود را وارکنید" required/>
+                                    <label for="name" class="pr-2">نام کامل </label>
+                                    <input id="name" v-model="name" type="text" class="form-control" placeholder="نام کامل خود را وارد کنید" @blur="phoneValidation('name')" required/>
                                 </div>
                             </div>
+                        
                         </div>
 
                         <div class="row flex justify-between">
@@ -57,13 +51,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12">
+                        <div class="row col-12">
                             <div class="mb-3">
                                 <label for="address">آدرس</label>
                                 <textarea v-model="address" id="address" cols="30" rows="4" class="form-control" placeholder="آدرس خود را وارد کنید" required></textarea>
                             </div>
                         </div>
-                        <div class="col-12">
+                        <div class="row col-12">
                             <div class="mb-1">
                                 <label for="desc">توضیحات</label>
                                 <textarea v-model="desc" id="desc" cols="30" rows="4" class="form-control" placeholder="توضیحات خود را وارد کنید"></textarea>
@@ -96,21 +90,15 @@
             <b-alert v-model="isError" class="mb-4" variant="danger" dismissible>{{ this.formError
 }}</b-alert>
             <form @submit.prevent="editSubmitCustomerForm" enctype="multipart/form-data">
-                <div class="row flex justify-between">
-                    <div class="row flex justify-between">
-                        <div class="col-md-6 col-sm-12 col-lg-6">
+                <div class="row flex " style="justify-content: center;">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-lg-12">
 
-                            <div class="mb-3">
-                                <label for="editname">نام</label>
-                                <input id="editname" v-model="editname" type="text" class="form-control" placeholder="نام خود را وارد کنید" required/>
-                            </div>
+                                <label for="editname">نام کامل</label>
+                                <input id="editname" v-model="editname" type="text" class="form-control" placeholder="نام کامل خود را وارد کنید" required/>
+                           
                         </div>
-                        <div class="col-sm-12 col-md-6 col-lg-6">
-                            <div class="mb-3">
-                                <label for="editLastName">نام خانواگی</label>
-                                <input id="editLastName" v-model="editLastName" type="text" class="form-control" placeholder="نام خانوادگی خود را وارکنید" required/>
-                            </div>
-                        </div>
+
                     </div>
                     <div class="row flex justify-between">
                         <div class="col-md-6 col-sm-12 col-lg-6">
@@ -126,13 +114,13 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12">
-                        <div class="mb-3">
+                    <div class="row col-12 juste">
+                        <div class=" mb-3">
                             <label for="editAddress">آدرس</label>
                             <textarea v-model="editAddress" id="editAddress" cols="30" rows="4" class="form-control" placeholder="آدرس خود را وارد کنید"></textarea>
                         </div>
                     </div>
-                    <div class="col-12">
+                    <div class="row col-12">
                         <div class="mb-1">
                             <label for="editDesc">توضیحات</label>
                             <textarea v-model="editDesc" id="editDesc" cols="30" rows="4" class="form-control" placeholder="توضیحات خود را وارد کنید"></textarea>
@@ -140,7 +128,7 @@
                     </div>
                 </div>
 
-                <div class="text-end pt-5 mt-1 g-2">
+                <div class=" text-end pt-5 mt-1 g-2 ml-5">
                     <b-button variant="danger" @click="editshowModal = false">بستن</b-button>
                     <b-button type="submit" variant="success" class="ms-1 ml-2">آپدیت</b-button>
                 </div>
@@ -159,8 +147,7 @@
             <thead>
                 <tr>
                     <th>آیدی</th>
-                    <th>نام</th>
-                    <th>نام خانواگی</th>
+                    <th>نام کامل</th>
                     <th>شماره مسلسل مشتری</th>
                     <th>شماره تماس</th>
                     <th>توضیحات</th>
@@ -175,9 +162,6 @@
                         {{ customer.id }}
                     </td>
                     <td>{{ customer.name }}</td>
-                    <td>
-                        <p class="mb-1">{{ customer.last_name }}</p>
-                    </td>
                     <td>{{ customer.cu_number }}</td>
                     <td>{{ customer.phone }}</td>
                     <td>{{ customer.desc }}</td>
@@ -231,7 +215,7 @@
 </template>
 
 <script>
-
+import { createStore } from 'vuex';
 import axios from 'axios';
 import Swal from 'sweetalert2'
 export default {
@@ -250,7 +234,6 @@ export default {
 
             name: '',
             phoneError:'',
-            last_name: '',
             phone: '',
             username: '',
             password: '',
@@ -264,7 +247,6 @@ export default {
             editshowModal: false,
 
             editname: '',
-            editLastName: '',
             editUsername: '',
             editPassword: '',
             editPhone: '',
@@ -320,7 +302,6 @@ export default {
         closeModal(){
             this.showModal=false;
             this.name = '';
-            this.last_name = '';
             this.phone = '';
             this.username = '';
             this.password = '';
@@ -348,7 +329,7 @@ export default {
         },
         async storeCustomer() {
             this.submitted = true;
-            if (this.name && this.last_name && this.phone && this.username && this.password) {
+            if (this.name  && this.phone && this.username && this.password) {
 
                 const response = await axios.post("/api/customer", {
                     name: this.name,
@@ -375,7 +356,6 @@ export default {
 
                         this.errors = {};
                         this.name = '';
-                        this.last_name = '';
                         this.phone = '';
                         this.username = '';
                         this.password = '';
@@ -408,7 +388,6 @@ export default {
             this.editCust = response.data.customer;
             this.openEditModal();
             this.editname = this.editCust.name;
-            this.editLastName = this.editCust.last_name;
             this.editPhone = this.editCust.phone;
 
             this.editImage = this.editCust.image;
@@ -423,7 +402,6 @@ export default {
             const responseUpdate = await axios.post('/api/updatecustomer', {
                 id:this.editCust.id,
                 name: this.editname,
-                last_name: this.editLastName,
                 phone: this.editPhone,
                 image: this.editImage,
                 address: this.editAddress,
@@ -442,7 +420,6 @@ export default {
                 } else {
                     this.errors = {};
                     this.editname = '';
-                    this.editLastName = '';
                     this.editPhone = null;
                     this.image = null;
                     this.editAddress = null;

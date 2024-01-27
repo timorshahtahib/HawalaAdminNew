@@ -163,7 +163,6 @@
           const responseUpdate = await axios.post(`/api/updatecustomer`, {
             id: id,
             name: this.editname,
-            last_name: this.editLastName,
             phone: this.editPhone,
             image: this.ediPhoto,
             address: this.editAddress,
@@ -660,20 +659,15 @@
                     <b-alert v-model="isError" class="mb-4" variant="danger" dismissible>{{ this.formError
           }}</b-alert>
                     <form @submit.prevent="editCustomerSubmitForm(editCust.id)" enctype="multipart/form-data">
-                      <div class="row flex justify-between">
+                      <div class="row flex" style="justify-content: center;">
                         <div class="row flex justify-between">
-                          <div class="col-md-6 col-sm-12 col-lg-6">
+                          <div class="col-md-6 col-sm-12 col-lg-12">
                             <div class="mb-3">
                               <label for="editname">نام</label>
                               <input id="editname" v-model="editname" type="text" class="form-control" placeholder="نام خود را وارد کنید" />
                             </div>
                           </div>
-                          <div class="col-sm-12 col-md-6 col-lg-6">
-                            <div class="mb-3">
-                              <label for="editLastName">نام خانواگی</label>
-                              <input id="editLastName" v-model="editLastName" type="text" class="form-control" placeholder="نام خانوادگی خود را وارکنید" />
-                            </div>
-                          </div>
+                       
                         </div>
                         <div class="row flex justify-between">
                           <div class="col-md-6 col-sm-12 col-lg-6">
@@ -718,9 +712,9 @@
                     <b-alert v-model="isError" class="mb-4" variant="danger" dismissible>{{ this.formError
                 }}</b-alert>
                     <form @submit.prevent="changeUsernameFunc">
-                      <div class="row flex justify-between">
+                      <div class="row flex justify-between" style="justify-content: center;">
                         <div class="row flex justify-between">
-                          <div class="col-md-6 col-sm-12 col-lg-6">
+                          <div class="col-md-6 col-sm-12 col-lg-12">
                             <div class="mb-3">
                               <label for="editUsername">نام کاربری</label>
                               <input id="editUsername" v-model="editUsername" type="text" class="form-control" placeholder="نام کاربری خود را وارد کنید" required />
@@ -745,15 +739,14 @@
                     <b-alert v-model="isError" class="mb-4" variant="danger" dismissible>{{ this.formError
                       }}</b-alert>
                     <form @submit.prevent="changePasswordfunc" enctype="multipart/form-data">
-                      <div class="row flex justify-between">
-                        <div class="row flex justify-between">
-                          <div class="col-md-6 col-sm-12 col-lg-6">
+                      <div class="row flex " style="justify-content: center;">
+                          <div class="col-md-12 col-sm-12 col-lg-12">
                             <div class="mb-3">
                               <label for="editPassword">رمز عبور</label>
                               <input id="editPassword" v-model="editPassword" type="password" class="form-control" placeholder="رمز خود را وارد کنید" required />
                             </div>
                           </div>
-                        </div>
+                        
                       </div>
                       <div class="text-end pt-5 mt-1 g-2">
                         <b-button variant="danger" @click="showEditPasswordModal = false">بستن</b-button>

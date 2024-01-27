@@ -53,7 +53,7 @@ export default {
 
             // does has an error 
             amount: 0,
-            currency_rate: 0.00,
+            currency_rate: 1.00,
             equal_amount: 0,
 
             // for setting the current date
@@ -75,7 +75,7 @@ export default {
             edit_rasid_bord: '',
             // edit amount
             editAmount: "",
-            editCurrency_rate: 0.00,
+            editCurrency_rate: 1.00,
             editEqual_amount: 0,
             editDesc: '',
             editDate: '',

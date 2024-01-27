@@ -20,16 +20,14 @@
                     </select>
                   </div>
                   <div class="mb-3 col-lg-2">
-                    <label for="email">تاریخ شروع</label>
-                    <date-picker @select="select_start_date" mode="single" type="date" locale="fa" :column="1" required>
-                    </date-picker>
+                    <label for="email">نوع  </label>
+                    <select class="form-control form-control-lg  required" v-model="account">
+                        <option value="all">All</option>
+                        <option value="bank">بانکها</option>
+                        <option value="income">درامدها</option>
+                        <option value="expense">مصارف</option>
+                    </select>
                   </div>
-
-                  <div class="mb-3 col-lg-2">
-                    <label for="email">تاریخ ختم</label>
-                    <date-picker @select="select_end_date" mode="single" type="date" locale="fa" :column="1" required>
-                    </date-picker>
-                  </div>    
                   <div class="col-lg-2 align-self-center">
                      <div class="d-grid">
                     <input
@@ -225,8 +223,7 @@ export default {
            
               // search
               type_of_banks:'',
-            start_date:'',
-            end_date:'',
+              account:'',
             // pagination
             currentPage: 1,
             totalPages: 1,
@@ -237,6 +234,7 @@ export default {
     mounted() {
         this.getFinanceAccount();
         this.type_of_banks='all'
+        this.account='all'
     },
 
     methods: {
@@ -402,10 +400,10 @@ export default {
         async financetypefilter() {
             const response = await axios.post('/api/financetypefilter', {
                 type:this.type_of_banks ,
-                // start_date:this.start_date,
-                // end_date:this.end_date,
+                account:this.account,
             });
-            this.financeAccounts = response.data.financeAccounts;
+            this.financeAccounts = response.data.financeAccounts.data;
+            // console.log(this.financeAccounts);
         },
     },
 }

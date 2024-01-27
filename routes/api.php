@@ -98,6 +98,9 @@ Route::get('/bankbalance',[ReportFinanceController::class, 'getBankBalance']);
 // Route::get('/bankdetails/{id}',[ReportFinanceController::class, 'getBanksTransaction']);
 Route::get('/bankdetails/{id}',[ReportFinanceController::class, 'getBanksTransaction']);
 Route::post('/filterBankTransactions',[ReportFinanceController::class, 'filterBankTransactions']);
+
+// get all balances
+Route::get('/getallbalances',[ReportFinanceController::class, 'getAllBalances']);
 // for getting the customer balance
 // Route::get('/getcustomerbalance/{id}',[CustomerController::class, 'getCustomerBalance']);
 Route::get('/customerblance/{customerId}', [CustomerController::class, 'getCustomerBalance']);

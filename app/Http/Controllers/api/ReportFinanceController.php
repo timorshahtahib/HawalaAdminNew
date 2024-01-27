@@ -83,42 +83,6 @@ class ReportFinanceController extends Controller
             return response()->json(['searchBank' => $result]);
         }
         
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
-
-    public function getUserAllPaindAndLoan(){
-
-    }
-
     public function filterAllTransaction(Request $request) {
         $transaction_type = $request->transaction_type;
         $rasid_bord = $request->rasid_bord;
@@ -175,4 +139,46 @@ class ReportFinanceController extends Controller
         $currency_count= Currency::where('status',1)->count();
         return response()->json($currency_count);
     }
+
+
+    public function getAllBalances() {
+        $transactions = Transaction::select('currency', 'rasid_bord', DB::raw('SUM(amount) as total_amount'))
+            ->groupBy('currency', 'rasid_bord')
+            ->with('tr_currency') // Assuming the relationship name is tr_currency
+            ->get();
+    
+        $balances = [];
+    
+        foreach ($transactions as $transaction) {
+            $currencyName = $transaction->tr_currency->name; // Accessing the currency name through the relationship
+    
+            $rasidBord = $transaction->rasid_bord;
+            if (!isset($balances[$currencyName])) {
+                $balances[$currencyName] = [
+                    'currency' => $currencyName,
+                    'rasid' => 0,
+                    'bord' => 0,
+                    'balance' => 0
+                ];
+            }
+    
+            if ($rasidBord === 'rasid') {
+                $balances[$currencyName]['rasid'] += $transaction->total_amount;
+            } elseif ($rasidBord === 'bord') {
+                $balances[$currencyName]['bord'] += $transaction->total_amount;
+            }
+        }
+    
+        foreach ($balances as &$balance) {
+            $balance['balance'] = $balance['rasid'] - $balance['bord'];
+        }
+    
+        // return array_values($balances);
+        return array_values($balances);
+    }
+    
+    
+    
+    
+
 }
