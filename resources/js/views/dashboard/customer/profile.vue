@@ -11,9 +11,15 @@
   import DatePicker from '@alireza-ab/vue3-persian-datepicker';
   import vSelect from 'vue-select';
   import 'vue-select/dist/vue-select.css';
+  import Loader from '../../loader/loader.vue'
   import {
     ref
   } from 'vue';
+  import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
+
+
   /**
    * customer-Profile component
    */
@@ -23,6 +29,7 @@
       PageHeader,
       DatePicker,
       vSelect,
+      Loader
     },
     data() {
       return {
@@ -87,6 +94,149 @@
       }
     },
     methods: {
+
+      async exportToPDF3() {
+  const doc = new jsPDF('p', 'pt', 'A4');
+  await this.$nextTick(); // Ensure Vue has rendered the table
+
+  // Embed the Persian font (e.g., Tahoma)
+  const fontPath = '../../../../fonts/tahoma.ttf';
+  console.log("fontPath",fontPath);
+  doc.addFileToVFS(fontPath);
+  doc.addFont(fontPath, 'Tahoma', 'normal');
+
+  // Set the font to Tahoma (or any other Persian font you're using)
+  doc.setFont('Tahoma');
+  doc.setFontSize(12);
+
+  // Add header
+  const header = function (data) {
+    doc.setFontStyle('bold');
+    doc.setTextColor(0, 0, 255); // Blue color
+    doc.text("Table Header", data.settings.margin.left, 40);
+  };
+
+  // Add footer
+  const footer = function (data) {
+    const pageCount = doc.internal.getNumberOfPages();
+    doc.setFontStyle('normal');
+    doc.text('Page ' + data.pageNumber + ' of ' + pageCount, data.settings.margin.left, doc.internal.pageSize.height - 20);
+  };
+
+  // Set table options
+  const options = {
+    didDrawPage: function(data) {
+      // Add Header
+      header(data);
+
+      // Add Footer
+      footer(data);
+    },
+    margin: { top: 80 },
+    startY: 50
+  };
+
+  // Generate table
+  doc.autoTable({ html: this.$refs.tableToExport, start: { y: 60 }, theme: 'grid', options });
+
+  // Save PDF
+  doc.save('table.pdf');
+}
+,
+async exportToPDF2() {
+  const doc = new jsPDF('p', 'pt', 'A4');
+  await this.$nextTick(); // Ensure Vue has rendered the table
+
+  // Embed the Persian font (e.g., Tahoma)
+  const fontPath = 'path/to/your/persian/font.ttf'; // Update the path to your Persian font file
+  console.log("fontPath", fontPath);
+  doc.addFileToVFS(fontPath);
+  doc.addFont(fontPath, 'Persian', 'normal');
+
+  // Set the font to Persian
+  doc.setFont('Persian');
+  doc.setFontSize(12);
+
+  // Add header
+  const header = function (data) {
+    doc.setFontStyle('bold');
+    doc.setTextColor(0, 0, 255); // Blue color
+    doc.text("عنوان جدول", data.settings.margin.left, 40); // Translate "Table Header" to Persian
+  };
+
+  // Add footer
+  const footer = function (data) {
+    const pageCount = doc.internal.getNumberOfPages();
+    doc.setFontStyle('normal');
+    doc.text('صفحه ' + data.pageNumber + ' از ' + pageCount, data.settings.margin.left, doc.internal.pageSize.height - 20); // Translate "Page" to Persian
+  };
+
+  // Set table options
+  const options = {
+    didDrawPage: function(data) {
+      // Add Header
+      header(data);
+
+      // Add Footer
+      footer(data);
+    },
+    margin: { top: 80 },
+    startY: 50
+  };
+
+  // Generate table
+  doc.autoTable({ html: this.$refs.tableToExport, start: { y: 60 }, theme: 'grid', options });
+
+  // Save PDF
+  doc.save('table.pdf');
+},
+async exportToPDF() {
+  const doc = new jsPDF('p', 'pt', 'A4');
+  await this.$nextTick(); // Ensure Vue has rendered the table
+  console.log("doc",doc);
+  // Embed a Persian font (e.g., "Arial")
+  const fontPath = '../../../../fonts/arial.ttf'; // Update the path to your Persian font file
+  doc.addFileToVFS(fontPath);
+  doc.addFont(fontPath, 'Arial', 'normal');
+
+  // Set the font to Persian
+  doc.setFont('Persian');
+  doc.setFontSize(12);
+
+  // Add header
+  const header = function (data) {
+    doc.setFontStyle('bold');
+    doc.setTextColor(0, 0, 255); // Blue color
+    doc.text("عنوان جدول", data.settings.margin.left, 40); // Translate "Table Header" to Persian
+  };
+
+  // Add footer
+  const footer = function (data) {
+    const pageCount = doc.internal.getNumberOfPages();
+    doc.setFontStyle('normal');
+    doc.text('صفحه ' + data.pageNumber + ' از ' + pageCount, data.settings.margin.left, doc.internal.pageSize.height - 20); // Translate "Page" to Persian
+  };
+
+  // Set table options
+  const options = {
+    didDrawPage: function(data) {
+      // Add Header
+      header(data);
+
+      // Add Footer
+      footer(data);
+    },
+    margin: { top: 80 },
+    startY: 50
+  };
+
+  // Generate table
+  doc.autoTable({ html: this.$refs.tableToExport, start: { y: 60 }, theme: 'grid', options });
+
+  // Save PDF
+  doc.save('table.pdf');
+}
+,
       openEditModaltransaction() {
         this.showModaltransaction = true;
         this.getCurrency();
@@ -412,7 +562,7 @@
               <div class="">
                 <div v-if="isLoading">
                   <!-- Loader or loading message here -->
-                  <p class="text-center font-size-20">....کمی صبر نمائید</p>
+                  <Loader />
                 </div>
                 <div class="card" style="margin-bottom:-60px !important">
                   <div class="card-body">
@@ -453,7 +603,7 @@
         <div class="">
           <div v-if="isLoading">
             <!-- Loader or loading message here -->
-            <p class="text-center font-size-20">....کمی صبر نمائید</p>
+            <Loader />          
           </div>
           <div class="card" v-else>
             <div class="card-body">
@@ -511,7 +661,7 @@
                     <div class="col-md-1">
                       <div class="me-2 mb-2 d-inline-block">
                         <div class="position-relative">
-                          <button class="btn btn-primary">خروجی</button>
+                          <button class="btn btn-primary" @click="exportToPDF">خروجی</button>
                         </div>
                       </div>
                     </div>
@@ -525,12 +675,12 @@
                               <hr class="mb-4" />
                               <div v-if="isLoading">
                                 <!-- Loader or loading message here -->
-                                <p class="text-center font-size-20">....کمی صبر نمائید</p>
+                                <Loader />  
                               </div>
                               <div class="" v-else>
                                 <div class="table-responsive" v-if="transactionslist?.length ">
                                   <div class="text-center font-size-20" v-if="notFound"> نتیجه مورد نظر یافت نشد! </div>
-                                  <table class="table table-centered table-nowrap" v-else>
+                                  <table class="table table-centered table-nowrap" v-else  ref="tableToExport">
                                     <thead>
                                       <tr>
                                         <th class="text-center">نمبر چک</th>
@@ -599,7 +749,7 @@
                             <div class="mt-5" v-if="orderslist?.length">
                               <hr class="mt-2" />
                               <div class="table-responsive">
-                                <table class="table table-centered table-nowrap">
+                                <table class="table table-centered table-nowrap" id="my-table">
                                   <thead>
                                     <tr>
                                       <th class="text-center">نمبر چک</th>

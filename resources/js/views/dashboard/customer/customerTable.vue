@@ -139,7 +139,7 @@
 <!-- edit modal end -->
 
     <div v-if="isLoading">
-        <p class="text-center font-size-20">کمی صبر نمائید...</p>
+        <Loader/>
       </div>
       <div class="table-responsive" v-else>
 
@@ -218,11 +218,11 @@
 import { createStore } from 'vuex';
 import axios from 'axios';
 import Swal from 'sweetalert2'
+import Loader from '../../loader/loader.vue';
 export default {
     name: 'customerTable',
     data() {
         return {
-           
             customers: [],
             searchQuery: null,
             isLoading: false,
@@ -231,9 +231,8 @@ export default {
             submitted: false,
             isError: false,
             formError: "",
-
             name: '',
-            phoneError:'',
+            phoneError: '',
             phone: '',
             username: '',
             password: '',
@@ -241,11 +240,8 @@ export default {
             address: '',
             desc: '',
             errors: {},
-
-         
             // edit modal
             editshowModal: false,
-
             editname: '',
             editUsername: '',
             editPassword: '',
@@ -258,15 +254,12 @@ export default {
             currentPage: 1,
             totalPages: 1,
             limit: 10,
-
-        }
+        };
     },
     mounted() {
         this.getCustomers();
     },
-
     methods: {
-
         async getCustomers(page = 1) {
             this.isLoading = true;
             try {
@@ -274,11 +267,13 @@ export default {
                 this.customers = response.data.customers.data;
                 this.totalPages = response.data.customers?.last_page;
                 this.currentPage = page; // Update the current page
-            } catch (error) {
+            }
+            catch (error) {
                 console.error('Error fetching customers:', error);
-            }finally {
+            }
+            finally {
                 this.isLoading = false;
-                 }
+            }
         },
         prevPage() {
             if (this.currentPage > 1) {
@@ -293,14 +288,12 @@ export default {
         editHandleFileChange(event) {
             const img = event.target.files[0];
             this.editImage = img.name;
-
         },
-
         openModal() {
             this.showModal = true;
         },
-        closeModal(){
-            this.showModal=false;
+        closeModal() {
+            this.showModal = false;
             this.name = '';
             this.phone = '';
             this.username = '';
@@ -309,7 +302,6 @@ export default {
             this.address = '';
             this.desc = '';
         },
-
         handleFileChange(event) {
             const img = event.target.files[0];
             this.image = img.name;
@@ -318,19 +310,17 @@ export default {
         openEditModal() {
             this.editshowModal = true;
         },
-      
         showalert(title, text, icon) {
             Swal.fire({
                 title: title,
                 text: text,
                 icon: icon,
                 confirmButtonText: 'بستن'
-            })
+            });
         },
         async storeCustomer() {
             this.submitted = true;
-            if (this.name  && this.phone && this.username && this.password) {
-
+            if (this.name && this.phone && this.username && this.password) {
                 const response = await axios.post("/api/customer", {
                     name: this.name,
                     last_name: this.last_name,
@@ -341,19 +331,17 @@ export default {
                     address: this.address,
                     desc: this.desc,
                 });
-        
                 if (response.data != null) {
                     if (response.data.status === false) {
-
                         if (response.data.message != null) {
                             // console.log(response.data.message, "error", "error!");
                             this.showalert(response.data.message, "error", "error!");
-                        } else {
-                            this.errors = response.data.error;
-
                         }
-                    } else {
-
+                        else {
+                            this.errors = response.data.error;
+                        }
+                    }
+                    else {
                         this.errors = {};
                         this.name = '';
                         this.phone = '';
@@ -363,44 +351,33 @@ export default {
                         this.address = '';
                         this.desc = '';
                         this.showModal = false;
-
                         this.customers.unshift(response.data.new_data);
                         this.showalert("مشتری با موفقیت ثبت شد!", 'موفقانه', 'success');
                         // location.reload();
-                       
-                      
                     }
-
                 }
-
-        
-            } else {
+            }
+            else {
                 this.isError = true;
                 this.formError = "فیلد ها خالی است";
             }
             // stop here if form is invalid
-
         },
-  
-
         async editCustomer(id) {
             const response = await axios.get(`/api/customer/${id}`);
             this.editCust = response.data.customer;
             this.openEditModal();
             this.editname = this.editCust.name;
             this.editPhone = this.editCust.phone;
-
             this.editImage = this.editCust.image;
             this.editAddress = this.editCust.address;
             this.editDesc = this.editCust.desc;
-
             //    console.log("inside editcustomer ", this.editDesc);
         },
         async editSubmitCustomerForm() {
-            
             // console.log("id",id);
             const responseUpdate = await axios.post('/api/updatecustomer', {
-                id:this.editCust.id,
+                id: this.editCust.id,
                 name: this.editname,
                 phone: this.editPhone,
                 image: this.editImage,
@@ -412,12 +389,13 @@ export default {
                 if (responseUpdate.data.status === false) {
                     if (responseUpdate.data.message != null) {
                         this.showalert(responseUpdate.data.message, "بستن", "error");
-                    } else {
+                    }
+                    else {
                         this.errors = responseUpdate.data.error;
                         this.showalert(this.errors, 'error', 'error');
-
                     }
-                } else {
+                }
+                else {
                     this.errors = {};
                     this.editname = '';
                     this.editPhone = null;
@@ -428,15 +406,13 @@ export default {
                     this.getCustomers();
                     this.showalert("مشتری با موفقیت ویرایش شد!", 'موفقانه', 'success');
                 }
-            } 
-
-          
-
+            }
         },
         async deleteCustomer(id) {
             if (!window.confirm('آیا میخواهید که مشتری حذف شود؟')) {
                 return;
-            } else {
+            }
+            else {
                 try {
                     const response = await axios.delete(`/api/customer/${id}`);
                     this.customers = response.data;
@@ -444,48 +420,50 @@ export default {
                         this.getCustomers();
                         this.showalert('مشتری با موفقیت حذف شد!', 'موفقانه', 'success');
                     }
-
-                } catch (error) {
+                }
+                catch (error) {
                     this.showalert('مشتری با موفقیت حذف نشد!', 'ناموفقانه', 'error');
                 }
             }
         },
         async searchData() {
-           try {
-            const response = await axios.post('/api/searchCustomer', {
+            try {
+                const response = await axios.post('/api/searchCustomer', {
                     query: this.searchQuery
                 });
-
                 this.customers = response.data;
                 this.notFound = this.customers.length === 0;
                 // console.log(this.notFound);
-           } catch (error) {
+            }
+            catch (error) {
                 console.log(error.message);
-           }
+            }
         },
-
         phoneValidation(field) {
             // console.log("phon3e validation");
             if (field === 'editPhone') {
                 if (this.editPhone === '') {
                     this.editphoneError = 'شماره تماس ضروری است';
-                } else if (this.editPhone.length < 10) {
+                }
+                else if (this.editPhone.length < 10) {
                     this.editphoneError = 'شماره تماس باید حداقل 10 کاراکتر باشد.';
                     this.telephoneCheck(this.editPhone);
-                } else {
+                }
+                else {
                     this.editphoneError = null;
                 }
             }
-
         },
         telephoneCheck(str) {
             let isphone = /^(1\s|1|)?((\(\d{3}\))|\d{3})(\-|\s)?(\d{3})(\-|\s)?(\d{4})$/.test(str);
             if (!isphone) {
                 this.editphoneError = 'لطفا شماره تماس وارد نمائید!';
-            } else {
+            }
+            else {
                 this.editphoneError = null;
             }
         }
     },
+    components: { Loader }
 }
 </script>

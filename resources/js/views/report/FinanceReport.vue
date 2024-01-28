@@ -3,11 +3,13 @@ import Layout from "../../layouts/main.vue";
 import Transaction from "../../components/widgets/transaction.vue";
 import Emailsent from "../../components/widgets/emailsent.vue";
 import axios from 'axios';
+import Loader from "../loader/loader.vue";
+import smallLoader from "../loader/smallLoader.vue";
 /**
  * Dashboard Component
  */
 export default {
-  components: { Layout, Transaction,  },
+  components: { Layout, Transaction,Loader ,smallLoader },
   data() {
     return {
       title: "گزارشات",
@@ -100,7 +102,6 @@ export default {
                 <!-- end card-body -->
               </div>
         </div>
-
         <div class="col-md-4">
             <div class="card mini-stats-wid">
                 <div class="card-body">
@@ -127,8 +128,8 @@ export default {
                   <div class="d-flex">
                     <div class="">
                       <div v-if="isLoading">
-                        <!-- Loader or loading message here -->
-                        <p class="text-center font-size-20">....کمی صبر نمائید</p>
+                        ttrtrrtty
+                          <smallLoader />
                       </div>
                       <div class="card text-center" v-else>
                         <div class="card-body">
@@ -176,12 +177,12 @@ export default {
 
     <div class="row">
       <div class="col-lg-12">
-        <div class="card">
+        <div class="card" style="min-height:100% !important">
           <div class="card-body">
             <h4 class="card-title mb-4">جدول بانک ها</h4>
             <!-- Transactions table -->
             <div v-if="isLoading">
-              <p class="text-center font-size-20">کمی صبر نمائید...</p>
+              <Loader />
             </div>
             <div v-else>
               <div class="table-responsive mb-0">

@@ -49,7 +49,7 @@
     </div>
 </div>
 <div v-if="isLoading">
-    <p class="text-center font-size-20">کمی صبر نمائید...</p>
+    <Loader/>
   </div>
         <div v-else>
             <div class="table-responsive" v-if="currencies.length">
@@ -115,9 +115,11 @@
 
 <script>
 import axios from 'axios';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
+import Loader from '../../loader/loader.vue'
 export default {
     name: 'currencyTable',
+    components:{Loader},
     data() {
         return {
             isLoading:false,

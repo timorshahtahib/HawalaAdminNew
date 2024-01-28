@@ -8,18 +8,19 @@ import Swal from "sweetalert2";
 import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
 import DatePicker from '@alireza-ab/vue3-persian-datepicker';
+import Loader from "../loader/loader.vue";
 
 /**
  * Rasidbord component
  */
 export default {
     components: {
-        Layout,
-        PageHeader,
-        DatePicker,
-        vSelect,
-
-    },
+    Layout,
+    PageHeader,
+    DatePicker,
+    vSelect,
+    Loader
+},
     data() {
         return {
             title: "لیست  تمام ترانزکشن ها",
@@ -279,7 +280,7 @@ export default {
                     <div class="row">
                         <div class="col-sm-12 ">
                             <div v-if="isLoading">
-                                <p class="text-center font-size-20">...کمی صبر نمائید</p>
+                                <Loader />
                               </div>
                           <div v-else>
                             <div class="table-responsive " v-if="transactions?.length">

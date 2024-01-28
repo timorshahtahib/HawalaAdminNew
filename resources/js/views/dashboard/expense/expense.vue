@@ -6,6 +6,7 @@ import axios from 'axios';
 import SweetAlert from "../../../SweetAlert.vue";
 import Swal from "sweetalert2";
 import DatePicker from '@alireza-ab/vue3-persian-datepicker';
+import Loader from '../../loader/loader.vue'
 /**
  * Expense component
  */
@@ -14,6 +15,7 @@ export default {
         Layout,
         PageHeader,
         DatePicker,
+        Loader
     },
     data() {
         return {
@@ -528,7 +530,7 @@ export default {
                         <div class="col-sm-12 ">
 
                             <div v-if="isLoading">
-                                <p class="text-center font-size-20">کمی صبر نمائید...</p>
+                                <Loader />
                               </div>
                                 <div v-else>
                                     <div class="table-responsive" v-if="ExpenseList?.length">
@@ -540,8 +542,8 @@ export default {
                                                     <th class="text-center">حساب</th>
                                                     <th class="text-center">نوع</th>
                                                     <th class="text-center">مقدار پول</th>
-                                                    <th class="text-center">واحد</th>
-                                                    <th class="text-center">دخل</th>
+                                                    <!-- <th class="text-center">واحد</th>
+                                                    <th class="text-center">دخل</th> -->
                                                     <th class="text-center">تفصیلات</th>
                                                     <th class="text-center">توسط</th>
                                                     <th class="text-center">عملیه</th>
@@ -555,9 +557,8 @@ export default {
                                                     <td>{{expenesel.date}}</td>
                                                     <td>{{expenesel.expense_acount?.account_name}}</td>
                                                     <td>{{expenesel.type ? "مصرف" :""}}</td>
-                                                    <td>{{expenesel.amount}}</td>
-                                                    <td>{{expenesel.expense_currency.name}}</td>
-                                                    <td>{{expenesel.expense_bank?.account_name}}</td>
+                                                    <td>{{expenesel.amount}} {{expenesel.expense_currency.name}} به {{expenesel.expense_bank?.account_name}}</td>
+                                            
                                                     <td>{{expenesel.desc}}</td>
                                                     <td>{{expenesel.user_id}}</td>
         

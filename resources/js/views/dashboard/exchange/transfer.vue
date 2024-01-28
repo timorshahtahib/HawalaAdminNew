@@ -6,6 +6,7 @@ import axios from 'axios';
 import SweetAlert from "../../../SweetAlert.vue";
 import Swal from "sweetalert2";
 import DatePicker from '@alireza-ab/vue3-persian-datepicker';
+import Loader from '../../loader/loader.vue'
 
 /**
  * Rasidbord component
@@ -15,6 +16,7 @@ export default {
         Layout,
         PageHeader,
         DatePicker,
+        Loader,
     },
     data() {
         return {
@@ -477,18 +479,7 @@ export default {
                                     </select>
                                     <span class="text-danger error-text dakhl_error"></span>
                                 </div>
-                                <!-- <div class="row mt-3 ">
-                                    <div class="col-sm-12">
-                                        <span class="">
-                                            <label for="Commission" class="mx-1">کمیشن دارد:‌</label>
-                                            <input class="form-check-input" type="radio" id="Commission" v-model="edit_commission" value="darad" name="Commission" />
-                                        </span>
-                                        <span>
-                                            <label for="Commission" class="mx-1">کمیشن ندارد:‌</label>
-                                            <input class="form-check-input" type="radio" id="nocommission" v-model="edit_commission" name="Commission" value="nadarad" />
-                                        </span>
-                                    </div>
-                                </div> -->
+                          
                                 <div class="row mt-3">
                                     <div class="col-sm-12">
                                         <span class="">
@@ -702,8 +693,8 @@ export default {
                     <div class="row">
                         <div class="col-sm-12 ">
                             <div v-if="isLoading">
-                                <p class="text-center font-size-20">کمی صبر نمائید...</p>
-                              </div>
+                                <Loader />
+                            </div>
                           <div v-else>
                             <div class="table-responsive" v-if="transfers?.length">
                                 <table class="table table-centered table-nowrap">
