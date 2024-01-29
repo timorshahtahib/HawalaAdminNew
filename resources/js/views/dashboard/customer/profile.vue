@@ -12,11 +12,8 @@
   import vSelect from 'vue-select';
   import 'vue-select/dist/vue-select.css';
   import Loader from '../../loader/loader.vue'
-  import {
-    ref
-  } from 'vue';
-  import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+
+
 
 
 
@@ -95,53 +92,9 @@ import 'jspdf-autotable';
     },
     methods: {
 
-      async exportToPDF3() {
-  const doc = new jsPDF('p', 'pt', 'A4');
-  await this.$nextTick(); // Ensure Vue has rendered the table
+      gotoExportPage() {
 
-  // Embed the Persian font (e.g., Tahoma)
-  const fontPath = '../../../../fonts/tahoma.ttf';
-  console.log("fontPath",fontPath);
-  doc.addFileToVFS(fontPath);
-  doc.addFont(fontPath, 'Tahoma', 'normal');
-
-  // Set the font to Tahoma (or any other Persian font you're using)
-  doc.setFont('Tahoma');
-  doc.setFontSize(12);
-
-  // Add header
-  const header = function (data) {
-    doc.setFontStyle('bold');
-    doc.setTextColor(0, 0, 255); // Blue color
-    doc.text("Table Header", data.settings.margin.left, 40);
-  };
-
-  // Add footer
-  const footer = function (data) {
-    const pageCount = doc.internal.getNumberOfPages();
-    doc.setFontStyle('normal');
-    doc.text('Page ' + data.pageNumber + ' of ' + pageCount, data.settings.margin.left, doc.internal.pageSize.height - 20);
-  };
-
-  // Set table options
-  const options = {
-    didDrawPage: function(data) {
-      // Add Header
-      header(data);
-
-      // Add Footer
-      footer(data);
-    },
-    margin: { top: 80 },
-    startY: 50
-  };
-
-  // Generate table
-  doc.autoTable({ html: this.$refs.tableToExport, start: { y: 60 }, theme: 'grid', options });
-
-  // Save PDF
-  doc.save('table.pdf');
-}
+      }
 ,
 async exportToPDF2() {
   const doc = new jsPDF('p', 'pt', 'A4');
@@ -661,7 +614,8 @@ async exportToPDF() {
                     <div class="col-md-1">
                       <div class="me-2 mb-2 d-inline-block">
                         <div class="position-relative">
-                          <button class="btn btn-primary" @click="exportToPDF">خروجی</button>
+                          <!-- <button class="btn btn-primary" @click="gotoExportPage">خروجی</button> -->
+                          <router-link class="btn btn-xs btn-primary" :to="`/dashboard/customer/${customer.id}/export`">خروجی</router-link>
                         </div>
                       </div>
                     </div>
@@ -695,6 +649,7 @@ async exportToPDF() {
                                     <tbody>
                                       <tr v-for="transaction in transactionslist" :key="transaction?.id">
                                         <td>{{transaction.check_number}}</td>
+                                        
                                         <td v-if="transaction.customer!=null">{{ transaction.customer.name}}</td>
                                         <td v-else>{{ transaction.finance_account.account_name}}</td>
                                         <td>

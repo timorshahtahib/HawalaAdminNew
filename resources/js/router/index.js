@@ -18,10 +18,15 @@ const routes = [{
     },
     {
         path: '/dashboard/customer/:id',
-        // path: '/dashboard/customer',
         meta: { title: 'Dashboard' },
         component: () =>
             import ('../views/dashboard/customer/profile.vue')
+    },
+    {
+        path: '/dashboard/customer/:id/export',
+        meta: { title: 'Dashboard' },
+        component: () =>
+            import ('../views/dashboard/customer/exportCustomer.vue')
     },
     {
         path: '/dashboard/finance_account',

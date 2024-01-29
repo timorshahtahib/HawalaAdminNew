@@ -41,6 +41,8 @@ Route::post('/updatecustomer', [CustomerController::class, 'updateCustomer']);
 Route::post('/searchCustomer', [CustomerController::class, 'searchCustomer']);
 Route::post('/changeusername/{id}', [CustomerController::class, 'ChangeUsernameFunc']);
 Route::post('/changepassword/{id}', [CustomerController::class, 'ChangePasswordFunc']);
+// for exporting the  customer transaction table to pdf
+Route::post('/exportcustomertopdf', [CustomerController::class, 'filterCustomerExport']);
 
 Route::apiResource('currencies',CurrencyController::class);
 Route::post('/updatecurrency', [CurrencyController::class, 'updateCurrency']);

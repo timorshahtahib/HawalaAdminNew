@@ -67,7 +67,7 @@ class TransactionController extends Controller
                     ->with(['financeAccount','tr_currency','bank_account','referencedTransaction'])->paginate($limit);
                     $customer = Customer::where('id',$id)->paginate($limit);
                     $transaction_order = Transaction::where('status', '=', '1')
-                    ->where('ref_id',$id)->where('transaction_type','order')->with(['financeAccount','tr_currency','bank_account','referencedTransaction','referencedTransaction'])->paginate($limit);
+                    ->where('ref_id',$id)->where('transaction_type','order')->with(['financeAccount','tr_currency','bank_account','referencedTransaction','referencedTransaction'])->orderBy('id','desc')->paginate($limit);
                 
                     $rasid=Transaction::where('status', '=', '1')->where('ref_id',$id)->sum('amount');
                     $bord=Transaction::where('status', '=', '1')->where('ref_id',$id)->sum('amount_equal');

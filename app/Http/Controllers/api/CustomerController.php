@@ -281,6 +281,44 @@ class CustomerController extends Controller
 
   
     
+    public function filterCustomerExport(Request $request) {
+      
+                try {
+                    $limit = $request->has('limit') ? $request->limit : 10;
+                    $id = $request->id;
+                    $rasid_bord = $request->rasid_bord;
+                    // $order_id = $request->order_id;
+                    $currency = $request->currency;
+                    // $bank_acount_id = $request->bank_acount_id;
+                
+                    // Building the query
+                    $customerExportFilter = Transaction::where('status', '1')->where('ref_id',$id);
+                    // ->where('ref_id',$id);
+                
+                    if ($rasid_bord!='all') {
+                        
+                        $customerExportFilter->where('rasid_bord', $rasid_bord);
+                    }
+                
+                    // if ($order_id) {
+                    //     $customerExportFilter->where('order_id', $order_id);
+                    // }
+                    if ($currency) {
+                        $customerExportFilter->where('currency',  $currency);
+                    }
+                    // if ($bank_acount_id) {
+                    //     $customerExportFilter->where('bank_acount_id',  $bank_acount_id);
+                    // }
+                
+            
+                    $result = $customerExportFilter->with(['financeAccount','customer','tr_currency','bank_account'])->paginate($limit);
 
+                    $totalPages = $result->lastPage();
+                    return response()->json(['customerExportFilter' => $result,'total_pages' => $totalPages]);
+
+                } catch (Throwable $e) {
+                    return response()->json(['error' => $e->getMessage()], 500);
+                }
+    }
 
 }
