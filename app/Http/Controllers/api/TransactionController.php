@@ -41,7 +41,7 @@ class TransactionController extends Controller
             $limit = $request->has('limit') ? $request->limit : 10;
 
             $transaction = Transaction::where('status', '=', '1')
-            ->with(['financeAccount','customer','tr_currency','bank_account','referencedTransaction'])->orderBy('id','desc')
+            ->with(['financeAccount','customer','tr_currency','eq_currency','bank_account','referencedTransaction'])->orderBy('id','desc')
             ->paginate($limit);
 
             if ($transaction->isEmpty()) {
@@ -64,10 +64,10 @@ class TransactionController extends Controller
                     $limit = $request->has('limit') ? $request->limit : 10;
 
                     $transaction_rasid_bord = Transaction::where('status', '=', '1')->where('ref_id',$id)
-                    ->with(['financeAccount','tr_currency','bank_account','referencedTransaction'])->paginate($limit);
+                    ->with(['financeAccount','tr_currency','eq_currency','bank_account','referencedTransaction'])->orderBy('id','desc')->paginate($limit);
                     $customer = Customer::where('id',$id)->paginate($limit);
                     $transaction_order = Transaction::where('status', '=', '1')
-                    ->where('ref_id',$id)->where('transaction_type','order')->with(['financeAccount','tr_currency','bank_account','referencedTransaction','referencedTransaction'])->orderBy('id','desc')->paginate($limit);
+                    ->where('ref_id',$id)->where('transaction_type','order')->with(['financeAccount','tr_currency','eq_currency','bank_account','referencedTransaction','referencedTransaction'])->orderBy('id','desc')->paginate($limit);
                 
                     $rasid=Transaction::where('status', '=', '1')->where('ref_id',$id)->sum('amount');
                     $bord=Transaction::where('status', '=', '1')->where('ref_id',$id)->sum('amount_equal');
@@ -145,7 +145,7 @@ class TransactionController extends Controller
                 if($transaction_id){
                     $update_values = ['transaction_id'=>$transaction_id,];
                  
-                    $output_data = Transaction::where('id',$transaction_id)->with(['financeAccount','customer','tr_currency','bank_account'])->first();
+                    $output_data = Transaction::where('id',$transaction_id)->with(['financeAccount','customer','tr_currency','eq_currency','bank_account'])->first();
 
                     DB::commit();
                     return  response()->json([
@@ -181,7 +181,7 @@ class TransactionController extends Controller
     public function show($id)
     {
         try {
-            $transaction = Transaction::where('id','=',$id)->where('status', '=', '1')->with(['financeAccount','customer','tr_currency','bank_account'])->get();
+            $transaction = Transaction::where('id','=',$id)->where('status', '=', '1')->with(['financeAccount','customer','tr_currency','eq_currency','bank_account'])->get();
 
             if ($transaction->isEmpty()) {
                 return response()->json([]);
@@ -241,7 +241,7 @@ class TransactionController extends Controller
             $transaction_update = Transaction::where('id',$request->id)->update($transaction_values);
             if($transaction_update){
               
-                $output_data = Transaction::where('id',$request->id)->with(['financeAccount','customer','tr_currency','bank_account','referencedTransaction'])->first();
+                $output_data = Transaction::where('id',$request->id)->with(['financeAccount','customer','tr_currency','eq_currency','bank_account','referencedTransaction'])->first();
 
                 DB::commit();
                 return  response()->json([
@@ -333,7 +333,7 @@ class TransactionController extends Controller
 
             if($transaction_update){
               
-                $output_data = Transaction::where('id',$request->id)->with(['financeAccount','customer','tr_currency','bank_account'])->first();
+                $output_data = Transaction::where('id',$request->id)->with(['financeAccount','customer','tr_currency','eq_currency','bank_account'])->first();
 
                 DB::commit();
                 return  response()->json([
@@ -381,7 +381,7 @@ class TransactionController extends Controller
                     ->orWhereHas('financeAccount', function ($query) use ($searchTerm) {
                         $query->where('account_name', 'like', '%' . $searchTerm . '%');
                     })
-                    ->orWhereHas('tr_currency', function ($query) use ($searchTerm) {
+                    ->orWhereHas('tr_currency','eq_currency', function ($query) use ($searchTerm) {
                         $query->where('name', 'like', '%' . $searchTerm . '%');
                     })
                     ->orWhere('id', 'like', '%' . $searchTerm . '%')
@@ -397,7 +397,7 @@ class TransactionController extends Controller
                 });
             }
     
-            $transactions = $transaction->with(['financeAccount', 'customer', 'tr_currency', 'bank_account'])
+            $transactions = $transaction->with(['financeAccount', 'customer', 'tr_currency','eq_currency', 'bank_account'])
                 ->orderBy('id', 'desc')
                 ->get();
     
@@ -424,7 +424,7 @@ class TransactionController extends Controller
             ->orWhereHas('financeAccount', function ($query) use ($searchTerm) {
                 $query->where('account_name', 'like', '%' . $searchTerm . '%');
             })
-            ->orWhereHas('tr_currency', function ($query) use ($searchTerm) {
+            ->orWhereHas('tr_currency','eq_currency', function ($query) use ($searchTerm) {
                 $query->where('name', 'like', '%' . $searchTerm . '%');
             })
             ->where('ref_id','=',$id)
@@ -433,7 +433,7 @@ class TransactionController extends Controller
             ->orWhere('currency_equal',  'like', '%' . $searchTerm . '%')
             ->orWhere('currency_rate',  'like', '%' . $searchTerm . '%')
             
-            ->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')
+            ->with(['financeAccount','customer','tr_currency','eq_currency','bank_account'])->orderBy('id','desc')
             ->get();
        
        

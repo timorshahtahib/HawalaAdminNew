@@ -43,9 +43,9 @@ export default {
             selectedCustomer:'',
             currencyModel:'',
             SelectedDakhl:'',
-            select_start_date:'',
-            select_end_date:'',
-            select_end_date:'',
+           
+            start_date:'',
+            end_date:'',
             customers:[],
             // Currency V-Model and arrays
             currencies: [],
@@ -72,13 +72,14 @@ export default {
     methods: {
      
         //   this is for getting the jalali date value
-        select_start_date(date) {
+        select(date) {
             this.start_date = date.toString();
-            // console.log(new Date().toISOString().substr(0, 10));
+            console.log(this.start_date);
         },
-
+        
         select_end_date(date) {
             this.end_date =  date.toString();
+            console.log('date.toString()',date.toString());
         },
 
         async getCustomers() {
@@ -161,6 +162,9 @@ export default {
             }
         },
         async filterRooznamchah() {
+
+            console.log(this.start_date,'s');
+            console.log(this.end_date,'e');
             const response = await axios.post('/api/filterrooznamchah', {
                 transaction_type:this.transaction_type,
                 rasid_bord:this.rasid_bord,
@@ -238,6 +242,7 @@ export default {
                             <label for="supplier">واحد پول :</label>
                             <select class="form-control form-control-lg select2 required" @change="change_currency" v-model="currencyModel" >
                                 <option disabled selected> واحد</option>
+                             
                                 <option v-for="currency in currencies" :key="currency?.id" :value="currency?.id">{{currency?.name}} {{currency?.sign}}</option>
                             </select>
                             <span class="text-danger error-text currency_error"></span>
@@ -257,7 +262,9 @@ export default {
                     <div class="row">
                         <div class="mb-3 col-lg-2">
                             <label for="email">تاریخ شروع</label>
-                            <date-picker @select="select_start_date" mode="single" type="date" locale="fa" :column="1" >
+                            <!-- <date-picker @select="select_start_date" mode="single" type="date" locale="fa" :column="1" >
+                            </date-picker> -->
+                            <date-picker @select="select" mode="single" type="date" locale="fa" :column="1" required>
                             </date-picker>
                           </div>
     

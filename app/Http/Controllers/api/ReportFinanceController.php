@@ -191,16 +191,21 @@ class ReportFinanceController extends Controller
                 $customer_id = $request->customer_id;
                 $currency = $request->currency;
                 $dakhl = $request->dakhl;
-                $start_date = $request->start_date ? $request->start_date : date('Y-m-d');
+                $start_date = $request->start_date;
                 $end_date = $request->end_date;
-                
+               
+
                 $getTransaction = Transaction::where('status',1);
                 
                 if ($transaction_type!='all') {
                     if ($rasid_bord!='all') {
                         $getTransaction->where('rasid_bord', $rasid_bord)->where('transaction_type',$transaction_type);
                        
+                    }else{
+                        $getTransaction->where('transaction_type',$transaction_type);
+
                     }
+
                 }else{
                     if ($rasid_bord!='all') {
                         $getTransaction->where('rasid_bord', $rasid_bord);
@@ -218,12 +223,12 @@ class ReportFinanceController extends Controller
                     $getTransaction->where('bank_acount_id', $dakhl);
                 }
 
-                // if ($start_date) {
-                //     $getTransaction->whereDate('date', '>=', $start_date);
-                // }
-                // if ($end_date) {
-                //     $getTransaction->whereDate('date', '<=', $end_date);
-                // }
+                if ($start_date) {
+                    $getTransaction->whereDate('date', '>=', $start_date);
+                }
+                if ($end_date) {
+                    $getTransaction->whereDate('date', '<=', $end_date);
+                }
             
                 $result = $getTransaction->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')->get();
             

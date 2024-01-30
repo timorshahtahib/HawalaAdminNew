@@ -657,7 +657,7 @@ async exportToPDF() {
                                             {{transaction.rasid_bord}}
                                           </span>
                                         </td>
-                                        <td>{{transaction.amount}} {{transaction.tr_currency.name}} به <span v-if="transaction.bank_account!=null">{{transaction.bank_account.account_name}}</span>
+                                        <td>{{transaction.amount_equal}} {{transaction.eq_currency.name}} به <span v-if="transaction.bank_account!=null">{{transaction.bank_account.account_name}}</span>
                                           <span v-else>{{ transaction.finance_account.account_name}}</span>
                                         </td>
                                         <td>{{transaction.desc}}</td>
