@@ -144,3 +144,11 @@ Route::post('/searchtransfer',[ExchangeController::class,'searchTransfers']);
 Route::post('/deleteonetransaction',[deleteTransaction::class, 'deleteTransaction']);
 
 
+
+
+// for exporting the customer transaction table
+Route::get('/transactions/pdf', [TransactionController::class, 'exportTransactionsToPDF'])->name('transactions.pdf');
+
+
+// rooznacha 
+Route::post('/filterrooznamchah',[ReportFinanceController::class, 'filterRooznachah']);

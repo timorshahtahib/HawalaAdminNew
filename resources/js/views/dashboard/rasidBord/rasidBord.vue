@@ -56,7 +56,7 @@ export default {
             amount: 0,
             currency_rate: 1.00,
             equal_amount: 0,
-
+         
             // for setting the current date
             transaction_date: null,
             errors: {},
@@ -66,6 +66,7 @@ export default {
             // show transaction in the table
             transactions: [],
             // Equals v-model
+            // equalcurrencyModel: '',
             equalcurrencyModel: '',
 
             // for edit
@@ -245,20 +246,13 @@ export default {
         },
         change_currency() {
             this.getBanks(this.currencyModel);
-            // it called when I select the first currency
-            this.getDefaultCurrency();
-          
         },
 
         editChange_currency() {
             this.getBanksForEdit(this.editCurrencyModel);
         },
 
-        async getDefaultCurrency(){ 
-            // if(this.currency_rate===1){
-                    this.equalcurrencyModel=this.currencyModel;
-                // }
-        },
+    
         async searchData() {
             const response = await axios.post('/api/searchtransactions', {
                 query: this.searchQuery

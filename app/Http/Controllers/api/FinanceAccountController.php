@@ -243,7 +243,7 @@ public function filterFinanceAccount(Request $request) {
                 $finance_type = $request->type;
                 $bank_type = $request->account;
             
-                $financeAcc = FinanceAccount::where('status', 1);
+                $financeAcc = FinanceAccount::where('status', 1)->with(['finance_currency']);
             
                 if ($finance_type != 'all') {
                     $financeAcc->where('type', '=', $finance_type);
@@ -254,7 +254,7 @@ public function filterFinanceAccount(Request $request) {
                 }
             
                 $totalPages = $financeAcc->paginate($limit)->lastPage();
-                $result = $financeAcc->paginate($limit);
+                $result = $financeAcc->orderBy('id', 'desc')->paginate($limit);
                 return response()->json(['financeAccounts' => $result, 'total_pages' => $totalPages]);
 
             } catch (Throwable $e) {

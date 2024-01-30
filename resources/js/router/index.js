@@ -46,12 +46,6 @@ const routes = [{
         component: () =>
             import ('../views/dashboard/currency/currency.vue'),
     },
-    // {
-    //     path: '/dashboard/income_expense',
-    //     meta: { authRequired: true, title: 'income_expense' },
-    //     component: () =>
-    //         import ('../views/dashboard/incomExpense/incomeExpense.vue'),
-    // },
     {
         path: '/dashboard/expense',
         meta: { authRequired: true, title: 'expense' },
@@ -83,6 +77,12 @@ const routes = [{
         meta: { authRequired: true, title: 'Bank details' },
         component: () =>
             import ('../views/report/bankDetails.vue')
+    },
+    {
+        path: '/report/rooznachah',
+        meta: { title: 'روزنامچه' },
+        component: () =>
+            import ('../views/report/rooznachah.vue')
     },
     {
         path: '/exchange/buy',

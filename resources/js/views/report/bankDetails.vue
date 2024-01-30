@@ -277,6 +277,7 @@ export default {
                             <option value="all">همه</option>
                             <option value="rasid">رسید</option>
                             <option value="bord">برد</option>
+                          
                         </select>
                       </div>
                       <div class="mb-3 col-lg-2">

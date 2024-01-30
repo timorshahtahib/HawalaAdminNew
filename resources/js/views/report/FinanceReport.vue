@@ -85,8 +85,8 @@ export default {
         <div class="row">
         <div class="col-md-4">
             <div class="card mini-stats-wid">
-                <div class="card-body">
-                  <div class="d-flex">
+                <div class="card-body" style="min-height: 47vh;">
+                  <div class="d-flex ">
                     <div class="flex-grow-1">
                       <p class="text-muted fw-medium">تعداد حسابات</p>
                       <h4 class="mb-0">{{finance_count}}</h4>
@@ -103,7 +103,7 @@ export default {
               </div>
         </div>
         <div class="col-md-4">
-            <div class="card mini-stats-wid">
+            <div class="card mini-stats-wid" style="min-height: 47vh;">
                 <div class="card-body">
                   <div class="d-flex">
                     <div class="flex-grow-1">
@@ -128,7 +128,6 @@ export default {
                   <div class="d-flex">
                     <div class="">
                       <div v-if="isLoading">
-                        ttrtrrtty
                           <smallLoader />
                       </div>
                       <div class="card text-center" v-else>

@@ -3,8 +3,8 @@
   import PageHeader from "../../../components/page-header.vue";
   import axios from "axios";
   import Loader from '../../loader/loader.vue'
-  import 'jspdf-autotable';
   import jsPDF from 'jspdf';
+  import 'jspdf-autotable';
 
   export default {
     components: {
