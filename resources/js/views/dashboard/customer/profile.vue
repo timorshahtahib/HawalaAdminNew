@@ -92,10 +92,7 @@
     },
     methods: {
 
-      gotoExportPage() {
 
-      }
-,
 async exportToPDF2() {
   const doc = new jsPDF('p', 'pt', 'A4');
   await this.$nextTick(); // Ensure Vue has rendered the table
@@ -143,7 +140,7 @@ async exportToPDF2() {
   // Save PDF
   doc.save('table.pdf');
 },
-async exportToPDF() {
+async exportToPDF3() {
   const doc = new jsPDF('p', 'pt', 'A4');
   await this.$nextTick(); // Ensure Vue has rendered the table
   console.log("doc",doc);
@@ -189,7 +186,17 @@ async exportToPDF() {
   // Save PDF
   doc.save('table.pdf');
 }
-,
+,    exportPDF() {
+      const doc = new jsPDF();
+      let y = 15;
+      this.tableData.forEach((row) => {
+        doc.text(row.id.toString(), 10, y);
+        doc.text(row.name, 30, y);
+        doc.text(row.description, 80, y);
+        y += 10;
+      });
+      doc.save('table.pdf');
+    },
       openEditModaltransaction() {
         this.showModaltransaction = true;
         this.getCurrency();
@@ -599,7 +606,8 @@ async exportToPDF() {
       <div class="col-xl-8">
         <div class="card h-100">
           <div class="card-body">
-            <div class="table-responsive mb-0">
+            <!-- <div class="table-responsive mb-0"> -->
+            <div class="">
               <div class="col-xl-12 col-lg-12">
                 <div class="card">
                   <div class="row">
@@ -638,9 +646,10 @@ async exportToPDF() {
                                     <thead>
                                       <tr>
                                         <th class="text-center">نمبر چک</th>
-                                        <th class="text-center">نام مشتری</th>
+                                        <!-- <th class="text-center">نام مشتری</th> -->
                                         <th class="text-center">رسید برد</th>
                                         <th class="text-center">مقدار پول</th>
+                                        <th class="text-center"> پول</th>
                                         <th class="text-center">تفصیلات</th>
                                         <th class="text-center">توسط</th>
                                         <th class="text-center">عملیه</th>
@@ -649,15 +658,20 @@ async exportToPDF() {
                                     <tbody>
                                       <tr v-for="transaction in transactionslist" :key="transaction?.id">
                                         <td>{{transaction.check_number}}</td>
-                                        
-                                        <td v-if="transaction.customer!=null">{{ transaction.customer.name}}</td>
-                                        <td v-else>{{ transaction.finance_account.account_name}}</td>
                                         <td>
                                           <span class="badge  font-size-12" :class="transaction.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">
                                             {{transaction.rasid_bord}}
                                           </span>
                                         </td>
-                                        <td>{{transaction.amount_equal}} {{transaction.eq_currency.name}} به <span v-if="transaction.bank_account!=null">{{transaction.bank_account.account_name}}</span>
+                                        <td>{{transaction.amount_equal}} {{transaction.eq_currency.name}} 
+                                          {{transaction.rasid_bord ==='rasid'? 'به': 'از' }}
+                                          <span v-if="transaction.bank_account!=null">{{transaction.bank_account.account_name}}</span>
+                                          <span v-else>{{ transaction.finance_account.account_name}}</span>
+                                        </td>
+
+                                          <td>{{transaction.amount}} {{transaction.eq_currency.name}} 
+                                          {{transaction.rasid_bord ==='rasid'? 'به': 'از' }}
+                                          <span v-if="transaction.bank_account!=null">{{transaction.bank_account.account_name}}</span>
                                           <span v-else>{{ transaction.finance_account.account_name}}</span>
                                         </td>
                                         <td>{{transaction.desc}}</td>
@@ -703,7 +717,7 @@ async exportToPDF() {
                             <!-- <h5>Archive</h5> -->
                             <div class="mt-5" v-if="orderslist?.length">
                               <hr class="mt-2" />
-                              <div class="table-responsive">
+                              <div class="">
                                 <table class="table table-centered table-nowrap" id="my-table">
                                   <thead>
                                     <tr>

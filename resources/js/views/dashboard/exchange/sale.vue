@@ -633,7 +633,7 @@ export default {
                                             <th class="text-center">نمبر چک</th>
                                             <!-- <th class="text-center">رسید برد</th> -->
                                             <th class="text-center">مقدار فروش </th>
-                                            <th class="text-center">مقدار دریاف شده  </th>
+                                            <th class="text-center">مقدار دریافت شده  </th>
                                             <th class="text-center">تفصیلات</th>
                                             <th class="text-center">توسط</th>
                                             <th class="text-center">عملیه</th>

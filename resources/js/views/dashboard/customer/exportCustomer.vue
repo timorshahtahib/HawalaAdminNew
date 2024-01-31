@@ -3,8 +3,8 @@
   import PageHeader from "../../../components/page-header.vue";
   import axios from "axios";
   import Loader from '../../loader/loader.vue'
-  import jsPDF from 'jspdf';
-  import 'jspdf-autotable';
+  import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
   export default {
     components: {
@@ -54,62 +54,40 @@
    
     methods: {
 
-async exportToPDF() {
-  const doc = new jsPDF('p', 'pt', 'A4');
-  await this.$nextTick(); // Ensure Vue has rendered the table
-  // console.log("doc",doc);
-  // Embed a Persian font (e.g., "Arial")
-    const fontPath = '../../../../fonts/arial.ttf'; // Update the path to your Persian font file
-    doc.addFileToVFS(fontPath);
-    doc.addFont('arial.ttf', 'Arial', 'normal');
-    doc.setFont('Arial'); // Set the font family
-    doc.setFontSize(12);
 
-  // Add header
-  const header = function (data) {
-    doc.setFontStyle('bold');
-    doc.setTextColor(0, 0, 255); // Blue color
-    doc.text("عنوان جدول", data.settings.margin.left, 40); // Translate "Table Header" to Persian
-  };
+      exportToPDF() {
+    const table = this.$refs.table;
+    html2canvas(table).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const imgWidth = 190; // Adjust as needed
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+        const farsiFont = '../../../../fonts/arial.ttf'; // Replace ... with your base64 font
+        pdf.addFileToVFS('arial.ttf', farsiFont);
+        pdf.setFont('arial');
 
-  // Add footer
-  const footer = function (data) {
-    const pageCount = doc.internal.getNumberOfPages();
-    doc.setFontStyle('normal');
-    doc.text('صفحه ' + data.pageNumber + ' از ' + pageCount, data.settings.margin.left, doc.internal.pageSize.height - 20); // Translate "Page" to Persian
-  };
+        // Set header
+        pdf.setPage(1); // Set the page number to 1
+        pdf.setDrawColor(0); // Set the color for the header
+        pdf.setFontSize(18); // Set the font size for the header
+        pdf.text('My PDF Header', 105, 15, { align: 'center' }); // Text, x, y, options
 
-  // Set table options
-  const options = {
-    didDrawPage: function(data) {
-      // Add Header
-      header(data);
+        // Add image
+        pdf.addImage(imgData, 'PNG', 10, 30, imgWidth, imgHeight); // Adjust Y position to make space for the header
 
-      // Add Footer
-      footer(data);
-    },
-    margin: { top: 80 },
-    startY: 50
-  };
+        // Set footer
+        const pageCount = pdf.internal.getNumberOfPages(); // Get the total number of pages
+        for (let i = 1; i <= pageCount; i++) {
+            pdf.setPage(i); // Set the current page
+            pdf.setFontSize(12); // Set the font size for the footer
+            pdf.text('Page ' + i + ' of ' + pageCount, 105, pdf.internal.pageSize.height - 10, { align: 'center' }); // Text, x, y, options
+        }
 
-  // Generate table
-  doc.autoTable({ html: this.$refs.tableToExport, start: { y: 60 }, theme: 'grid', options });
-
-  // Save PDF
-  doc.save('table.pdf');
+        pdf.save('table.pdf');
+    });
 }
-,  exportToPDF444() {
-      const doc = new jsPDF();
-      const tableData = this.transactionslist.map(item => [item.englishData, item.farsiData]);
-
-      doc.autoTable({
-        head: [['English Column', 'Farsi Column']],
-        body: tableData
-      });
-
-      doc.save('table_data.pdf');
-    },
-
+,
+ 
       async getTransactionbycid(page = 1) {
         try {
           const response = await axios.post(`/api/customerinfo`, {
@@ -294,13 +272,14 @@ async exportToPDF() {
                               <div class="" v-else>
                                 <div class="table-responsive" v-if="transactionslist?.length ">
                                   <div class="text-center font-size-20" v-if="notFound"> نتیجه مورد نظر یافت نشد! </div>
-                                  <table class="table table-centered table-nowrap" v-else  ref="tableToExport">
+                                  <table class="table table-centered table-nowrap" v-else  ref="table">
                                     <thead>
                                       <tr>
                                         <th class="text-center">نمبر چک</th>
-                                        <th class="text-center">نام مشتری</th>
+                                        <!-- <th class="text-center">نام مشتری</th> -->
                                         <th class="text-center">رسید برد</th>
                                         <th class="text-center">مقدار پول</th>
+                                        <th class="text-center">پول</th>
                                         <th class="text-center">تفصیلات</th>
                                         <th class="text-center">توسط</th>
                                       </tr>
@@ -308,14 +287,17 @@ async exportToPDF() {
                                     <tbody>
                                       <tr v-for="transaction in transactionslist" :key="transaction?.id">
                                         <td>{{transaction.check_number}}</td>
-                                        <td v-if="transaction.customer!=null">{{ transaction.customer.name}}</td>
-                                        <td v-else>{{ transaction.finance_account.account_name}}</td>
+                                        <!-- <td v-if="transaction.customer!=null">{{ transaction.customer.name}}</td>
+                                        <td v-else>{{ transaction.finance_account.account_name}}</td> -->
                                         <td>
                                           <span class="badge  font-size-12" :class="transaction.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">
                                             {{transaction.rasid_bord}}
                                           </span>
                                         </td>
-                                        <td>{{transaction.amount}} {{transaction.tr_currency.name}} به <span v-if="transaction.bank_account!=null">{{transaction.bank_account.account_name}}</span>
+                                        <td>{{transaction.amount}} {{transaction.tr_currency.name}}  {{transaction.rasid_bord ==='rasid'? 'به': 'از' }} <span v-if="transaction.bank_account!=null">{{transaction.bank_account.account_name}}</span>
+                                          <span v-else>{{ transaction.finance_account.account_name}}</span>
+                                        </td>
+                                        <td>{{transaction.amount_equal}} {{transaction?.eq_currency?.name}}  {{transaction.rasid_bord ==='rasid'? 'به': 'از' }} <span v-if="transaction.bank_account!=null">{{transaction.bank_account.account_name}}</span>
                                           <span v-else>{{ transaction.finance_account.account_name}}</span>
                                         </td>
                                         <td>{{transaction.desc}}</td>

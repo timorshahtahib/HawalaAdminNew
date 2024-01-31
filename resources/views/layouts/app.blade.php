@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{ Vite::asset('resources/sass/app.scss') }}" id="layout-css">
     <script type="module" src="{{ Vite::asset('resources/js/app.js') }}"></script>
     <link rel="stylesheet" href="{{ Vite::asset('resources/sass/app-rtl.scss') }}" id="layout-css">
+    {{-- <link href="https://fonts.googleapis.com/css2?family=IranSans&display=swap" rel="stylesheet"> --}}
 
     @yield('css')
 </head>

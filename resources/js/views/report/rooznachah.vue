@@ -348,11 +348,7 @@ export default {
                                                 displayTransactionType(transaction.transaction_type)}}</td>
                                             <td v-if="transaction.customer!=null">{{ transaction.customer?.name}}</td>
                                             <td v-else>{{ transaction.finance_account?.account_name}}</td>
-                                            <!-- <td>
-                                                <span class="badge  font-size-12" :class="transaction.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">
-                                                {{transaction.rasid_bord}}
-                                                </span>
-                                            </td> -->
+                                        
                                            
                                             <td >{{transaction.amount}} {{transaction.tr_currency?.name}}
                                             {{transaction.rasid_bord ==='rasid'? 'به': 'از' }}

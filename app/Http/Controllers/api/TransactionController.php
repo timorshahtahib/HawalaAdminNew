@@ -412,34 +412,34 @@ class TransactionController extends Controller
     }
     
 
-    public function getCustomerInfoSearch(Request $request,$id){
-        $query=$request->input('query');
+    // public function getCustomerInfoSearch(Request $request,$id){
+    //     $query=$request->input('query');
 
-        $searchTerm = $request->input('query');
+    //     $searchTerm = $request->input('query');
 
-        $transaction = Transaction::query()->where('status', '=', '1')
-            ->whereHas('customer', function ($query) use ($searchTerm) {
-                $query->where('name', 'like', '%' . $searchTerm . '%');
-            })
-            ->orWhereHas('financeAccount', function ($query) use ($searchTerm) {
-                $query->where('account_name', 'like', '%' . $searchTerm . '%');
-            })
-            ->orWhereHas('tr_currency','eq_currency', function ($query) use ($searchTerm) {
-                $query->where('name', 'like', '%' . $searchTerm . '%');
-            })
-            ->where('ref_id','=',$id)
-            ->orWhere('amount',  'like', '%' . $searchTerm . '%')
-            ->orWhere('amount_equal',  'like', '%' . $searchTerm . '%')
-            ->orWhere('currency_equal',  'like', '%' . $searchTerm . '%')
-            ->orWhere('currency_rate',  'like', '%' . $searchTerm . '%')
+    //     $transaction = Transaction::query()->where('status', '=', '1')
+    //         ->whereHas('customer', function ($query) use ($searchTerm) {
+    //             $query->where('name', 'like', '%' . $searchTerm . '%');
+    //         })
+    //         ->orWhereHas('financeAccount', function ($query) use ($searchTerm) {
+    //             $query->where('account_name', 'like', '%' . $searchTerm . '%');
+    //         })
+    //         ->orWhereHas('tr_currency','eq_currency', function ($query) use ($searchTerm) {
+    //             $query->where('name', 'like', '%' . $searchTerm . '%');
+    //         })
+    //         ->where('ref_id','=',$id)
+    //         ->orWhere('amount',  'like', '%' . $searchTerm . '%')
+    //         ->orWhere('amount_equal',  'like', '%' . $searchTerm . '%')
+    //         ->orWhere('currency_equal',  'like', '%' . $searchTerm . '%')
+    //         ->orWhere('currency_rate',  'like', '%' . $searchTerm . '%')
             
-            ->with(['financeAccount','customer','tr_currency','eq_currency','bank_account'])->orderBy('id','desc')
-            ->get();
+    //         ->with(['financeAccount','customer','tr_currency','eq_currency','bank_account'])->orderBy('id','desc')
+    //         ->get();
        
        
        
-        return response()->json($transaction);
-    }
+    //     return response()->json($transaction);
+    // }
     
 
 

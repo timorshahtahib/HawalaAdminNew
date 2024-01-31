@@ -123,10 +123,10 @@ export default {
         </div>
 
         <div class="col-md-4">
-            <div class="card ">
+            <div class="card " style="min-height: 47vh;">
                 <!-- <div class="card-body"> -->
                   <div class="d-flex">
-                    <div class="">
+                    <div class="w-100">
                       <div v-if="isLoading">
                           <smallLoader />
                       </div>
@@ -135,7 +135,7 @@ export default {
                           <h4 class="card-titl badge  font-size-20 text-center text-black-50">بیلانس</h4>
                           <div class="table-responsive mb-0">
                             <div>
-                              <table class="table table-centered table-nowrap">
+                              <table class="table table-centered table-nowrap" style="width:100%">
                                 <thead>
                                   <tr>
                                     <th>واحد</th>
