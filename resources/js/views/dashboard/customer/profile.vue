@@ -92,111 +92,6 @@
     },
     methods: {
 
-
-async exportToPDF2() {
-  const doc = new jsPDF('p', 'pt', 'A4');
-  await this.$nextTick(); // Ensure Vue has rendered the table
-
-  // Embed the Persian font (e.g., Tahoma)
-  const fontPath = 'path/to/your/persian/font.ttf'; // Update the path to your Persian font file
-  console.log("fontPath", fontPath);
-  doc.addFileToVFS(fontPath);
-  doc.addFont(fontPath, 'Persian', 'normal');
-
-  // Set the font to Persian
-  doc.setFont('Persian');
-  doc.setFontSize(12);
-
-  // Add header
-  const header = function (data) {
-    doc.setFontStyle('bold');
-    doc.setTextColor(0, 0, 255); // Blue color
-    doc.text("عنوان جدول", data.settings.margin.left, 40); // Translate "Table Header" to Persian
-  };
-
-  // Add footer
-  const footer = function (data) {
-    const pageCount = doc.internal.getNumberOfPages();
-    doc.setFontStyle('normal');
-    doc.text('صفحه ' + data.pageNumber + ' از ' + pageCount, data.settings.margin.left, doc.internal.pageSize.height - 20); // Translate "Page" to Persian
-  };
-
-  // Set table options
-  const options = {
-    didDrawPage: function(data) {
-      // Add Header
-      header(data);
-
-      // Add Footer
-      footer(data);
-    },
-    margin: { top: 80 },
-    startY: 50
-  };
-
-  // Generate table
-  doc.autoTable({ html: this.$refs.tableToExport, start: { y: 60 }, theme: 'grid', options });
-
-  // Save PDF
-  doc.save('table.pdf');
-},
-async exportToPDF3() {
-  const doc = new jsPDF('p', 'pt', 'A4');
-  await this.$nextTick(); // Ensure Vue has rendered the table
-  console.log("doc",doc);
-  // Embed a Persian font (e.g., "Arial")
-  const fontPath = '../../../../fonts/arial.ttf'; // Update the path to your Persian font file
-  doc.addFileToVFS(fontPath);
-  doc.addFont(fontPath, 'Arial', 'normal');
-
-  // Set the font to Persian
-  doc.setFont('Persian');
-  doc.setFontSize(12);
-
-  // Add header
-  const header = function (data) {
-    doc.setFontStyle('bold');
-    doc.setTextColor(0, 0, 255); // Blue color
-    doc.text("عنوان جدول", data.settings.margin.left, 40); // Translate "Table Header" to Persian
-  };
-
-  // Add footer
-  const footer = function (data) {
-    const pageCount = doc.internal.getNumberOfPages();
-    doc.setFontStyle('normal');
-    doc.text('صفحه ' + data.pageNumber + ' از ' + pageCount, data.settings.margin.left, doc.internal.pageSize.height - 20); // Translate "Page" to Persian
-  };
-
-  // Set table options
-  const options = {
-    didDrawPage: function(data) {
-      // Add Header
-      header(data);
-
-      // Add Footer
-      footer(data);
-    },
-    margin: { top: 80 },
-    startY: 50
-  };
-
-  // Generate table
-  doc.autoTable({ html: this.$refs.tableToExport, start: { y: 60 }, theme: 'grid', options });
-
-  // Save PDF
-  doc.save('table.pdf');
-}
-,    exportPDF() {
-      const doc = new jsPDF();
-      let y = 15;
-      this.tableData.forEach((row) => {
-        doc.text(row.id.toString(), 10, y);
-        doc.text(row.name, 30, y);
-        doc.text(row.description, 80, y);
-        y += 10;
-      });
-      doc.save('table.pdf');
-    },
       openEditModaltransaction() {
         this.showModaltransaction = true;
         this.getCurrency();
@@ -219,7 +114,7 @@ async exportToPDF3() {
           title: title,
           text: text,
           icon: icon,
-          confirmButtonText: 'خوب'
+          confirmButtonText: 'بستن'
         })
       },
       async getTransactionbycid(page = 1) {
@@ -234,7 +129,7 @@ async exportToPDF3() {
           this.totalAmount = response.data.total_amount;
           this.totalPages = response.data.customers?.last_page();
           this.currentPage = page;
-          // console.log("transactionslist=",this.transactionslist);
+          console.log("Customers",this.transactionslist);
         } catch (error) {
           console.log(error.message);
         }

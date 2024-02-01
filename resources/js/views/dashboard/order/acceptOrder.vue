@@ -1,18 +1,18 @@
 <script>
 import Layout from "../../../layouts/main.vue";
 import PageHeader from "../../../components/page-header.vue";
-import orderTable from './orderTable.vue'
+import acceptOrderTable from './acceptOrderTable.vue'
 import axios from 'axios';
 
 /**
  * Customers component
  */
 export default {
-  components: { Layout, PageHeader,orderTable },
+  components: { Layout, PageHeader,acceptOrderTable },
   data() {
     return {
        
-      title: "لیست همه سفارشات",
+      title: " لیست سفارشات تائید شده",
       items: [
         {
           text: "داشبورد",
@@ -30,7 +30,7 @@ export default {
  
   methods: {
    
-       
+
   },
 };
 </script>
@@ -47,13 +47,14 @@ export default {
               <div class="col-sm-4">
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="جستجوی سفارش..." />
+                    <input type="text" class="form-control" placeholder="جستجوی سفارشات..." />
                     <i class="bx bx-search-alt search-icon"></i>
                   </div>
                 </div>
               </div>
+
             </div>
-              <orderTable />
+              <acceptOrderTable />
           
           </div>
         </div>

@@ -37,10 +37,23 @@ import jsPDF from 'jspdf';
         currencies:[],
         orders:[], 
 
+        // for exporting pdf
+        customerName:'',
+        customer_rasid:'',
+        customer_bord:'',
+        customer_balance:'',
         errors: {},
         currentPage: 1,
         totalPages: 1,
         limit: 10,
+
+    //     customerInfo : [
+    //     { 'Customer Rasid:': this.customer_rasid },
+    //     { 'Customer Bord:': this.customer_bord },
+    //     { 'Customer Name:': this.customerName },
+    //     { 'Customer Balance:': this.customer_balance }
+    // ]
+
       };
     },
     mounted() {
@@ -65,7 +78,7 @@ import jsPDF from 'jspdf';
         const farsiFont = '../../../../fonts/arial.ttf'; // Replace ... with your base64 font
         pdf.addFileToVFS('arial.ttf', farsiFont);
         pdf.setFont('arial');
-
+       
         // Set header
         pdf.setPage(1); // Set the page number to 1
         pdf.setDrawColor(0); // Set the color for the header
@@ -83,11 +96,10 @@ import jsPDF from 'jspdf';
             pdf.text('Page ' + i + ' of ' + pageCount, 105, pdf.internal.pageSize.height - 10, { align: 'center' }); // Text, x, y, options
         }
 
-        pdf.save('table.pdf');
+        pdf.save(`${this.customerName}.pdf`);
     });
 }
 ,
- 
       async getTransactionbycid(page = 1) {
         try {
           const response = await axios.post(`/api/customerinfo`, {
@@ -103,11 +115,17 @@ import jsPDF from 'jspdf';
           this.totalAmount = response.data.total_amount;
           this.totalPages = response.data.customers?.last_page();
           this.currentPage = page;
-          // console.log("transactionslist=",this.transactionslist);
+
+          this.customer_rasid = this.rasid;
+          this.customer_bord = this.bord;
+          this.customer_balance = this.totalAmount;
+          this.customerName = response.data?.customer?.data[0].name;
         } catch (error) {
           console.log(error.message);
         }
       },
+
+      
       prevPage() {
             if (this.currentPage > 1) {
                 this.transactionslist(this.currentPage - 1); // Update the page parameter
@@ -167,7 +185,7 @@ import jsPDF from 'jspdf';
 
 
 
-},
+     },
 
     },
   };
@@ -287,8 +305,7 @@ import jsPDF from 'jspdf';
                                     <tbody>
                                       <tr v-for="transaction in transactionslist" :key="transaction?.id">
                                         <td>{{transaction.check_number}}</td>
-                                        <!-- <td v-if="transaction.customer!=null">{{ transaction.customer.name}}</td>
-                                        <td v-else>{{ transaction.finance_account.account_name}}</td> -->
+                                      
                                         <td>
                                           <span class="badge  font-size-12" :class="transaction.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">
                                             {{transaction.rasid_bord}}
@@ -306,6 +323,8 @@ import jsPDF from 'jspdf';
                                       </tr>
                                     </tbody>
                                   </table>
+
+                          
                                   <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
                                     <li class="page-item">
                                       <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
@@ -323,12 +342,52 @@ import jsPDF from 'jspdf';
                                   </ul>
                                 </div>
                               </div>
+                    
+
+                              
                               <!-- <h3 class="text-center" v-else>این مشتری ترانزکشنی انجام نداده است</h3> -->
                             </div>
                           </div>
                         </div>
                       </div>
-                    </b-tab>
+                    </b-tab>    
+                        
+                          <table class="table table-centered table-nowrap"  ref="table">
+                            <thead>
+                              <tr>
+                             
+                                <th class="text-center">نام مشتری</th>
+                                <th class="text-center">رسید</th>
+                                <th class="text-center">برداشت</th>
+                                <th class="text-center">مقدار پول</th>
+                                <th class="text-center">پول</th>
+                                <th class="text-center">تفصیلات</th>
+                                <th class="text-center">توسط</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>{{customerName}}</td>
+                              
+                                <td>
+                                  <span class="badge  font-size-12 bg-success" >
+                                    {{customer_rasid}}
+                                  </span>
+                                </td>
+                                <!-- <td>
+                                  <span class="badge  font-size-12" :class="transaction.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">
+                                    {{transaction.rasid_bord}}
+                                  </span>
+                                </td>
+                                <td>{{transaction.amount_equal}} {{transaction?.eq_currency?.name}}  {{transaction.rasid_bord ==='rasid'? 'به': 'از' }} <span v-if="transaction.bank_account!=null">{{transaction.bank_account.account_name}}</span>
+                                  <span v-else>{{ transaction.finance_account.account_name}}</span>
+                                </td> -->
+                            
+
+                              </tr>
+                            </tbody>
+                          </table>
+                                 
                     <b-tab title="سفارشات">
                       <div>
                         <div class="row justify-content-center">

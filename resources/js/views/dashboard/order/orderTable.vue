@@ -56,7 +56,8 @@
                   <td>{{ order.transaction_id  }}</td>
                   <td>{{ order.order_date }}</td>
                   <td>{{ order.action_date }}</td>
-                  <td>{{ order.state }}</td>
+                  <td> <span class="badge font-size-12 " :class="order.state ==='done' ? 
+                    'bg-success': order.state ==='pending' ? 'bg-warning': 'bg-danger' ">{{ order.state }}</span> </td>
                   <td>{{ order.order_number }}</td>
                   <!-- <td>{{ order.ip_address }}</td> -->
                   <td>{{ order.system }}</td>

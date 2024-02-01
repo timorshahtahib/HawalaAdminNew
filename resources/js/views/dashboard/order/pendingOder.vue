@@ -1,18 +1,18 @@
 <script>
 import Layout from "../../../layouts/main.vue";
 import PageHeader from "../../../components/page-header.vue";
-import orderTable from './orderTable.vue'
+import pendingOrderTable from './pendingOrderTable.vue'
 import axios from 'axios';
 
 /**
  * Customers component
  */
 export default {
-  components: { Layout, PageHeader,orderTable },
+  components: { Layout, PageHeader,pendingOrderTable },
   data() {
     return {
        
-      title: "لیست همه سفارشات",
+      title: "لیست سفارشات در حال تائید",
       items: [
         {
           text: "داشبورد",
@@ -52,8 +52,9 @@ export default {
                   </div>
                 </div>
               </div>
+
             </div>
-              <orderTable />
+              <pendingOrderTable />
           
           </div>
         </div>

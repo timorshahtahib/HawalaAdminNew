@@ -56,6 +56,9 @@ Route::post('/financetypefilter', [FinanceAccountController::class, 'filterfinan
 
 
 Route::apiResource('orders',OrderController::class);
+Route::get('/acceptedorder', [OrderController::class, 'getAcceptedOrder']);
+Route::get('/pendingorder', [OrderController::class, 'getPendingOrder']);
+Route::get('/rejectedorder', [OrderController::class, 'getrejectedOrder']);
 Route::post('/searchorder', [OrderController::class, 'searchOrder']);
 
 Route::apiResource('users',UserController::class);

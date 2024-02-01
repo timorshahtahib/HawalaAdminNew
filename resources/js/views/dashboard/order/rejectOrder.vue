@@ -1,18 +1,17 @@
 <script>
 import Layout from "../../../layouts/main.vue";
 import PageHeader from "../../../components/page-header.vue";
-import orderTable from './orderTable.vue'
-import axios from 'axios';
+import rejectOrderTable from './rejectOrderTable.vue'
 
 /**
  * Customers component
  */
 export default {
-  components: { Layout, PageHeader,orderTable },
+  components: { Layout, PageHeader,rejectOrderTable },
   data() {
     return {
        
-      title: "لیست همه سفارشات",
+      title: "لیست سفارشات در رد شده",
       items: [
         {
           text: "داشبورد",
@@ -52,8 +51,9 @@ export default {
                   </div>
                 </div>
               </div>
+
             </div>
-              <orderTable />
+              <rejectOrderTable />
           
           </div>
         </div>

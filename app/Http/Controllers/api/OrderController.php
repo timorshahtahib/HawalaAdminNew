@@ -33,6 +33,65 @@ class OrderController extends Controller
         }
     }
 
+
+    public function getAcceptedOrder(Request $request){
+        try {
+            $limit = $request->has('limit') ? $request->limit : 10;
+    
+            $order = OrderModel::where('status', '=', '1')->where('state','done')
+                ->orderBy('id', 'desc')
+                ->paginate($limit);
+    
+            if ($order->isEmpty()) {
+                return response()->json([]);
+            }
+    
+            $totalPages = $order->lastPage();
+    
+            return response()->json(['orders' => $order, 'total_pages' => $totalPages]);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    public function getPendingOrder(Request $request){
+        try {
+            $limit = $request->has('limit') ? $request->limit : 10;
+    
+            $order = OrderModel::where('status', '=', '1')->where('state','pending')
+                ->orderBy('id', 'desc')
+                ->paginate($limit);
+    
+            if ($order->isEmpty()) {
+                return response()->json([]);
+            }
+    
+            $totalPages = $order->lastPage();
+    
+            return response()->json(['orders' => $order, 'total_pages' => $totalPages]);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getrejectedOrder(Request $request){
+        try {
+            $limit = $request->has('limit') ? $request->limit : 10;
+    
+            $order = OrderModel::where('status', '=', '1')->where('state','rejected')
+                ->orderBy('id', 'desc')
+                ->paginate($limit);
+    
+            if ($order->isEmpty()) {
+                return response()->json([]);
+            }
+    
+            $totalPages = $order->lastPage();
+    
+            return response()->json(['orders' => $order, 'total_pages' => $totalPages]);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
     /**
      * Store a newly created resource in storage.
      */

@@ -43,12 +43,13 @@ export const menuItems = [{
         id: 19,
         label: "رسید و بردها",
         icon: "bx-dollar",
-        subItems: [{
-                id: 6,
-                label: "سفارش",
-                link: "/dashboard/order",
-                parentId: 2
-            },
+        subItems: [
+            // {
+            //     id: 6,
+            //     label: "سفارش",
+            //     link: "/dashboard/order",
+            //     parentId: 2
+            // },
 
             {
                 id: 8,
@@ -65,6 +66,38 @@ export const menuItems = [{
                 label: "رسید برد",
                 icon: "bx-file",
                 link: "/dashboard/rasidbord"
+            },
+        ]
+    },
+    {
+        id: 19,
+        label: "سفارشات",
+        icon: "bx-dollar",
+        subItems: [{
+                id: 10,
+                label: "همه سفارشات",
+                link: "/dashboard/order",
+                parentId: 2
+            },
+
+            {
+                id: 11,
+                label: "سفارشات های تائید شده",
+                icon: "bx-file",
+                link: "/dashboard/acceptorder",
+
+            },
+            {
+                id: 12,
+                label: "سفارشات در حال تائید",
+                icon: "bx-file",
+                link: "/dashboard/pendingorder"
+            },
+            {
+                id: 13,
+                label: "سفارشات رد شده",
+                icon: "bx-file",
+                link: "/dashboard/rejectorder"
             },
         ]
     },

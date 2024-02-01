@@ -41,6 +41,24 @@ const routes = [{
             import ('../views/dashboard/order/order.vue'),
     },
     {
+        path: '/dashboard/acceptorder',
+        meta: { title: 'Order', authRequired: true, },
+        component: () =>
+            import ('../views/dashboard/order/acceptOrder.vue'),
+    },
+    {
+        path: '/dashboard/pendingorder',
+        meta: { title: 'Order', authRequired: true, },
+        component: () =>
+            import ('../views/dashboard/order/pendingOder.vue'),
+    },
+    {
+        path: '/dashboard/rejectorder',
+        meta: { title: 'Order', authRequired: true, },
+        component: () =>
+            import ('../views/dashboard/order/rejectOrder.vue'),
+    },
+    {
         path: '/dashboard/currency',
         meta: { title: 'Currency', authRequired: true, },
         component: () =>
