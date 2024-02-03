@@ -78,6 +78,7 @@ class CustomerController extends Controller
                 $image->move($destinationPath, $name);
                 $input['image'] = $name;
             }
+         
                 $out_put = Customer::create($input);
                 return response()->json([ 'status'=>true,'message' => 'User created successfully!', 'new_data' => $out_put], 201);
             

@@ -47,6 +47,7 @@
         "leaflet": "^1.9.3",
         "maska": "^1.5.0",
         "metismenujs": "^1.4.0",
+        "pdfmake": "^0.2.9",
         "simplebar-vue": "^2.3.1",
         "simplebar-vue3": "^0.2.0",
         "sweetalert2": "^11.7.3",

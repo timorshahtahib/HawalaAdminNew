@@ -64,7 +64,7 @@ export default {
                 <div class="col-12">
                   <div class=" p-4 text-center">
 
-                    <h5 class="">به پنل مدیریت آسیا تلکام خوش آمدید</h5>
+                    <!-- <h5 class="">به پنل مدیریت آسیا تلکام خوش آمدید</h5> -->
                     <h5 class="">به پنل مدیریت حواله خوش آمدید</h5>
                   </div>
                 </div>
@@ -93,7 +93,7 @@ export default {
 
                 <b-form-group id="input-group-2" label="رمز عبور" label-for="input-2" class="mb-3">
                   <b-form-input id="input-2" v-model="auth.password" name="password" type="password"
-                    placeholder="رمز عبور خود را وارد نمائید"></b-form-input>
+                  placeholder="رمز عبور خود را وارد نمائید"></b-form-input>
                 </b-form-group>
                 <b-form-checkbox id="customControlInline" name="checkbox-1" value="accepted"
                   unchecked-value="not_accepted">
@@ -123,7 +123,7 @@ export default {
             </p>
             <p>
               © {{ new Date().getFullYear() }}
-              <i class="mdi mdi-heart text-danger"></i> by Nazir Ahmad Rahmaty
+              <i class="mdi mdi-heart text-danger"></i> by Asia Telecom
             </p>
           </div>
           <!-- end row -->

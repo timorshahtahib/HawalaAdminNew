@@ -1,6 +1,6 @@
 @extends('layouts.auth')
 @section('title')
-    Login
+    ورود
 @endsection
 @section('content')
     <div class="account-pages my-5 pt-sm-5">
@@ -12,8 +12,8 @@
                             <div class="row">
                                 <div class="col-7">
                                     <div class="text-primary p-4">
-                                        <h5 class="text-primary">Welcome Back !</h5>
-                                        <p>Sign in to continue to Skote.</p>
+                                        <h5 class="text-primary">خوش آمدید </h5>
+                                        {{-- <p>Sign in to continue to Skote.</p> --}}
                                     </div>
                                 </div>
                                 <div class="col-5 align-self-end">
@@ -45,7 +45,7 @@
                                 <form class="form-horizontal" method="POST" action="{{ route('login') }}">
                                     @csrf
                                     <div class="mb-3">
-                                        <label for="email" class="form-label">Email</label>
+                                        <label for="email" class="form-label">ایمیل</label>
                                         <input type="text" class="form-control @error('email') is-invalid @enderror"
                                             id="email" placeholder="Enter email" name="email" required>
                                         @error('email')
@@ -56,7 +56,7 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <label class="form-label">Password</label>
+                                        <label class="form-label">رمزعبور</label>
                                         <div class="input-group auth-pass-inputgroup">
                                             <input type="password"
                                                 class="form-control @error('password') is-invalid @enderror"
@@ -75,16 +75,15 @@
                                         <input class="form-check-input" type="checkbox" name="remember" id="remember"
                                             {{ old('remember') ? 'checked' : '' }}>
                                         <label class="form-check-label" for="remember-check">
-                                            Remember me
+                                            مرا بخاطر بسپار
                                         </label>
                                     </div>
 
                                     <div class="mt-3 d-grid">
-                                        <button class="btn btn-primary waves-effect waves-light" type="submit">Log
-                                            In</button>
+                                        <button class="btn btn-primary waves-effect waves-light" type="submit">ورود</button>
                                     </div>
 
-                                    <div class="mt-4 text-center">
+                                    {{-- <div class="mt-4 text-center">
                                         <h5 class="font-size-14 mb-3">Sign in with</h5>
 
                                         <ul class="list-inline">
@@ -107,13 +106,13 @@
                                                 </a>
                                             </li>
                                         </ul>
-                                    </div>
+                                    </div> --}}
 
                                     @if (Route::has('password.request'))
                                         <div class="mt-4 text-center">
                                             <a href="{{ route('password.request') }}" class="text-muted"><i
                                                     class="mdi mdi-lock me-1"></i>
-                                                Forgot your password?</a>
+                                                گذر واژه خود را فراموش کردید؟?</a>
                                         </div>
                                     @endif
                                 </form>
@@ -125,15 +124,14 @@
 
                         <div>
                             @if (Route::has('register'))
-                                <p>Don't have an account ? <a href="{{ route('register') }}" class="fw-medium text-primary">
-                                        Signup
-                                        now </a> </p>
+                                <p>آیا حساب ندارید? <a href="{{ route('register') }}" class="fw-medium text-primary">
+                                      حالا راجستر نمائید</a> </p>
                                 <p>©
                             @endif
                             <script>
                                 document.write(new Date().getFullYear())
-                            </script> Skote. Crafted with <i class="mdi mdi-heart text-danger"></i> by
-                            Themesbrand
+                            </script> by Asia Telecom <i class="mdi mdi-heart text-danger"></i> 
+                          
                             </p>
                         </div>
                     </div>

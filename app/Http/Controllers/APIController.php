@@ -44,18 +44,27 @@ class APIController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|email|max:250',
             'password' => 'required|max:250',
-        ]);
+        ],
+        ['email.required'=>'نام کاربری ضروری میباشد',
+        'password.required'=>'رمز عبور ضروری میباشد'
+        ]
+    );
 
         if ($validator->fails()) {
             return $this->sendResponse(400, $validator->errors()->first());
         }
-
+// After successful login in your login method
+     
         $credentials = $request->only('email', 'password');
-        // if (Auth::attempt($credentials)) {
+        if (Auth::attempt($credentials)) {
             $user = User::where('email', $request->email)->first();
+            $refreshToken = Str::random(60); // Generate a random refresh token
+            $user->remember_token = Hash::make($refreshToken);
+            $user->refresh_token_expiry = now()->addMinutes(1); // Set the expiration date for the refresh token
+            $user->save();
             return $this->sendResponse($user, "success");
-        // }
-        return $this->sendResponse(400, "Credentials not match with our records");
+        }
+        return $this->sendResponse(400, "نام کاربری و رمز عبور مطابقت ندارد!");
     }
 
     // custom register
@@ -65,7 +74,15 @@ class APIController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
+        ],
+        [
+            'name.required'=>'نام ضروری میباشد',
+            'email.required'=>'ایمیل ضروری میباشد',
+            'passwod.required'=>'رمز عبور ضروری میباشد',
+        ]
+    
+    
+    );
 
         if ($validator->fails()) {
             return $this->sendResponse(400, $validator->errors()->first());
@@ -87,7 +104,7 @@ class APIController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => ['required', 'string', 'email', 'max:255'],
-        ]);
+        ],['email.required'=>'ایمیل ضروری میباشد']);
 
         if ($validator->fails()) {
             return $this->sendResponse(400, $validator->errors()->first());
@@ -112,7 +129,7 @@ class APIController extends Controller
 
             return $this->sendResponse(null, "success");
         } catch (\Throwable $th) {
-            return $this->sendResponse(400, "Something went wrong, please contact support.");
+            return $this->sendResponse(400, "لطفا با بخش پشتیبانی ما به تماس شوید");
         }
     }
 
@@ -122,6 +139,11 @@ class APIController extends Controller
             'email' => ['required', 'string', 'email', 'max:255'],
             'token' => ['required', 'max:255'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+
+        ], [
+            'email.required'=>'ایمیل ضروری میباشد',
+            'token.required'=>'توکن ضروری میباشد',
+            'passwod.required'=>'رمز عبور ضروری میباشد',
         ]);
 
         if ($validator->fails()) {
@@ -143,7 +165,28 @@ class APIController extends Controller
 
             return $this->sendResponse(null, "success");
         } catch (\Throwable $th) {
-            return $this->sendResponse(400, "Something went wrong, please contact support.");
+            return $this->sendResponse(400, "لطفا با بخش پشتیبانی ما به تماس شوید");
         }
     }
+
+    public function refreshAccessToken(Request $request)
+{
+    $request->validate([
+        'refresh_token' => 'required',
+    ]);
+
+    $user = User::where('refresh_token', $request->refresh_token)
+                ->where('refresh_token_expiry', '>', now())
+                ->first();
+
+    if (!$user) {
+        return response()->json(['error' => 'Invalid refresh token'], 401);
+    }
+
+    // Generate a new access token
+    $accessToken = $user->createToken('AccessToken')->plainTextToken;
+
+    return response()->json(['access_token' => $accessToken]);
+}
+    
 }

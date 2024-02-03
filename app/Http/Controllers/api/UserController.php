@@ -83,6 +83,6 @@ class UserController extends Controller
         $user->field_name = $request->input('status');
     
         $user->update(['status'=>0]);
-        return response()->json(['message' => 'Order deleted successfully', 'data' => $user], 204);
+        return response()->json(['message' => 'User deleted successfully', 'data' => $user], 204);
     }
 }

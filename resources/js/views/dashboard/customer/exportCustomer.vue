@@ -1,195 +1,158 @@
 <script>
-  import Layout from "../../../layouts/main.vue";
-  import PageHeader from "../../../components/page-header.vue";
-  import axios from "axios";
-  import Loader from '../../loader/loader.vue'
-  import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import Layout from "../../../layouts/main.vue";
+import PageHeader from "../../../components/page-header.vue";
+import axios from "axios";
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+import Loader from '../../loader/loader.vue';
 
-  export default {
-    components: {
-      Layout,
-      PageHeader,
-      Loader
+export default {
+  components: {
+    Layout,
+    PageHeader,
+    Loader
+  },
+  data() {
+    return {
+      title: "صفحه خروجی گرفتن از اطلاعات مشتری",
+      items: [{
+        text: "مشتری",
+        href: "/"
+      }, {
+        text: "خروجی پی دی اف",
+        active: true
+      }],
+      isLoading: false,
+      notFound: false,
+      searchQuery: '',
+      transactionslist: [],
+      orderslist: [],
+      filter_rasid_bord:'',
+      orderModel:'',
+      currencyModel:'',
+      SelectedDakhl:'',
+      banks:[],
+      currencies:[],
+      orders:[],
+      customerName:'',
+      customer_rasid:'',
+      customer_bord:'',
+      customer_balance:'',
+      currentPage: 1,
+      totalPages: 1,
+      limit: 10,
+    };
+  },
+  mounted() {
+    this.getTransactionbycid();
+    this.getCurrency();
+    this.getOrders();
+    this.filter_rasid_bord='all';
+  },
+  methods: {
+    async getTransactionbycid(page = 1) {
+      try {
+        const response = await axios.post(`/api/customerinfo`, {
+          id: this.$route.params.id,
+          rasid_bord:this.rasid_bord,
+          order_id:this.order_id,
+          bank_acount_id:this.bank_acount_id
+        });
+        this.transactionslist = response.data.transactions?.data;
+        this.orderslist = response.data?.orders;
+        this.rasid = response.data.rasid;
+        this.bord = response.data.bord;
+        this.totalAmount = response.data.total_amount;
+        this.totalPages = response.data.customers?.last_page();
+        this.currentPage = page;
+
+        this.customer_rasid = this.rasid;
+        this.customer_bord = this.bord;
+        this.customer_balance = this.totalAmount;
+        this.customerName = response.data?.customer?.data[0].name;
+      } catch (error) {
+        console.log(error.message);
+      }
     },
-    data() {
-      return {
-        title: "صفحه خروجی گرفتن از اطلاعات مشتری",
-        items: [{
-          text: "مشتری",
-          href: "/"
-        }, {
-          text: "خروجی پی دی اف",
-          active: true
-        }],
-        isLoading: false,
-        notFound: false,
-        searchQuery: '',
-        transactionslist: [],
-        orderslist: [],
-
-        // filter
-        filter_rasid_bord:'',
-        orderModel:'',
-        currencyModel:'',
-        SelectedDakhl:'',
-        banks:[],
-        currencies:[],
-        orders:[], 
-
-        // for exporting pdf
-        customerName:'',
-        customer_rasid:'',
-        customer_bord:'',
-        customer_balance:'',
-        errors: {},
-        currentPage: 1,
-        totalPages: 1,
-        limit: 10,
-
-    //     customerInfo : [
-    //     { 'Customer Rasid:': this.customer_rasid },
-    //     { 'Customer Bord:': this.customer_bord },
-    //     { 'Customer Name:': this.customerName },
-    //     { 'Customer Balance:': this.customer_balance }
-    // ]
-
+    async getOrders() {
+      try {
+        const response = await axios.get(`/api/orders`);
+        this.orders = response.data.orders.data;
+        console.log(this.orderModel);
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+      } finally {
+        this.isLoading=false;
+      }
+    },
+    async getCurrency(){
+      const response = await axios.get('/api/currencies');
+      this.currencies = response.data.currencies.data;
+    },
+    change_currency() {
+      this.getBanks(this.currencyModel);
+    },
+    async getBanks(id) {
+      try {
+        const response = await axios.get('/api/getbankbyid/' + id);
+        this.banks = response.data.banks;
+        this.SelectedDakhl = this.banks[0].id;
+      } catch (error) {
+        console.log(error.message);
+      }
+    },
+    async filterCustomerExport() {
+      try {
+        const response = await axios.post('/api/exportcustomertopdf',{
+          id: this.$route.params.id,
+          rasid_bord:this.filter_rasid_bord,
+          currency:this.currencyModel
+        });
+        this.transactionslist = response.data.customerExportFilter.data;
+      } catch (error) {
+        console.log(error.message)
+      }
+    },
+    exportToPDF() {
+      const docDefinition = {
+        content: [
+          { text: 'جدول داده‌ها', style: 'header' },
+          {
+            style: 'table',
+            table: {
+              body: [
+                ['نام مشتری', 'رسید', 'برداشت', 'مقدار پول', 'پول', 'تفصیلات', 'توسط'],
+                ...this.transactionslist.map(item => [
+                  item.customerName,
+                  item.rasid,
+                  item.bord,
+                  item.amount,
+                  item.currency,
+                  item.desc,
+                  item.user_id
+                ])
+              ]
+            }
+          }
+        ],
+        styles: {
+          header: {
+            fontSize: 18,
+            bold: true,
+            alignment: 'right'
+          },
+          table: {
+            alignment: 'right'
+          }
+        }
       };
-    },
-    mounted() {
-      this.getTransactionbycid();
-      this.getCurrency();
-      this.getOrders();
-      this.filter_rasid_bord='all';
-    //   this.orderModel='سفارش';
-    //   this.currencyModel="واحد";
-    },
-   
-    methods: {
-
-
-      exportToPDF() {
-    const table = this.$refs.table;
-    html2canvas(table).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const imgWidth = 190; // Adjust as needed
-        const imgHeight = canvas.height * imgWidth / canvas.width;
-        const farsiFont = '../../../../fonts/arial.ttf'; // Replace ... with your base64 font
-        pdf.addFileToVFS('arial.ttf', farsiFont);
-        pdf.setFont('arial');
-       
-        // Set header
-        pdf.setPage(1); // Set the page number to 1
-        pdf.setDrawColor(0); // Set the color for the header
-        pdf.setFontSize(18); // Set the font size for the header
-        pdf.text('My PDF Header', 105, 15, { align: 'center' }); // Text, x, y, options
-
-        // Add image
-        pdf.addImage(imgData, 'PNG', 10, 30, imgWidth, imgHeight); // Adjust Y position to make space for the header
-
-        // Set footer
-        const pageCount = pdf.internal.getNumberOfPages(); // Get the total number of pages
-        for (let i = 1; i <= pageCount; i++) {
-            pdf.setPage(i); // Set the current page
-            pdf.setFontSize(12); // Set the font size for the footer
-            pdf.text('Page ' + i + ' of ' + pageCount, 105, pdf.internal.pageSize.height - 10, { align: 'center' }); // Text, x, y, options
-        }
-
-        pdf.save(`${this.customerName}.pdf`);
-    });
-}
-,
-      async getTransactionbycid(page = 1) {
-        try {
-          const response = await axios.post(`/api/customerinfo`, {
-            id: this.$route.params.id,
-            rasid_bord:this.rasid_bord,
-            order_id:this.order_id,
-            bank_acount_id:this.bank_acount_id
-          });
-          this.transactionslist = response.data.transactions?.data;
-          this.orderslist = response.data?.orders;
-          this.rasid = response.data.rasid;
-          this.bord = response.data.bord;
-          this.totalAmount = response.data.total_amount;
-          this.totalPages = response.data.customers?.last_page();
-          this.currentPage = page;
-
-          this.customer_rasid = this.rasid;
-          this.customer_bord = this.bord;
-          this.customer_balance = this.totalAmount;
-          this.customerName = response.data?.customer?.data[0].name;
-        } catch (error) {
-          console.log(error.message);
-        }
-      },
-
       
-      prevPage() {
-            if (this.currentPage > 1) {
-                this.transactionslist(this.currentPage - 1); // Update the page parameter
-            }
-        },
-        nextPage() {
-            if (this.currentPage < this.totalPages) {
-                this.transactionslist(this.currentPage + 1); // Update the page parameter
-            }
-        },
-        async getOrders() {
-    
-          try {
-                const response = await axios.get(`/api/orders`);
-                this.orders = response.data.orders.data;
-                console.log(this.orderModel);
-            } catch (error) {
-                console.error('Error fetching orders:', error);
-            }finally{
-                this.isLoading=false;
-            }
-        },
-        async getCurrency(){
-            const response = await axios.get('/api/currencies');
-            this.currencies = response.data.currencies.data;
-        },
-         change_currency() {
-            this.getBanks(this.currencyModel);
-        },
-        async getBanks(id) {
-            try {
-                const response = await axios.get('/api/getbankbyid/' + id);
-                this.banks = response.data.banks;
-                this.SelectedDakhl = this.banks[0].id;
-
-            } catch (error) {
-                console.log(error.message);
-            }
-        },
-
-        async filterCustomerExport(){
-
-            try {
-                const response = await axios.post('/api/exportcustomertopdf',{
-                id: this.$route.params.id,
-                rasid_bord:this.filter_rasid_bord,
-                // order_id:this.orderModel,
-                currency:this.currencyModel
-                // bank_acount_id:this.bank_acount_id,
-                });
-
-             this.transactionslist= response.data.customerExportFilter.data;
-        // console.log(this.transactionslist);
-            } catch (error) {
-                console.log(error.message)
-            }
-
-
-
-     },
-
-    },
-  };
+      pdfMake.createPdf(docDefinition).download('table_data.pdf');
+    }
+  }
+};
 </script>
+
 <template>
   <Layout>
     <PageHeader :title="title" :items="items" />
