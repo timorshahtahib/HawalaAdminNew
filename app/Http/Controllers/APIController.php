@@ -48,25 +48,60 @@ class APIController extends Controller
         ['email.required'=>'نام کاربری ضروری میباشد',
         'password.required'=>'رمز عبور ضروری میباشد'
         ]
-    );
+        );
 
         if ($validator->fails()) {
             return $this->sendResponse(400, $validator->errors()->first());
         }
-// After successful login in your login method
-     
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
-            $user = User::where('email', $request->email)->first();
-            $refreshToken = Str::random(60); // Generate a random refresh token
-            $user->remember_token = Hash::make($refreshToken);
-            $user->refresh_token_expiry = now()->addMinutes(1); // Set the expiration date for the refresh token
-            $user->save();
-            return $this->sendResponse($user, "success");
+           $user = $request->user();
+           $expiration = Carbon::now()->addDays(1);
+          $token = $user->createToken('AuthToken')->accessToken->token;
+
+        // Return the token
+        return response()->json(['success'=>true,'user'=>$user,'access_token' => $token], 200);
+        }else{
+            return response()->json(['success'=>false,'error' => "نام کاربری و رمز عبور مطابقت ندارد!"], 401);
         }
-        return $this->sendResponse(400, "نام کاربری و رمز عبور مطابقت ندارد!");
+     
+    }
+public function login2(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'email' => 'required|email|max:250',
+        'password' => 'required|max:250',
+    ],
+    [
+        'email.required' => 'نام کاربری ضروری میباشد',
+        'password.required' => 'رمز عبور ضروری میباشد'
+    ]);
+
+    if ($validator->fails()) {
+        return $this->sendResponse(400, $validator->errors()->first());
     }
 
+    $credentials = $request->only('email', 'password');
+    if (Auth::attempt($credentials)) {
+        $user = $request->user();
+
+        // Set token expiration time (e.g., 7 days from now)
+        $expiration = Carbon::now()->addMinutes(9); // Adjust the expiration time as needed
+
+        // Create a token with the specified expiration time
+        $token = $user->createToken('AuthToken', ['expires_at' => $expiration])->accessToken;
+
+        // Return the token
+        return response()->json(['success' => true, 'user' => $user, 'access_token' => $token], 200);
+    } else {
+        return response()->json(['success' => false, 'error' => "نام کاربری و رمز عبور مطابقت ندارد!"], 401);
+    }
+}
+    public function getUser(Request $request)
+    {
+        $user = $request->user();
+        return response()->json(['user' => $user], 200);
+    }
     // custom register
     public function register(Request $request)
     {
@@ -83,7 +118,6 @@ class APIController extends Controller
     
     
     );
-
         if ($validator->fails()) {
             return $this->sendResponse(400, $validator->errors()->first());
         }
@@ -169,24 +203,6 @@ class APIController extends Controller
         }
     }
 
-    public function refreshAccessToken(Request $request)
-{
-    $request->validate([
-        'refresh_token' => 'required',
-    ]);
-
-    $user = User::where('refresh_token', $request->refresh_token)
-                ->where('refresh_token_expiry', '>', now())
-                ->first();
-
-    if (!$user) {
-        return response()->json(['error' => 'Invalid refresh token'], 401);
-    }
-
-    // Generate a new access token
-    $accessToken = $user->createToken('AccessToken')->plainTextToken;
-
-    return response()->json(['access_token' => $accessToken]);
-}
+    
     
 }

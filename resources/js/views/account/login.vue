@@ -26,29 +26,36 @@ export default {
   },
   methods: {
     async login() {
-      this.processing = true
-      await axios.post('/api/login', this.auth).then(({ data }) => {
-        if (data.success == true && data.message == 'success') {
-          const logged_user = {
-            login: true,
-            user_id: data.data.id,
-            name: data.data.name,
-            email: data.data.email,
-          }
-          localStorage.setItem('user', JSON.stringify(logged_user));
-          this.$router.push('/');
-        } else {
-          if(data.data == 400) {
-            this.authError = data.message;
-            this.isAuthError = true;
-          }
-        }
-      }).catch(({response:{data}}) => {
-        console.log(data)
-      }).finally(() => {
-        this.processing = false
-      })
-    },
+  this.processing = true;
+  try {
+    const response = await axios.post('/api/login', this.auth);
+    const data = response.data;
+    if (data.success) {
+      const logged_user = {
+        login: true,
+        user_id: data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+        token: data.access_token
+      };
+      localStorage.setItem('user', JSON.stringify(logged_user.token));
+      // console.log("data",data);
+      this.$router.push('/');
+    } else {
+      this.authError = data.error;
+      this.isAuthError = true;
+    }
+  } catch (error) {
+    console.error('Error during login:', error);
+    this.authError = 'An error occurred during login.';
+    this.isAuthError = true;
+  } finally {
+    this.processing = false;
+  }
+   
+
+}
+,
   }
 };
 </script>
@@ -63,8 +70,6 @@ export default {
               <div class="row">
                 <div class="col-12">
                   <div class=" p-4 text-center">
-
-                    <!-- <h5 class="">به پنل مدیریت آسیا تلکام خوش آمدید</h5> -->
                     <h5 class="">به پنل مدیریت حواله خوش آمدید</h5>
                   </div>
                 </div>
