@@ -25,38 +25,35 @@ export default {
     }
   },
   methods: {
-    async login() {
+async login() {
   this.processing = true;
-  try {
-    const response = await axios.post('/api/login', this.auth);
-    const data = response.data;
-    if (data.success) {
-      const logged_user = {
-        login: true,
-        user_id: data.user.id,
-        name: data.user.name,
-        email: data.user.email,
-        token: data.access_token
-      };
-      localStorage.setItem('user', JSON.stringify(logged_user.token));
-      // console.log("data",data);
-      this.$router.push('/');
-    } else {
-      this.authError = data.error;
-      this.isAuthError = true;
-    }
-  } catch (error) {
-    console.error('Error during login:', error);
-    this.authError = 'An error occurred during login.';
-    this.isAuthError = true;
-  } finally {
+      try {
+        const response = await axios.post('/api/login', this.auth);
+
+        // Assuming your API response structure matches the provided one
+        if (response.data.status) {
+                const logged_user = {
+                   status:response.data.status,
+                    token: response.data.access_token
+                };
+
+              localStorage.setItem('user', JSON.stringify(logged_user.token));
+              this.$router.push('/');
+        } else {
+          this.authError = response.data.message;
+           this.isAuthError = true;
+          
+        }
+      } catch (error) {
+        console.error('Error during login:', error);
+          this.authError = 'An error occurred during login.';
+          this.isAuthError = true;
+      }finally {
     this.processing = false;
   }
-   
-
-}
-,
+    }
   }
+  
 };
 </script>
 
@@ -106,7 +103,7 @@ export default {
                 </b-form-checkbox>
                 <div class="mt-3 d-grid">
                   <button type="submit" :disabled="processing" @click="login" class="btn btn-primary btn-block">
-                    {{ processing ? "Please wait" : "ورود" }}
+                    {{ processing ? "لطفا صبر نمائید..." : "ورود" }}
                   </button>
                 </div>
            
