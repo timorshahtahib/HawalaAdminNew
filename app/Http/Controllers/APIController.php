@@ -11,84 +11,181 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-
-
+use Throwable;
 
 class APIController extends Controller
 {
   
     public function register(Request $request)
     {
-       $validator = Validator::make($request->all(), [
-        'name' => 'required|string',
-        'email' => 'required|string|email|max:255|unique:users',
-        'password' =>'required|min:8|max:255',
-       ],
-       [
-        'name.required' => 'نام ضروری میباشد',
-        'email.required' => 'ایمیل ضروری میباشد',
-        'password.required' => 'رمز عبور ضروری میباشد',
-    ]
-    );
+            try {
+                $validator = Validator::make($request->all(), [
+                    'name' => 'required|string',
+                    'email' => 'required|string|email|max:255|unique:users',
+                    'password' =>'required|min:8|max:255',
+                   ],
+                   [
+                    'name.required' => 'نام ضروری میباشد',
+                    'email.required' => 'ایمیل ضروری میباشد',
+                    'email.unique' => 'ایمیل از قبل موجود میباشد',
+                    'password.required' => 'رمز عبور ضروری میباشد',
+                    'password.min' => 'رمز عبور باید بیشتر از8 کاراکتر باشد',
+                ]
+                );
+            
+                if (!$validator->passes()) {
+                    return response()->json(['status'=>false,'error'=>$validator->errors()->toArray()]);
+                }
+                $user = User::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                ]);
+            
+                return response()->json(['status'=>true,'message'=>'کاربر با موفقیت ثبت شد!'],200);
+            
+            } catch (Throwable $e) {
+                return response()->json(['status'=>false,$e->getMessage()]);
+            }
 
-    if ($validator->fails()) {
-        return response()->json(['status'=>false,$validator->errors()->toArray()], 403);
     }
-    $user = User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-    ]);
 
-    return response()->json(['status'=>true,'message'=>'کاربر با موفقیت ثبت شد!']);
 
-    // if ($user) {
-    //     return response()->json($user, "success");
-    // }
-    }
-
-    public function login(Request $request){
+    public function login0(Request $request){
 
         $validator = Validator::make($request->all(), [
             'email' => 'required|email|max:250',
             'password' => 'required|max:250',
         ],
-        ['email.required'=>'نام کاربری ضروری میباشد',
-        'password.required'=>'رمز عبور ضروری میباشد'
-        ]
-        );
-
-        if ($validator->fails()) {
-            return response()->json(
-                [
-                'status'=>false,
-                'error'=>$validator->errors()->toArray()]
-            );
+        [
+            'email.required'=>'ایمیل ضروری میباشد',
+            'password.required'=>'رمز عبور ضروری میباشد',
+        ]);
+    
+        if (!$validator->passes()) {
+            return response()->json(['status'=>false,'error'=>$validator->errors()->toArray()]);
         }
-
-        // Auth Facade
+    
+        // Attempt to authenticate the user
         if(Auth::attempt([
             "email" => $request->email,
             "password" => $request->password
         ])){
+    
+            $user = Auth::user();
+            $token = $user->createToken("myToken")->accessToken;
+    
+            return response()->json([
+                "status" => true,
+                'user_name'=>$user->name,
+                "message" => "ورود با موفقیت انجام شد",
+                "access_token" => $token
+            ]);
+        } else {
+            // Authentication failed, return error message
+            return response()->json([
+                "status" => false,
+                "error" => "ایمیل یا رمز عبور اشتباه است"
+            ]);
+        }
+    }
 
+
+    public function login(Request $request){
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
             $user = Auth::user();
             $token = $user->createToken("myToken")->accessToken;
 
             return response()->json([
                 "status" => true,
+                "user_name" => $user->name,
                 "message" => "ورود با موفقیت انجام شد",
                 "access_token" => $token
             ]);
+        } else {
+            return response()->json([
+                "status" => false,
+                "error" => "ایمیل یا رمز عبور اشتباه است"
+            ]);
         }
-
-        return response()->json([
-            "status" => false,
-            "message" => "رمز عبور و ایمیل مطابقت ندارد"
-        ]);
     }
+    public function login2(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|max:250',
+            'password' => 'required|max:250',
+        ], [
+            'email.required' => 'ایمیل ضروری می‌باشد',
+            'password.required' => 'رمز عبور ضروری می‌باشد',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'error' => $validator->$request->toArray()], 422);
+        }
+    
+        if (Auth::attempt($request->only('email', 'password'))) {
+            $user = Auth::user();
+            $token = $user->createToken('myToken')->accessToken;
+    
+            return response()->json([
+                'status' => true,
+                'user_name' => $user->name,
+                'message' => 'ورود با موفقیت انجام شد',
+                'access_token' => $token,
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'error' => 'ایمیل یا رمز عبور اشتباه است',
+            ], 401);
+        }
+    }
+    
+    public function login1(Request $request) {
 
-   
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|max:250',
+            'password' => 'required|max:250',
+        ],
+        [
+            'email.required'=>'ایمیل ضروری میباشد',
+            'password.required'=>'رمز عبور ضروری میباشد',
+        ]);
+    
+        if (!$validator->passes()) {
+            return response()->json(['status'=>false,'error'=>$validator->errors()->toArray()]);
+        }
+    
+        // Attempt to authenticate the user
+        if(Auth::attempt([
+            "email" => $request->email,
+            "password" => $request->password
+        ])){
+    
+            $user = Auth::user();
+            // Revoke existing tokens to ensure only one token is active per user
+            $user->tokens->each(function ($token, $key) {
+                $token->delete();
+            });
+            // $this->logout($request);
+            // Create new token for the authenticated user
+            $token = $user->createToken("myToken")->accessToken;
+    
+            return response()->json([
+                "status" => true,
+                'user_name'=>$user->name,
+                "message" => "ورود با موفقیت انجام شد",
+                "access_token" => $token
+            ]);
+        } else {
+            // Authentication failed, return error message
+            return response()->json([
+                "status" => false,
+                "error" => "ایمیل یا رمز عبور اشتباه است"
+            ]);
+        }
+    }
 public function logout(Request $request)
 {
     // Check if the user is authenticated
@@ -170,7 +267,7 @@ public function logout(Request $request)
             DB::table('password_resets')->where(['email'=> $request->email])->delete();
 
             return $this->sendResponse(null, "success");
-        } catch (\Throwable $th) {
+        } catch (Throwable $e) {
             return $this->sendResponse(400, "لطفا با بخش پشتیبانی ما به تماس شوید");
         }
     }

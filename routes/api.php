@@ -38,11 +38,13 @@ Route::post('/forget-password', [APIController::class, 'forget_pass']);
 Route::post('/reset-password', [APIController::class, 'reset_pass']);
 
 
-Route::group([
-    "middleware"=>["auth:api"]
-],function(){
+
+// Route::group([
+//     "middleware"=>["auth:api"]
+// ],function(){
 // for logout user
     Route::post('/logout', [APIController::class, 'logout']);
+    
     Route::apiResource('customer',CustomerController::class);
     Route::post('/updatecustomer', [CustomerController::class, 'updateCustomer']);
     Route::post('/searchCustomer', [CustomerController::class, 'searchCustomer']);
@@ -156,5 +158,5 @@ Route::group([
     Route::get('/transactions/pdf', [TransactionController::class, 'exportTransactionsToPDF'])->name('transactions.pdf');
     // rooznacha 
     Route::post('/filterrooznamchah',[ReportFinanceController::class, 'filterRooznachah']);
-});
+// });
 

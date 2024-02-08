@@ -203,7 +203,7 @@ export default {
             if (response.data != null) {
                 if (response.data.status === false) {
                     if (response.data.message != null) {
-                        this.showalert(response.data.message, "موفقانه", "error");
+                        this.showalert(response.data.message, "خطا", "error");
                     } else {
                         this.errors = response.data.error;
 

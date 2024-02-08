@@ -481,7 +481,7 @@ export default {
                                 </div>
                           
                                 <div class="row mt-3">
-                                    <div class="col-sm-12">
+                                    <!-- <div class="col-sm-12">
                                         <span class="">
                                             <label for="Commission" class="mx-1">کمیشن دارد:‌</label>
                                             <input class="form-check-input" type="radio" id="Commission" v-model="edit_commission" value="darad" name="Commission" />
@@ -490,7 +490,11 @@ export default {
                                             <label for="nocommission" class="mx-1">کمیشن ندارد:‌</label>
                                             <input class="form-check-input" type="radio" id="nocommission" v-model="edit_commission" name="Commission" value="nadarad" />
                                         </span>
-                                    </div>
+                                    </div> -->
+                                    <select class="form-control form-control-lg select2 required" v-model="commission">
+                                        <option value="yes">کمیشن دارد</option>
+                                        <option value="no">کمیشن ندارد</option>
+                                    </select>
                                 </div>
                                 
                                 <div class="row">
@@ -601,7 +605,7 @@ export default {
                                     <span class="text-danger error-text dakhl_error"></span>
                                 </div>
                                 <div class="row mt-3 ">
-                                    <div class="col-sm-12">
+                                    <!-- <div class="col-sm-12">
                                         <span class="">
                                             <label for="Commission" class="mx-1">کمیشن دارد:‌</label>
                                             <input class="form-check-input" type="radio" id="Commission" v-model="commission" checked="true" value="darad" name="Commission" />
@@ -610,7 +614,11 @@ export default {
                                             <label for="Commission" class="mx-1">کمیشن ندارد:‌</label>
                                             <input class="form-check-input" type="radio" id="Commission_darad" v-model="commission" name="Commission" value="nadarad" />
                                         </span>
-                                    </div>
+                                    </div> -->
+                                    <select class="form-control form-control-lg select2 required" v-model="commission">
+                                        <option value="yes">کمیشن دارد</option>
+                                        <option value="no">کمیشن ندارد</option>
+                                    </select>
                                 </div>
 
                                 <div class="row">
@@ -703,6 +711,7 @@ export default {
                                             <th class="text-center">نمبر چک</th>
                                             <th class="text-center">رسید برد</th>
                                             <th class="text-center">مقدار پول</th>
+                                            <th class="text-center">مقدار کمیشن</th>
                                             <th class="text-center">تفصیلات</th>
                                             <th class="text-center">توسط</th>
                                             <th class="text-center">عملیه</th>
@@ -726,6 +735,7 @@ export default {
                                             </td>
                                            
                                            
+                                            <td>{{transaction?.commission}}</td>
                                             <td>{{transaction?.desc}}</td>
                                             <td>{{transaction?.user_id}}</td>
 

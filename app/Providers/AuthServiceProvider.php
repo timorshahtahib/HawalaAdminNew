@@ -6,6 +6,7 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
 
+
 class AuthServiceProvider extends ServiceProvider
 {
     /**
@@ -26,11 +27,10 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        // Passport::loadKeysFrom(__DIR__.'/../secrets/oauth');
-        // Passport::hashClientSecrets();
+        Passport::tokensExpireIn(now()->addDays(7)); // Access tokens expire in 7 days
+        Passport::refreshTokensExpireIn(now()->addDays(30)); // Refresh tokens expire in 30 days
+        Passport::personalAccessTokensExpireIn(now()->addMonths(6)); // Personal access tokens expire in 6 months
 
-        // Passport::tokensExpireIn(now()->addDays(15));
-        // Passport::refreshTokensExpireIn(now()->addDays(30));
-        // Passport::personalAccessTokensExpireIn(now()->addMonths(6));
+
     }
 }

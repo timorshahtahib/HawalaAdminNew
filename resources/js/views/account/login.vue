@@ -9,49 +9,87 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      auth: {
-        email: "",
-        password: ""
-      },
+      showAlert:false,
+      email: '',
+      password: '',
+      emailError:null,
+      passwordError:null,
       profileImg, logo,
       processing: false,
-      authError: null,
-      isAuthError: false,      
+      authError:null,
+     
     }
   },
   beforeCreate() {
+    
     if(localStorage.getItem('user')) {
       this.$router.push('/');
     }
   },
   methods: {
-async login() {
-  this.processing = true;
-      try {
-        const response = await axios.post('/api/login', this.auth);
 
-        // Assuming your API response structure matches the provided one
-        if (response.data.status) {
-                const logged_user = {
-                   status:response.data.status,
-                    token: response.data.access_token
-                };
+        async login0() {
+            this.processing = true;
+          
+          try {
+            const response = await axios.post('/api/login',{email:this.email,password:this.password});
+            
+            if (response.data.status===true) {
+              const logged_user = {
+                status: response.data.status,
+                token: response.data.access_token
+              };
 
               localStorage.setItem('user', JSON.stringify(logged_user.token));
+              // Set the token in the axios defaults for future requests
+              axios.defaults.headers.common['Authorization'] = 'Bearer ' + logged_user.token;
+              
               this.$router.push('/');
+            } else {
+              this.authError = response.data.error;
+              console.log(response.data.error);
+              this.emailError = response.data.error.email;
+              this.passwordError = response.data.error.password;
+            
+            }
+          } catch (error) {
+            this.showAlert=true;
+            // console.error('Error during login:', error);
+            this.authError = 'در جریان ورود خطائی رخ داد!';
+         
+          } finally {
+            this.processing = false;
+          }
+        },
+        async login() {
+      try {
+        const response = await axios.post('/api/login', {
+          email: this.email,
+          password: this.password
+        });
+
+        if (response.data.status === true) {
+          const token = response.data.access_token;
+          localStorage.setItem('user', token);
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          this.$router.push('/');
         } else {
-          this.authError = response.data.message;
-           this.isAuthError = true;
-          
+          console.log(response.data.error);
+          // Handle error messages
         }
       } catch (error) {
-        console.error('Error during login:', error);
-          this.authError = 'An error occurred during login.';
-          this.isAuthError = true;
-      }finally {
-    this.processing = false;
-  }
-    }
+        if (error.response.status === 401) {
+          console.error('Unauthorized. Logging out user.');
+          // Clear user data and redirect to login page
+          localStorage.removeItem('user');
+          delete axios.defaults.headers.common['Authorization'];
+          Router.push('/login'); // Redirect to the login page
+        } else {
+          console.error('Error during login:', error);
+        }
+      }
+    },
+       
   }
   
 };
@@ -83,36 +121,43 @@ async login() {
                   </div>
                 </router-link>
               </div>
+   
 
-              <b-alert v-model="isAuthError" variant="danger" class="mt-3" dismissible>{{ authError }}</b-alert>
+              <div class="alert alert-warning alert-dismissible fade show" role="alert" v-if="authError">
+                <strong> {{ authError }}</strong> 
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
 
-              <b-form class="p-2" action="javascript:void(0)" method="POST">
-                <slot />
-                <b-form-group id="input-group-1" label="ایمل آدرس" label-for="input-1" class="mb-3">
-                  <b-form-input id="input-1" name="email" v-model="auth.email" type="text"
-                    placeholder="Enter email"></b-form-input>
-                </b-form-group>
+              <form class="p-2" action="javascript:void(0)" method="POST" @submit.prevent="login">
+            
+                <div class="form-group mt-2">                
+                  <label id="email-group" >ایمیل</label>
+                  <input v-model="email" type="email" placeholder="example@gmail.com" class="form-control" required>
+                  <p class="pt-2 text-danger " v-if="emailError">{{emailError[0]}}</p>
+              </div>
 
-                <b-form-group id="input-group-2" label="رمز عبور" label-for="input-2" class="mb-3">
-                  <b-form-input id="input-2" v-model="auth.password" name="password" type="password"
-                  placeholder="رمز عبور خود را وارد نمائید"></b-form-input>
-                </b-form-group>
+                <div class="form-group mb-3">                
+                  <label id="password" >رمز عبور</label>
+                  <input type="password" v-model="password"   placeholder="رمز عبور..." class="form-control" required>
+                  <p class="pt-2 text-danger " v-if="passwordError">{{passwordError[0]}}</p>
+              </div>
+
                 <b-form-checkbox id="customControlInline" name="checkbox-1" value="accepted"
                   unchecked-value="not_accepted">
                   مرا بخاطر بسپار!
                 </b-form-checkbox>
                 <div class="mt-3 d-grid">
-                  <button type="submit" :disabled="processing" @click="login" class="btn btn-primary btn-block">
+                  <button type="submit" :disabled="processing"  class="btn btn-primary btn-block">
                     {{ processing ? "لطفا صبر نمائید..." : "ورود" }}
                   </button>
                 </div>
            
-                <div class="mt-4 text-center">
+                <!-- <div class="mt-4 text-center">
                   <router-link to="/forget-password" class="text-muted">
                     <i class="mdi mdi-lock mr-1"></i> رمز عبور خود را فراموش کرده اید؟
                   </router-link>
-                </div>
-              </b-form>
+                </div> -->
+              </form>
             </div>
             <!-- end card-body -->
           </div>

@@ -4,63 +4,63 @@ const routes = [{
         path: '/',
         name: 'dashboard',
         meta: {
-            title: 'Dashboard',
             authRequired: true,
+            title: 'Dashboard',
         },
         component: () =>
             import ('../views/home.vue'),
     },
     {
         path: '/dashboard/customer',
-        meta: { title: 'Dashboard' },
+        meta: { authRequired: true, title: 'Dashboard' },
         component: () =>
             import ('../views/dashboard/customer/customer.vue')
     },
     {
         path: '/dashboard/customer/:id',
-        meta: { title: 'Dashboard' },
+        meta: { authRequired: true, title: 'Dashboard' },
         component: () =>
             import ('../views/dashboard/customer/profile.vue')
     },
     {
         path: '/dashboard/customer/:id/export',
-        meta: { title: 'Dashboard' },
+        meta: { authRequired: true, title: 'Dashboard' },
         component: () =>
             import ('../views/dashboard/customer/exportCustomer.vue')
     },
     {
         path: '/dashboard/finance_account',
-        meta: { title: 'finance_account', authRequired: true, },
+        meta: { authRequired: true, title: 'finance_account' },
         component: () =>
             import ('../views/dashboard/financeAccount/financeAccount.vue'),
     },
     {
         path: '/dashboard/order',
-        meta: { title: 'Order', authRequired: true, },
+        meta: { authRequired: true, title: 'Order', },
         component: () =>
             import ('../views/dashboard/order/order.vue'),
     },
     {
         path: '/dashboard/acceptorder',
-        meta: { title: 'Order', authRequired: true, },
+        meta: { authRequired: true, title: 'Order', },
         component: () =>
             import ('../views/dashboard/order/acceptOrder.vue'),
     },
     {
         path: '/dashboard/pendingorder',
-        meta: { title: 'Order', authRequired: true, },
+        meta: { authRequired: true, title: 'Order', },
         component: () =>
             import ('../views/dashboard/order/pendingOder.vue'),
     },
     {
         path: '/dashboard/rejectorder',
-        meta: { title: 'Order', authRequired: true, },
+        meta: { authRequired: true, title: 'Order', },
         component: () =>
             import ('../views/dashboard/order/rejectOrder.vue'),
     },
     {
         path: '/dashboard/currency',
-        meta: { title: 'Currency', authRequired: true, },
+        meta: { authRequired: true, title: 'Currency', },
         component: () =>
             import ('../views/dashboard/currency/currency.vue'),
     },
@@ -70,16 +70,15 @@ const routes = [{
         component: () =>
             import ('../views/dashboard/expense/expense.vue'),
     },
-
     {
         path: '/dashboard/rasidbord',
-        meta: { title: 'رسید برد' },
+        meta: { authRequired: true, title: 'رسید برد' },
         component: () =>
             import ('../views/dashboard/rasidBord/rasidBord.vue')
     },
     {
         path: '/report/financereport',
-        meta: { title: 'گزارش بانک ها' },
+        meta: { authRequired: true, title: 'گزارش بانک ها' },
         component: () =>
             import ('../views/report/FinanceReport.vue')
     },
@@ -98,7 +97,7 @@ const routes = [{
     },
     {
         path: '/report/rooznachah',
-        meta: { title: 'روزنامچه' },
+        meta: { authRequired: true, title: 'روزنامچه' },
         component: () =>
             import ('../views/report/rooznachah.vue')
     },
@@ -123,7 +122,6 @@ const routes = [{
         component: () =>
             import ('../views/dashboard/exchange/transfer.vue')
     },
-
     {
         path: '/auth/login-1',
         meta: { authRequired: true, title: 'Login' },
@@ -145,18 +143,6 @@ const routes = [{
             import ('../views/account/register.vue')
     },
     {
-        path: '/auth/login-2',
-        meta: { authRequired: true, title: 'Login' },
-        component: () =>
-            import ('../views/sample-pages/login-2.vue')
-    },
-    {
-        path: '/auth/register-1',
-        meta: { title: 'Register' },
-        component: () =>
-            import ('../views/account/register.vue')
-    },
-    {
         path: '/forget-password',
         meta: { title: 'Forget Password' },
         component: () =>
@@ -167,12 +153,6 @@ const routes = [{
         meta: { title: 'Reset Password' },
         component: () =>
             import ('../views/account/reset-password.vue')
-    },
-    {
-        path: '/auth/register-2',
-        meta: { authRequired: true, title: 'Register' },
-        component: () =>
-            import ('../views/sample-pages/register-2.vue')
     },
     {
         path: '/auth/recoverpw',
@@ -186,19 +166,11 @@ const routes = [{
         component: () =>
             import ('../views/sample-pages/recoverpwd-2.vue')
     },
-
-
     {
         path: '/auth/confirm-mail',
         meta: { authRequired: true, title: 'Confirm Mail' },
         component: () =>
             import ('../views/sample-pages/confirm-mail.vue')
-    },
-    {
-        path: '/auth/confirm-mail-2',
-        meta: { authRequired: true, title: 'Confirm Mail' },
-        component: () =>
-            import ('../views/sample-pages/confirm-mail-2.vue')
     },
     {
         path: '/auth/email-verification',
@@ -207,24 +179,11 @@ const routes = [{
             import ('../views/sample-pages/email-verification.vue')
     },
     {
-        path: '/auth/email-verification-2',
-        meta: { authRequired: true, title: 'Email Verification' },
-        component: () =>
-            import ('../views/sample-pages/email-verification-2.vue')
-    },
-    {
         path: '/auth/two-step-verification',
         meta: { authRequired: true, title: 'Two Step Verification' },
         component: () =>
             import ('../views/sample-pages/two-step-verification.vue')
     },
-    {
-        path: '/auth/two-step-verification-2',
-        meta: { authRequired: true, title: 'Two Step Verification' },
-        component: () =>
-            import ('../views/sample-pages/two-step-verification-2.vue')
-    },
-
 
 
 

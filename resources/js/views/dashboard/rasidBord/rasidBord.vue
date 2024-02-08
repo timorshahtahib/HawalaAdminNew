@@ -649,6 +649,7 @@ export default {
                                             <th class="text-center">نام مشتری</th>
                                             <!-- <th class="text-center">رسید برد</th> -->
                                             <th class="text-center">مقدار پول</th>
+                                            <th class="text-center">مقدار معادل</th>
                                             <th class="text-center">تفصیلات</th>
                                             <th class="text-center">توسط</th>
                                             <th class="text-center">عملیه</th>
@@ -667,6 +668,9 @@ export default {
                                         </td> -->
                                             
                                             <td>{{transaction.amount}} {{transaction.tr_currency.name}} به <span v-if="transaction.bank_account!=null">{{transaction.bank_account?.account_name}}</span>
+                                                <span v-else>{{ transaction.finance_account?.account_name}}</span> </td>
+
+                                            <td>{{transaction.amount_equal}} {{transaction.eq_currency.name}} به <span v-if="transaction.bank_account!=null">{{transaction.bank_account?.account_name}}</span>
                                                 <span v-else>{{ transaction.finance_account?.account_name}}</span> </td>
                                             
                                             <td>{{transaction.desc}}</td>

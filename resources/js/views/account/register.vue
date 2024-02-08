@@ -1,53 +1,70 @@
 <script>
 
 import profileImg from '../../../images/profile-img.png';
-import logo from '../../../images/logo.svg';
+import logo from '../../../images/mycustom/Asiatelecomlogo.png';
 import axios from 'axios';
-
+import Swal from 'sweetalert2';
 /**
  * Register component
  */
 export default {
   data() {
     return {
-      auth: {
-        name: "",
-        email: "",
-        password: "",
-        password_confirmation: ""
-      },
+      name: '',
+      email: '',
+      password: '',
+      password_confirmation: '',
       profileImg, logo,
       processing: false,
-      regError: null,
-      isRegisterError: false,
+      regError:'',
+      regSuccess:'',
+      nameError:null,
+      emailError:null,
+      passwordError:null,
     };
   },
   methods: {
-    async register() {
-      this.processing = true
-      await axios.post('/api/register', this.auth).then(({ data }) => {
-        console.log('data', data)
-        if (data.success == true && data.message == 'success') {
-          const logged_user = {
-            login: true,
-            user_id: data.data.id,
-            name: data.data.name,
-            email: data.data.email,
-          }
-          localStorage.setItem('user', JSON.stringify(logged_user));
-          this.$router.push('/');
-        } else {
-          if(data.data == 400) {
-            this.regError = data.message;
-            this.isRegisterError = true;
-          }
-        }
-      }).catch(({response:{data}}) => {
-        console.log(data)
-      }).finally(() => {
+    showalert(title, text, icon) {
+            Swal.fire({
+                title: title,
+                text: text,
+                icon: icon,
+                confirmButtonText: 'بستن'
+            })
+        },
+
+ async register(){
+  this.processing = true
+      try {
+        if(this.name || this.email || this.password ){
+        const response = await axios.post('/api/register', {
+            name:this.name,
+            email:this.email,
+            password:this.password
+         });
+        //  if (this.password !== this.password_confirmation) {
+        //     this.regError = 'رمز عبور و تائید رمز عبور باهم مطابقت ندارند';
+        //     return;
+        // }
+         if(response.data.status===true){
+          this.showalert("ثبت نام با موفقیت انجام شد", 'موفقانه', 'success');
+          this.$router.push('/login');
+         }else{
+  
+          // this.showalert(response.data.error, 'خطا', 'error');
+          this.nameError=response.data.error.name;
+          this.emailError=response.data.error.email;
+          this.passwordError=response.data.error.password;
+          // console.log("response",response.data.error);
+         }
+       }
+      } catch (error) {
+        console.log(error.message);
+      }finally{
         this.processing = false
-      })
-    },
+      }
+}
+
   }
 };
 </script>
@@ -62,8 +79,8 @@ export default {
               <div class="row">
                 <div class="col-7">
                   <div class="text-primary p-4">
-                    <h5 class="text-primary">Free Register</h5>
-                    <p>Get your free Skote account now.</p>
+                    <h5 class="text-primary">به صفحه ثبت نام خوش آمدید</h5>
+                   
                   </div>
                 </div>
                 <div class="col-5 align-self-end">
@@ -76,66 +93,46 @@ export default {
                 <router-link to="/">
                   <div class="avatar-md profile-user-wid mb-4">
                     <span class="avatar-title rounded-circle bg-light">
-                      <img :src="logo" alt class="rounded-circle" height="34" />
+                      <img :src="logo" alt class="rounded-circle" height="66" />
                     </span>
                   </div>
                 </router-link>
               </div>
-        
-              <b-alert v-model="isRegisterError" class="mt-3" variant="danger" dismissible>{{ regError }}</b-alert>
-    
-              <b-form class="p-2" action="javascript:void(0)" method="POST">
+              <div class="alert text-center text-black font-bold alert-danger" role="alert" v-if="regError">
+               <span v-if="regError">{{ regError }}</span>
+              </div>
+
+              <form  action="javascript:void(0)" method="POST" @submit.prevent="register">
                 <slot />
-                <b-form-group id="email-group" label="Name" label-for="name" class="mb-3">
-                  <b-form-input id="name" v-model="auth.name" name="name" type="text" placeholder="Enter name"></b-form-input>
-                </b-form-group>
-    
-                <b-form-group id="fullname-group" label="Email" label-for="email" class="mb-3">
-                  <b-form-input id="email" name="email" v-model="auth.email" type="email" placeholder="Enter email"></b-form-input>
-                </b-form-group>
-    
-                <b-form-group id="password-group" label="Password" label-for="password" class="mb-3">
-                  <b-form-input id="password" v-model="auth.password" name="password" type="password"
-                    placeholder="Enter password"></b-form-input>
-                </b-form-group>
-                <b-form-group label="Confirm Password" label-for="password-confirm" class="mb-3">
-                  <b-form-input id="password-confirm" v-model="auth.password_confirmation" name="password_confirmation"
-                    type="password" placeholder="Confirm password"></b-form-input>
-                </b-form-group>
-    
+                <div class="form-group mb-3">                
+                  <label id="email-group" label="" label-for="name">نام</label>
+                  <input type="text" id="name" class="form-control" v-model="name"   placeholder="نام..."   required>
+                  <p class="pt-2 text-danger " v-if="nameError">{{nameError[0]}}</p>
+              </div>
+  
+                <div class="form-group mt-2">                
+                  <label id="email-group" label-for="ایمیل">ایمیل</label>
+                  <input v-model="email" type="email" placeholder="example@gmail.com" class="form-control" required>
+                  <p class="pt-2 text-danger " v-if="emailError">{{emailError[0]}}</p>
+              </div>
+                <div class="form-group mb-3">                
+                  <label id="password" >رمز عبور</label>
+                  <input type="password" v-model="password"   placeholder="رمز عبور..." class="form-control" required>
+                  <p class="pt-2 text-danger " v-if="passwordError">{{passwordError[0]}}</p>
+              </div>
+
+                <!-- <div class="form-group mb-3">                
+                  <label id="password" >تائید رمز عبور</label>
+                  <input type="password" v-model="password_confirmation"   placeholder="تائید رمز عبور..." class="form-control" required>
+              </div> -->
                 <div class="mt-4 d-grid">
-                  <b-button type="submit" :disabled="processing" @click="register" variant="primary" class="btn-block">
-                    {{ processing ? "Please wait" : "Register" }}
+                  <b-button type="submit" :disabled="processing"  variant="primary" class="btn-block">
+                    {{ processing ? "لطفا منتظر باشید..." : "ثبت نام" }}
                   </b-button>
                 </div>
-                <div class="mt-4 text-center">
-                  <h5 class="font-size-14 mb-3">Sign in with</h5>
-    
-                  <ul class="list-inline">
-                    <li class="list-inline-item">
-                      <a href="javascript: void(0);" class="social-list-item bg-primary text-white border-primary">
-                        <i class="mdi mdi-facebook"></i>
-                      </a>
-                    </li>
-                    <li class="list-inline-item">
-                      <a href="javascript: void(0);" class="social-list-item bg-info text-white border-info">
-                        <i class="mdi mdi-twitter"></i>
-                      </a>
-                    </li>
-                    <li class="list-inline-item">
-                      <a href="javascript: void(0);" class="social-list-item bg-danger text-white border-danger">
-                        <i class="mdi mdi-google"></i>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-                <div class="mt-4 text-center">
-                  <p class="mb-0">
-                    By registering you agree to the Skote
-                    <a href="javascript: void(0);" class="text-primary">Terms of Use</a>
-                  </p>
-                </div>
-              </b-form>
+           
+   
+              </form>
             </div>
             <!-- end card-body -->
           </div>
@@ -143,12 +140,13 @@ export default {
     
           <div class="mt-5 text-center">
             <p>
-              Already have an account ?
-              <router-link to="/login" class="fw-medium text-primary">Login</router-link>
+              از قبل حساب دارید؟
+              <router-link to="/login" class="fw-medium text-primary text-bold">ورود</router-link>
+              
             </p>
             <p>
-              © {{ new Date().getFullYear() }} Skote. Crafted with
-              <i class="mdi mdi-heart text-danger"></i> by Themesbrand
+              © {{ new Date().getFullYear() }}
+              <i class="mdi mdi-heart text-danger"></i> by Asia Telecom
             </p>
           </div>
         </div>
