@@ -3,22 +3,22 @@ export const menuItems = [{
         label: 'خانه',
         icon: 'bx-home-circle',
         subItems: [{
-                id: 3,
+                id: 2,
                 label: "menuitems.dashboards.list.default",
                 link: "/",
                 parentId: 2
             },
             {
 
-                id: 4,
+                id: 3,
                 label: "مشتریان",
-                icon: "bx-file",
+                icon: "bx-customer",
                 link: "/dashboard/customer",
 
             },
             {
-                id: 5,
-                label: "فایننس اکانت",
+                id: 4,
+                label: "فایننس اکانتها",
                 icon: "bx-file",
                 link: "/dashboard/finance_account"
             },
@@ -32,16 +32,43 @@ export const menuItems = [{
     },
     {
         id: 19,
-        label: "رسید و بردها",
+        label: "سفارشات",
         icon: "bx-dollar",
         subItems: [{
                 id: 6,
-                label: "سفارش",
+                label: " تمام سفارشات",
                 link: "/dashboard/order",
                 parentId: 2
+
             },
 
             {
+                id: 8,
+                label: "سفارشات تائید شده",
+                icon: "bx-file",
+                link: "/dashboard/acceptorder",
+
+            },
+            {
+                id: 9,
+                label: "سفارشات در حالت تائید",
+                icon: "bx-file",
+                link: "/dashboard/pendingorder"
+            },
+            {
+                id: 9,
+                label: "سفارشات رد شده",
+                icon: "bx-file",
+                link: "/dashboard/rejectorder"
+            },
+        ]
+    },
+
+    {
+        id: 19,
+        label: "رسید و بردها",
+        icon: "bx-dollar",
+        subItems: [{
                 id: 8,
                 label: "ثبت مصرف جدید",
                 icon: "bx-file",

@@ -78,6 +78,7 @@ class ExchangeController extends Controller
     public function getTransfer(Request $request)
     {
         try {
+            
             $limit = $request->has('limit') ? $request->limit : 10;
 
             $transaction = Transaction::where('transaction_type','transfer')

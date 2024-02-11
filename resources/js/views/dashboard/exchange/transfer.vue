@@ -77,6 +77,9 @@ export default {
         totalPages: 1,
         limit: 10,
 
+        showCommission:true,
+        edit_showCommission:true,
+
         };
     },
     mounted() {
@@ -319,22 +322,28 @@ export default {
             this.edit_commission_currency_model = commission_list?.currency;
             this.edit_commission_amount = commission_list?.amount;
             this.edit_commission = commission_list?.commission;
-            this.edit_commission_currency_model = commission_list?.currency
+            // console.log("commission_list",commission_list);
             this.edit_source_selectedDakhl = bord_list.bank_acount_id;
             this.edit_getBanksByCIDforComision(this.edit_commission_currency_model)
             this.edit_transfer_date = bord_list.date;
             this.edit_transfer_desc = bord_list.desc;
 
-            this.setCommissionCheckboxes(this.edit_commission);
+            
 
         },
-        setCommissionCheckboxes(value) {
-    const commission = document.getElementById('Commission');
-    const nocommission = document.getElementById('nocommission');
 
-    commission.checked = value === 'darad';
-    nocommission.checked = value !== 'darad';
-},
+
+        hideCommission(){
+            this.showCommission = !this.showCommission;
+            console.log("hideCommission");
+        },
+        editHideCommission(){
+            // this.edit_showCommission = !this.showCommission;
+            this.edit_showCommission = !this.edit_showCommission;
+            console.log("this.edit_showCommission",this.edit_showCommission);
+        }
+
+,   
     async editSubmitTransfer() {
 
             try {
@@ -481,22 +490,23 @@ export default {
                                 </div>
                           
                                 <div class="row mt-3">
-                                    <!-- <div class="col-sm-12">
-                                        <span class="">
+                                   <div class="col-sm-12">
+                                        <!--  <span class="">
                                             <label for="Commission" class="mx-1">کمیشن دارد:‌</label>
                                             <input class="form-check-input" type="radio" id="Commission" v-model="edit_commission" value="darad" name="Commission" />
                                         </span>
                                         <span>
                                             <label for="nocommission" class="mx-1">کمیشن ندارد:‌</label>
                                             <input class="form-check-input" type="radio" id="nocommission" v-model="edit_commission" name="Commission" value="nadarad" />
-                                        </span>
-                                    </div> -->
-                                    <select class="form-control form-control-lg select2 required" v-model="commission">
-                                        <option value="yes">کمیشن دارد</option>
-                                        <option value="no">کمیشن ندارد</option>
+                                        </span>-->
+                                    
+                                    <select class="form-control form-control-lg select2 required" v-model="edit_commission" @change="editHideCommission">
+                                       <!-- {{ transaction.commission_list ? `<option value="darad" selected>کمیشن دارد</option> :<option value="naDarad">کمیشن ندارد</option>` }}  -->
+                                        
                                     </select>
+                                </div> 
                                 </div>
-                                
+                                <span v-show="edit_showCommission">
                                 <div class="row">
                                     <div class="col-sm-6 col-xs-12">
                                         <label for="supplier">واحد پول کمیشن:</label>
@@ -524,6 +534,7 @@ export default {
 
                                     <span class="text-danger error-text dakhl_error"></span>
                                 </div>
+                            </span>
                                 <!-- commission bank -->
 
                                 <div class="col-sm-12 col-xs-12 p-0">
@@ -615,12 +626,16 @@ export default {
                                             <input class="form-check-input" type="radio" id="Commission_darad" v-model="commission" name="Commission" value="nadarad" />
                                         </span>
                                     </div> -->
-                                    <select class="form-control form-control-lg select2 required" v-model="commission">
-                                        <option value="yes">کمیشن دارد</option>
-                                        <option value="no">کمیشن ندارد</option>
+
+                                    <div class="col-sm-12">
+                                    <select class="form-control form-control-lg select2 required" v-model="commission" @change="hideCommission">
+                                        <option value="darad" selected>کمیشن دارد</option>
+                                        <option value="naDarad">کمیشن ندارد</option>
                                     </select>
                                 </div>
-
+                                </div>
+                                    <!-- if doesn't commission don't show the bellow inputs -->
+                                <span v-show="showCommission">
                                 <div class="row">
                                     <div class="col-sm-6 col-xs-12">
                                         <label for="supplier">واحد پول کمیشن:</label>
@@ -648,8 +663,8 @@ export default {
                                     </select>
                                     <span class="text-danger error-text dakhl_error"></span>
                                 </div>
+                            </span>
                                 <!-- commission bank -->
-
                                 <div class="col-sm-12 col-xs-12 p-0">
                                     <label for="factore_date">تاریخ :
                                     </label>

@@ -4,7 +4,7 @@
       <div class="row text-center">
         <div class="col-sm-6">
           <div class="text-sm-end d-none d-sm-block ">
-            <router-link to="https://asyatelecom.net/">By Asia Telecom{{ new Date().getFullYear() }}</router-link>
+            <router-link to="www.asyatelecom.net/">By Asia Telecom{{ new Date().getFullYear() }}</router-link>
             <router-view/>
           </div>
         </div>

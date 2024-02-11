@@ -57,8 +57,8 @@ export default {
         },
         {
           flag: ar,
-          language: "ar",
-          title: "Arabic",
+          language: "fa",
+          title: "Farsi",
         },
       ],
       lan: this.$i18n.locale,

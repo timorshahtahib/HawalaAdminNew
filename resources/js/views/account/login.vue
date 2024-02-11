@@ -61,6 +61,7 @@ export default {
             this.processing = false;
           }
         },
+
         async login() {
       try {
         const response = await axios.post('/api/login', {
@@ -89,7 +90,8 @@ export default {
         }
       }
     },
-       
+
+
   }
   
 };

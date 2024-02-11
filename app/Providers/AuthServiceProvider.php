@@ -27,9 +27,13 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        Passport::tokensExpireIn(now()->addDays(7)); // Access tokens expire in 7 days
-        Passport::refreshTokensExpireIn(now()->addDays(30)); // Refresh tokens expire in 30 days
-        Passport::personalAccessTokensExpireIn(now()->addMonths(6)); // Personal access tokens expire in 6 months
+
+        // Passport::hashClientSecrets();
+        Passport::loadKeysFrom(__DIR__.'/../secrets/oauth');
+        Passport::tokensExpireIn(now()->addDays(7));
+        Passport::refreshTokensExpireIn(now()->addDays(30));
+        Passport::personalAccessTokensExpireIn(now()->addMonths(6));
+
 
 
     }

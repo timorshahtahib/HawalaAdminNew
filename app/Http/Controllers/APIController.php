@@ -15,7 +15,16 @@ use Throwable;
 
 class APIController extends Controller
 {
+
+    public function __construct()
+{
+    $this->middleware('auth:api', ['except' => ['login']]);
+}
   
+public function guard()
+{
+    return Auth::guard();
+}
     public function register(Request $request)
     {
             try {
@@ -51,56 +60,22 @@ class APIController extends Controller
     }
 
 
+  
+
+
     public function login0(Request $request){
-
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email|max:250',
-            'password' => 'required|max:250',
-        ],
-        [
-            'email.required'=>'ایمیل ضروری میباشد',
-            'password.required'=>'رمز عبور ضروری میباشد',
-        ]);
-    
-        if (!$validator->passes()) {
-            return response()->json(['status'=>false,'error'=>$validator->errors()->toArray()]);
-        }
-    
-        // Attempt to authenticate the user
-        if(Auth::attempt([
-            "email" => $request->email,
-            "password" => $request->password
-        ])){
-    
-            $user = Auth::user();
-            $token = $user->createToken("myToken")->accessToken;
-    
-            return response()->json([
-                "status" => true,
-                'user_name'=>$user->name,
-                "message" => "ورود با موفقیت انجام شد",
-                "access_token" => $token
-            ]);
-        } else {
-            // Authentication failed, return error message
-            return response()->json([
-                "status" => false,
-                "error" => "ایمیل یا رمز عبور اشتباه است"
-            ]);
-        }
-    }
-
-
-    public function login(Request $request){
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
+            // $user->tokens->each(function ($token, $key) {
+            //     $token->delete();
+            // });
             $token = $user->createToken("myToken")->accessToken;
 
             return response()->json([
                 "status" => true,
-                "user_name" => $user->name,
+                // "user_name" => $user->name,
                 "message" => "ورود با موفقیت انجام شد",
                 "access_token" => $token
             ]);
@@ -111,96 +86,52 @@ class APIController extends Controller
             ]);
         }
     }
-    public function login2(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email|max:250',
-            'password' => 'required|max:250',
-        ], [
-            'email.required' => 'ایمیل ضروری می‌باشد',
-            'password.required' => 'رمز عبور ضروری می‌باشد',
-        ]);
+ 
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
     
-        if ($validator->fails()) {
-            return response()->json(['status' => false, 'error' => $validator->$request->toArray()], 422);
-        }
-    
-        if (Auth::attempt($request->only('email', 'password'))) {
+        if (Auth::attempt($credentials)) {
             $user = Auth::user();
-            $token = $user->createToken('myToken')->accessToken;
-    
-            return response()->json([
-                'status' => true,
-                'user_name' => $user->name,
-                'message' => 'ورود با موفقیت انجام شد',
-                'access_token' => $token,
-            ]);
-        } else {
-            return response()->json([
-                'status' => false,
-                'error' => 'ایمیل یا رمز عبور اشتباه است',
-            ], 401);
-        }
-    }
-    
-    public function login1(Request $request) {
-
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email|max:250',
-            'password' => 'required|max:250',
-        ],
-        [
-            'email.required'=>'ایمیل ضروری میباشد',
-            'password.required'=>'رمز عبور ضروری میباشد',
-        ]);
-    
-        if (!$validator->passes()) {
-            return response()->json(['status'=>false,'error'=>$validator->errors()->toArray()]);
-        }
-    
-        // Attempt to authenticate the user
-        if(Auth::attempt([
-            "email" => $request->email,
-            "password" => $request->password
-        ])){
-    
-            $user = Auth::user();
-            // Revoke existing tokens to ensure only one token is active per user
-            $user->tokens->each(function ($token, $key) {
-                $token->delete();
-            });
-            // $this->logout($request);
-            // Create new token for the authenticated user
             $token = $user->createToken("myToken")->accessToken;
     
-            return response()->json([
-                "status" => true,
-                'user_name'=>$user->name,
-                "message" => "ورود با موفقیت انجام شد",
-                "access_token" => $token
-            ]);
+            if ($token) {
+                return response()->json([
+                    "status" => true,
+                    "message" => "ورود با موفقیت انجام شد",
+                    "access_token" => $token
+                ]);
+            } else {
+                return response()->json([
+                    "status" => false,
+                    "error" => "خطا در ایجاد توکن"
+                ]);
+            }
         } else {
-            // Authentication failed, return error message
             return response()->json([
                 "status" => false,
                 "error" => "ایمیل یا رمز عبور اشتباه است"
             ]);
         }
     }
-public function logout(Request $request)
-{
-    // Check if the user is authenticated
-    if (Auth::check()) {
-        // Revoke the user's token
-        $request->user()->token()->revoke();
-    
-        return response()->json(['status'=>true,'message' => '!خروج با موفقیت انجام شد'], 200);
-    } else {
-        // User is not authenticated, return error response
-        $response = ['error' => 'شما هنوز وارد نشده‌اید!'];
-        return response()->json($response, 401);
-    }
+   public function logout(Request $request){
+            if(Auth::guard('api')->check()){
+                $accessToken = Auth::guard('api')->user()->token();
+                DB::table('oauth_refresh_tokens')->where('access_token_id',$accessToken)->update(['revoked'=>true]);
+                $accessToken->revoke();
+                return response()->json(['data'=>'Unauthorized','message'=>'User logout successfully'],401);
+            }
+            return response()->json(['status'=>false,'data'=>'Unauthorized'],401);
 }
 
+public function getUserDetails(){
+        
+    if(Auth::guard('(api')->check()){
+        $user = Auth::guard('api')->user();
+        return response()->json(['data'=>$user],200);
+    }
+    return response()->json(['data'=>'Unauthorized'],401);
+}
   
     // password forget
     public function forget_pass(Request $request)
