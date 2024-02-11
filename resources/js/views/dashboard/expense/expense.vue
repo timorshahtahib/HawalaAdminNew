@@ -2,11 +2,12 @@
 import Layout from "../../../layouts/main.vue";
 import PageHeader from "../../../components/page-header.vue";
 
-import axios from 'axios';
+// import api from 'api';
 import SweetAlert from "../../../SweetAlert.vue";
 import Swal from "sweetalert2";
 import DatePicker from '@alireza-ab/vue3-persian-datepicker';
 import Loader from '../../loader/loader.vue'
+import api from '../../../services/api';
 /**
  * Expense component
  */
@@ -91,7 +92,7 @@ export default {
             this.showModal = false;
         },
         async editExpense(id) {
-            const response = await axios.get(`/api/showExpense/${id}`);
+            const response = await api.get(`/showExpense/${id}`);
             this.newExpense = response.data;
             this.openModaledit(this.newExpense);
             this.editAmount = this.newExpense.amount
@@ -107,7 +108,7 @@ export default {
         async showExpenses(page = 1) {
                     this.isLoading=true;
             try {
-                const response = await axios.get(`/api/showExpenses?page=${page}&limit=${this.limit}`);
+                const response = await api.get(`/showExpenses?page=${page}&limit=${this.limit}`);
                 this.ExpenseList = response.data.expenses.data;
                 this.totalPages = response.data.total_pages;
                 this.currentPage = page; // Update the current page
@@ -141,7 +142,7 @@ export default {
         // for selecting the FinanceAccounts in insert form
         async getAccounts() {
             try {
-                const response = await axios.get('/api/expenses');
+                const response = await api.get('/expenses');
                 this.financeAccounts = response.data.financeAccounts;
                 // console.log("this.financeAccounts",this.financeAccounts);
             } catch (error) {
@@ -152,7 +153,7 @@ export default {
         // for getting the id in modal
         getAccountForEdit(id) {
 
-            axios.get('/api/expenses')
+            api.get('/expenses')
                 .then(response => {
                     // Assuming the API response is an array of objects with 'value' and 'label' properties
                     this.editFinanceAccounts = response.data.financeAccounts;
@@ -166,7 +167,7 @@ export default {
         // for selecting the bank in modal
         async getBanksForEdit(selectedUserid) {
             // console.log("In getAccountForEidt: ",this.editfinmodel);
-            const response = await axios.get('/api/financeAccWithCurrency/' + selectedUserid);
+            const response = await api.get('/financeAccWithCurrency/' + selectedUserid);
             this.editselectedDakhls = response.data.banks;
             this.editselectedDakhl = this.editselectedDakhls.length > 0 ? this.editselectedDakhls.find(bank => bank.id == selectedUserid).id : '';
         },
@@ -175,7 +176,7 @@ export default {
         async updateEditedAccount() {
             try {
              
-                const response = await axios.get('/api/financeAccWithCurrency/' + this.editfinmodel);
+                const response = await api.get('/financeAccWithCurrency/' + this.editfinmodel);
                 this.editExpenseCurrecies = response.data.financeAccCurrencies;
                 this.newExpense.expense_currency.id = this.editExpenseCurrecies.id;
                 this.newExpense.expense_currency.name = this.editExpenseCurrecies.name;
@@ -192,7 +193,7 @@ export default {
         // it's for selecting the currency automatically from the finAccount
         async updateCurrencySelect() {
             try {
-                const response = await axios.get('/api/financeAccWithCurrency/' + this.selectedFinanceAccount);
+                const response = await api.get('/financeAccWithCurrency/' + this.selectedFinanceAccount);
                 this.gettedFinanceCurrencyId = response.data.financeAccCurrencies;
                 this.selectedCurrency = this.gettedFinanceCurrencyId.id;
                 this.banks = response.data.banks;
@@ -208,7 +209,7 @@ export default {
         async storeExpense() {
 
             try {
-                const response = await axios.post('/api/storeExpense', {
+                const response = await api.post('/storeExpense', {
                     amount: this.amount,
                     currency: this.selectedCurrency,
                     amount_equal: this.amount,
@@ -262,7 +263,7 @@ export default {
         async submitEditedForm(id) {
 
             try {
-                const response = await axios.post('/api/updateExpense', {
+                const response = await api.post('/updateExpense', {
                     id: this.newExpense.id,
                     amount: this.editAmount,
                     currency: this.editExpenseExpenseCurrencyModel,
@@ -310,7 +311,7 @@ export default {
                 return;
             } else {
                 try {
-                    const response = await axios.post(`/api/deleteExpense`, {
+                    const response = await api.post(`/deleteExpense`, {
                         id: id
                     });
                     this.expenseSearch = response.data;
@@ -327,7 +328,7 @@ export default {
         },
 
         async searchData() {
-            const response = await axios.post('/api/searchexpense', {
+            const response = await api.post('/searchexpense', {
                 query: this.searchQuery
             });
 

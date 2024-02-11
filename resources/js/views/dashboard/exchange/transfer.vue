@@ -2,12 +2,11 @@
 import Layout from "../../../layouts/main.vue";
 import PageHeader from "../../../components/page-header.vue";
 
-import axios from 'axios';
 import SweetAlert from "../../../SweetAlert.vue";
 import Swal from "sweetalert2";
 import DatePicker from '@alireza-ab/vue3-persian-datepicker';
 import Loader from '../../loader/loader.vue'
-
+import api from '../../../services/api';
 /**
  * Rasidbord component
  */
@@ -119,7 +118,7 @@ export default {
         async getTransferTransaction(page=1) {
                 try {
                     this.isLoading=true;
-                    const response = await axios.get(`/api/gettransfers?page=${page}&limit=${this.limit}`);
+                    const response = await api.get(`/gettransfers?page=${page}&limit=${this.limit}`);
                     this.transfers = response.data.transactions.data;
                     this.totalPages = response.data.transactions.last_page;
                     this.currentPage = page;
@@ -143,7 +142,7 @@ export default {
         },
         async getCurrency() {
             try {
-                await axios.get('/api/currencies').then((response) => {
+                await api.get('/currencies').then((response) => {
                         this.currencies = response.data.currencies.data;
 
                     })
@@ -160,7 +159,7 @@ export default {
         async storeTransferTransaction() {
 
             try {
-                const response = await axios.post('/api/storetransfer', {
+                const response = await api.post('/storetransfer', {
                     transfer_amount: this.transfer_amount,
                     currency: this.transfer_currency_model,
                     source_bank_acount_id: this.source_selectedDakhl,
@@ -223,7 +222,7 @@ export default {
 
         async getBanksByCID(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.sourcebanks = response.data.banks;
 
                 this.destinationbanks = response.data.banks;
@@ -242,7 +241,7 @@ export default {
 
         async getBanksByCIDforComision(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.commissionbanks = response.data.banks;
                 this.commission_selectedDakhl = this.commissionbanks[0].id;
             } catch (error) {
@@ -253,7 +252,7 @@ export default {
         // for edit
         async get_edit_Currency() {
             try {
-                await axios.get('/api/currencies').then((response) => {
+                await api.get('/currencies').then((response) => {
                         this.edit_currencies = response.data.currencies.data;
                     })
                     .catch((error) => {
@@ -274,7 +273,7 @@ export default {
 
         async edit_getBanksByCID(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.edit_sourcebanks = response.data.banks;
                 this.edit_destinationbanks = response.data.banks;
 
@@ -288,7 +287,7 @@ export default {
         async edit_getBanksByCIDforComision(id) {
             try {
                 // get bank by currency id
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.edit_commissionbanks = response.data.banks;
                 this.edit_commission_selectedDakhl = this.edit_commissionbanks[0].id;
 
@@ -299,7 +298,7 @@ export default {
 
         async edit_transfer_func(id, type) {
             
-            const response = await axios.post('/api/gettransferforedit', {
+            const response = await api.post('/gettransferforedit', {
                 id: id,
                 rasid_bord: type
             });
@@ -345,9 +344,8 @@ export default {
 
 ,   
     async editSubmitTransfer() {
-
             try {
-                const response = await axios.post('/api/updateTransferTransaction', {
+                const response = await api.post('/updateTransferTransaction', {
                     rasid_id: this.rasid_id,
                     bord_id: this.rasid_id,
                     commmission_id: this.commission_id,
@@ -373,12 +371,9 @@ export default {
                             this.showalert(response.data.message, "error", "error!");
                         } else {
                             this.errors = response.data.error;
-
                         }
-
                     } else {
 
-                
                         this.edit_transfer_amount = ''
                         this.edit_transfer_currency_model = ''
                         this.edit_source_selectedDakhl = ''
@@ -407,7 +402,7 @@ export default {
                 return;
             } else {
                 try {
-                    const response = await axios.post('/api/deletetransfer', {
+                    const response = await api.post('/deletetransfer', {
                         rasid_id:this.rasid_id,
                         bord_id:this.bord_id,
                         commission_id:this.commission_id,
@@ -428,7 +423,7 @@ export default {
         },
 
         async searchData() {
-            const response = await axios.post('/api/searchtransfer', {
+            const response = await api.post('/searchtransfer', {
                 query: this.searchQuery
             });
             this.transfers = response.data;

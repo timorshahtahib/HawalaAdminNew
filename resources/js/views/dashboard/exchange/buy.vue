@@ -2,11 +2,11 @@
 import Layout from "../../../layouts/main.vue";
 import PageHeader from "../../../components/page-header.vue";
 
-import axios from 'axios';
 import SweetAlert from "../../../SweetAlert.vue";
 import Swal from "sweetalert2";
 import DatePicker from '@alireza-ab/vue3-persian-datepicker';
 import Loader from '../../loader/loader.vue'
+import api from '../../../services/api';
 /**
  * Rasidbord component
  */
@@ -114,7 +114,7 @@ export default {
         async getTransaction(page=1) {
            try {
             this.isLoading=true;
-            const response = await axios.get(`/api/getbuytransaction?page=${page}&limit=${this.limit}`);
+            const response = await api.get(`/getbuytransaction?page=${page}&limit=${this.limit}`);
             this.transactions = response.data.transactions.data;
             this.totalPages = response.data.transactions.last_page;
             this.currentPage = page;
@@ -138,7 +138,7 @@ export default {
         },
         async getCurrency() {
             try {
-                await axios.get('/api/currencies').then((response) => {
+                await api.get('/currencies').then((response) => {
                         this.currencies = response.data.currencies.data;
                         // console.log(this.currencies);
 
@@ -153,7 +153,7 @@ export default {
         },
         async get_edite_Currency() {
             try {
-                await axios.get('/api/currencies').then((response) => {
+                await api.get('/currencies').then((response) => {
                         this.edit_currencies = response.data.currencies.data;
                         // console.log(this.currencies);
 
@@ -170,7 +170,7 @@ export default {
         async storeBuyTransaction() {
 
             try {
-                const response = await axios.post('/api/buystoretransaction', {
+                const response = await api.post('/buystoretransaction', {
                     rasid_amount: this.buy_amount,
                     rasid_currency: this.buy_currency_model,
                     rasid_bank_acount_id: this.rasid_selectedDakhl,
@@ -240,7 +240,7 @@ export default {
    
 
         async edit_buy_func(id,type) {
-            const response = await axios.post(`/api/getexchangesaleforedit/`,{id: id,rasid_bord:type});
+            const response = await api.post(`/getexchangesaleforedit/`,{id: id,rasid_bord:type});
             let rasid_list = response.data.rasid;
             let bord_list = response.data.bord;
             this.openModaledit();
@@ -262,7 +262,7 @@ export default {
     
         async submiteditBuyTransaction() {
             
-            const response = await axios.post(`/api/updatebuyexchange`, {
+            const response = await api.post(`/updatebuyexchange`, {
                 rasid_id: this.rasid_id,
                 rasid_amount: this.edit_buy_amount,
 
@@ -308,7 +308,7 @@ export default {
                 return;
             } else {
                 try {
-                    const response = await axios.post(`/api/deleteexchangesale`,{
+                    const response = await api.post(`/deleteexchangesale`,{
                         id:id,
                     });
                    
@@ -326,7 +326,7 @@ export default {
         },
         async getBanks(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.banks = response.data.banks;
                 this.bord_selectedDakhl = this.banks[0].id;
                 // console.log("selected Dakhl", this.selectedDakhl);
@@ -338,7 +338,7 @@ export default {
     
         async edit_getBanks(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.edit_banks = response.data.banks;
                 this.edit_bord_selectedDakhl = this.edit_banks[0].id;
                 // console.log("selected Dakhl", this.selectedDakhl);
@@ -349,7 +349,7 @@ export default {
         },
         async getrasidBanks(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.rasidbanks = response.data.banks;
                 this.rasid_selectedDakhl = this.rasidbanks[0].id;
                 // console.log("selected Dakhl", this.selectedDakhl);
@@ -361,7 +361,7 @@ export default {
       
         async edit_getrasidBanks(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.edit_rasidbanks = response.data.banks;
                 this.edit_rasid_selectedDakhl = this.edit_rasidbanks[0].id;
                 // console.log("selected Dakhl", this.selectedDakhl);
@@ -372,7 +372,7 @@ export default {
         },
         async edit_getRasidBanks(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.edit_banks = response.data.banks;
                 this.edit_bord_selectedDakhl = this.edit_banks[0].id;
                 // console.log("selected Dakhl", this.selectedDakhl);
@@ -382,7 +382,7 @@ export default {
             }
         },
         async searchData() {
-            const response = await axios.post('/api/searchexchange', {
+            const response = await api.post('/searchexchange', {
                 query: this.searchQuery
             });
 

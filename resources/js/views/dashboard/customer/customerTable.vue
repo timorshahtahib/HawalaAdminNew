@@ -215,10 +215,10 @@
 </template>
 
 <script>
-import { createStore } from 'vuex';
-import axios from 'axios';
 import Swal from 'sweetalert2'
 import Loader from '../../loader/loader.vue';
+import api from '../../../services/api';
+
 export default {
     name: 'customerTable',
     data() {
@@ -263,7 +263,8 @@ export default {
         async getCustomers(page = 1) {
             this.isLoading = true;
             try {
-                const response = await axios.get(`/api/customer?page=${page}&limit=${this.limit}`);
+               const response = await api.get(`/customer?page=${page}&limit=${this.limit}`);
+                // const response = await api.get(`/customer`);
                 this.customers = response.data.customers.data;
                 this.totalPages = response.data.customers?.last_page;
                 this.currentPage = page; // Update the current page
@@ -321,7 +322,7 @@ export default {
         async storeCustomer() {
             this.submitted = true;
             if (this.name && this.phone && this.username && this.password) {
-                const response = await axios.post("/api/customer", {
+                const response = await api.post("/customer", {
                     name: this.name,
                     last_name: this.last_name,
                     phone: this.phone,
@@ -364,7 +365,7 @@ export default {
             // stop here if form is invalid
         },
         async editCustomer(id) {
-            const response = await axios.get(`/api/customer/${id}`);
+            const response = await api.get(`/customer/${id}`);
             this.editCust = response.data.customer;
             this.openEditModal();
             this.editname = this.editCust.name;
@@ -376,7 +377,7 @@ export default {
         },
         async editSubmitCustomerForm() {
             // console.log("id",id);
-            const responseUpdate = await axios.post('/api/updatecustomer', {
+            const responseUpdate = await api.post('/updatecustomer', {
                 id: this.editCust.id,
                 name: this.editname,
                 phone: this.editPhone,
@@ -414,7 +415,7 @@ export default {
             }
             else {
                 try {
-                    const response = await axios.delete(`/api/customer/${id}`);
+                    const response = await api.delete(`/customer/${id}`);
                     this.customers = response.data;
                     if (response.status === 204) {
                         this.getCustomers();
@@ -428,7 +429,7 @@ export default {
         },
         async searchData() {
             try {
-                const response = await axios.post('/api/searchCustomer', {
+                const response = await api.post('/searchCustomer', {
                     query: this.searchQuery
                 });
                 this.customers = response.data;

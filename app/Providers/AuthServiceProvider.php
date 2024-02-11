@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
 
 
+
 class AuthServiceProvider extends ServiceProvider
 {
     /**
@@ -27,7 +28,7 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-
+        
         // Passport::hashClientSecrets();
         Passport::loadKeysFrom(__DIR__.'/../secrets/oauth');
         Passport::tokensExpireIn(now()->addDays(7));

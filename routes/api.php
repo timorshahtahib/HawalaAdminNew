@@ -40,10 +40,12 @@ Route::post('/reset-password', [APIController::class, 'reset_pass']);
 
 
 
-   
-Route::group([
-    "middleware"=>["auth:api"]
-],function(){
+Route::middleware('auth:api')->group(function(){
+
+// });
+// Route::group([
+//     "middleware"=>["auth:api"]
+// ],function(){
 // for logout user
     Route::post('/logout', [APIController::class, 'logout']);
     Route::apiResource('user', UserController::class);

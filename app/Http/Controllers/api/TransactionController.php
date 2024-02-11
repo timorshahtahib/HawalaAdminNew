@@ -9,6 +9,7 @@ use App\Models\FinanceAccount;
 use App\Models\Transaction;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Throwable;
@@ -132,8 +133,8 @@ class TransactionController extends Controller
                     'currency_equal'=>$request->currency_equal,
                     'currency_rate'=>$request->currency_rate,
                     'ref_id'=>$request->ref_id,
-                    // 'user_id'=>Auth::user()->id,
-                    'user_id'=>1,
+                    'user_id'=>Auth::user()->id,
+                    // 'user_id'=>1,
                     'desc'=>$request->desc,
                     'date'=>$request->date,
                     'check_number'=>$check_number,

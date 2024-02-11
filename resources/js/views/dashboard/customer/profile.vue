@@ -6,13 +6,12 @@
   } from "../../contacts/data-profile";
   import profile from '../../../../images/profile-img.png';
   import avatar1 from '../../../../images/users/avatar-2.jpg';
-  import axios from "axios";
   import Swal from 'sweetalert2'
   import DatePicker from '@alireza-ab/vue3-persian-datepicker';
   import vSelect from 'vue-select';
   import 'vue-select/dist/vue-select.css';
   import Loader from '../../loader/loader.vue'
-
+  import api from '../../../services/api';
 
 
 
@@ -80,7 +79,7 @@
     async created() {
       this.isLoading = true;
       try {
-        const response = await axios.get(`/api/customer/${this.$route.params.id}`);
+        const response = await api.get(`/customer/${this.$route.params.id}`);
         this.customer = response.data.customer;
         this.customerbalances = response.data.balances
         // console.log("cutomBalances",this.customerbalances);
@@ -119,7 +118,7 @@
       },
       async getTransactionbycid(page = 1) {
         try {
-          const response = await axios.post(`/api/customerinfo`, {
+          const response = await api.post(`/customerinfo`, {
             id: this.$route.params.id
           });
           this.transactionslist = response.data.transactions?.data;
@@ -129,7 +128,7 @@
           this.totalAmount = response.data.total_amount;
           this.totalPages = response.data.customers?.last_page();
           this.currentPage = page;
-          console.log("Customers",this.transactionslist);
+          // console.log("Customers",this.transactionslist);
         } catch (error) {
           console.log(error.message);
         }
@@ -146,15 +145,13 @@
       },
       async editCustomer(id) {
         try {
-          const response = await axios.get(`/api/customer/${id}`);
+          const response = await api.get(`/customer/${id}`);
           this.editCust = response.data.customer;
           this.openEditModal(this.editCust);
           //    console.log("editCustomer",this.editCust);
           this.editname = this.editCust.name;
           this.editLastName = this.editCust.last_name;
           this.editPhone = this.editCust.phone;
-          // this.editUsername = this.editCust.username;
-          // this.editPassword = this.editCust.password;
           this.ediPhoto = this.editCust.image;
           this.editAddress = this.editCust.address;
           this.editDesc = this.editCust.desc;
@@ -165,7 +162,7 @@
       },
       async editCustomerSubmitForm(id) {
         try {
-          const responseUpdate = await axios.post(`/api/updatecustomer`, {
+          const responseUpdate = await api.post(`/updatecustomer`, {
             id: id,
             name: this.editname,
             phone: this.editPhone,
@@ -173,7 +170,7 @@
             address: this.editAddress,
             desc: this.editDesc,
           });
-          console.log(this.responseUpdate);
+          // console.log(this.responseUpdate);
           if (responseUpdate.data != null) {
             if (responseUpdate.data.status === false) {
               if (responseUpdate.data.message != null) {
@@ -209,7 +206,7 @@
       },
       async changeUsernameFunc() {
         try {
-          const response = await axios.post(`/api/changeusername/${this.$route.params.id}`, {
+          const response = await api.post(`/changeusername/${this.$route.params.id}`, {
             username: this.editUsername
           });
           // console.log(this.responseUpdate);
@@ -237,10 +234,10 @@
       },
       async changePasswordfunc() {
         try {
-          const response = await axios.post(`/api/changepassword/${this.$route.params.id}`, {
+          const response = await api.post(`/changepassword/${this.$route.params.id}`, {
             password: this.editPassword
           });
-          console.log(response);
+          // console.log(response);
           if (response.data != null) {
             console.log("response.data != null");
             if (response.data.status === false) {
@@ -264,20 +261,20 @@
           console.log(error.message);
         }
         try {
-          const response = await axios.post(`/api/changepassword/${this.$route.params.id}`, {
+          const response = await api.post(`/changepassword/${this.$route.params.id}`, {
             password: this.this.editPassword
           });
         } catch (error) {}
       },
       async searchData() {
-        const response = await axios.post('/api/searchtransactions', {
+        const response = await api.post('/searchtransactions', {
           query: this.searchQuery
         });
         this.transactions = response.data;
         this.notFound = this.transactions.length === 0
       },
       async editTransactionFunc(id) {
-        const response = await axios.get(`/api/transaction/${id}`);
+        const response = await api.get(`/transaction/${id}`);
         this.editTransaction = response.data;
         this.openEditModaltransaction();
         // console.log("this.editTransaction",this.editTransaction);
@@ -287,15 +284,17 @@
         this.editEqual_amount = this.editTransaction[0].amount_equal;
         this.editDesc = this.editTransaction[0].desc;
         this.editDate = this.editTransaction[0].date;
-        this.editCurrencyModel = this.editTransaction[0].tr_currency;
-        this.editEqualcurrencyModel = this.editTransaction[0].currency_equal;
-        this.getBanksForEdit(this.editCurrencyModel)
+        this.editCurrencyModel = this.editTransaction[0].tr_currency.id;
+        this.editEqualcurrencyModel = this.editTransaction[0].eq_currency;
+        this.getBanksForEdit(this.editCurrencyModel);
+        // console.log("this.editEqualcurrencyModel",this.editEqualcurrencyModel);
+      
         // this.getCustomerForEdit(this.editTransaction[0].ref_id);
         //  console.log("this.editTransaction", this.editTransaction);
       },
       async submitEditTransaction() {
         let id = this.editTransaction[0].id;
-        const response = await axios.post(`/api/updateTransaction`, {
+        const response = await api.post(`/updateTransaction`, {
           id: this.editTransaction[0].id,
           rasid_bord: this.editasid_bord,
           transaction_type: this.editasid_bord,
@@ -334,7 +333,7 @@
           return;
         } else {
           try {
-            const response = await axios.post(`/api/deleteonetransaction`, {
+            const response = await api.post(`/deleteonetransaction`, {
               id: id
             });
             if (response.status === 204) {
@@ -349,9 +348,9 @@
       },
       async getCurrency() {
         try {
-          await axios.get('/api/currencies').then((response) => {
+          await api.get('/currencies').then((response) => {
             this.edit_currencies = response.data.currencies.data;
-            console.log("this.edit_currencies", this.edit_currencies);
+            // console.log("this.edit_currencies", this.edit_currencies);
           }).catch((error) => {
             console.error('Error fetching currencies:', error);
           });
@@ -360,14 +359,16 @@
         }
       },
       editChange_currency() {
-        // this.getBanksForEdit(this.editCurrencyModel);
+        this.getBanksForEdit(this.editCurrencyModel);
       },
       async getBanksForEdit(id) {
         try {
-          const response = await axios.get('/api/getbankbyid/' + id);
+          const response = await api.get('/getbankbyid/' + id);
           this.editbanks = response.data.banks;
-          console.log("getNBanks", this.editbanks);
+          // console.log("getNBanks", this.editbanks);
           this.editSelectedDakhl = this.editbanks[0].id;
+          console.log("his.editSelectedDakhl",id);
+         
         } catch (error) {
           console.log(error.message);
         }
@@ -462,7 +463,7 @@
           </div>
           <div class="card" v-else>
             <div class="card-body">
-              <h4 class="card-titl badge  font-size-20 bg-primary">بیلانس</h4>
+              <h4 class="card-titl badge  font-size-20 bg-primary ">بیلانس</h4>
               <div class="table-responsive mb-0">
                 <div>
                   <table class="table table-centered table-nowrap">
@@ -519,6 +520,7 @@
                         <div class="position-relative">
                           <!-- <button class="btn btn-primary" @click="gotoExportPage">خروجی</button> -->
                           <router-link class="btn btn-xs btn-primary" :to="`/dashboard/customer/${customer.id}/export`">خروجی</router-link>
+                          
                         </div>
                       </div>
                     </div>
@@ -544,7 +546,7 @@
                                         <!-- <th class="text-center">نام مشتری</th> -->
                                         <th class="text-center">رسید برد</th>
                                         <th class="text-center">مقدار پول</th>
-                                        <th class="text-center"> پول</th>
+                                        <th class="text-center">مقدار معادل</th>
                                         <th class="text-center">تفصیلات</th>
                                         <th class="text-center">توسط</th>
                                         <th class="text-center">عملیه</th>

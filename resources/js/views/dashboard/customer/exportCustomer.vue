@@ -1,16 +1,18 @@
 <script>
 import Layout from "../../../layouts/main.vue";
 import PageHeader from "../../../components/page-header.vue";
-import axios from "axios";
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
 import Loader from '../../loader/loader.vue';
+import api from '../../../services/api';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+
+import vue3ToPdf from 'vue3-to-pdf'
 
 export default {
   components: {
     Layout,
     PageHeader,
-    Loader
+    Loader,vue3ToPdf
   },
   data() {
     return {
@@ -52,7 +54,7 @@ export default {
   methods: {
     async getTransactionbycid(page = 1) {
       try {
-        const response = await axios.post(`/api/customerinfo`, {
+        const response = await api.post(`/customerinfo`, {
           id: this.$route.params.id,
           rasid_bord:this.rasid_bord,
           order_id:this.order_id,
@@ -76,9 +78,10 @@ export default {
     },
     async getOrders() {
       try {
-        const response = await axios.get(`/api/orders`);
+        const response = await api.get(`/orders`);
         this.orders = response.data.orders.data;
-        console.log(this.orderModel);
+      
+        // console.log(this.orderModel);
       } catch (error) {
         console.error('Error fetching orders:', error);
       } finally {
@@ -86,7 +89,7 @@ export default {
       }
     },
     async getCurrency(){
-      const response = await axios.get('/api/currencies');
+      const response = await api.get('/currencies');
       this.currencies = response.data.currencies.data;
     },
     change_currency() {
@@ -94,7 +97,7 @@ export default {
     },
     async getBanks(id) {
       try {
-        const response = await axios.get('/api/getbankbyid/' + id);
+        const response = await api.get('/getbankbyid/' + id);
         this.banks = response.data.banks;
         this.SelectedDakhl = this.banks[0].id;
       } catch (error) {
@@ -103,7 +106,7 @@ export default {
     },
     async filterCustomerExport() {
       try {
-        const response = await axios.post('/api/exportcustomertopdf',{
+        const response = await api.post('/exportcustomertopdf',{
           id: this.$route.params.id,
           rasid_bord:this.filter_rasid_bord,
           currency:this.currencyModel
@@ -114,41 +117,40 @@ export default {
       }
     },
     exportToPDF() {
-      const docDefinition = {
-        content: [
-          { text: 'جدول داده‌ها', style: 'header' },
-          {
-            style: 'table',
-            table: {
-              body: [
-                ['نام مشتری', 'رسید', 'برداشت', 'مقدار پول', 'پول', 'تفصیلات', 'توسط'],
-                ...this.transactionslist.map(item => [
-                  item.customerName,
-                  item.rasid,
-                  item.bord,
-                  item.amount,
-                  item.currency,
-                  item.desc,
-                  item.user_id
-                ])
-              ]
-            }
-          }
-        ],
-        styles: {
-          header: {
-            fontSize: 18,
-            bold: true,
-            alignment: 'right'
-          },
-          table: {
-            alignment: 'right'
-          }
+      const table = this.$refs.table;
+      html2canvas(table).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const imgWidth = 190; // Adjust as needed
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+        const farsiFont = '../../../../fonts/arial.ttf'; // Replace ... with your base64 font
+        pdf.addFileToVFS('arial.ttf', farsiFont);
+        pdf.setFont('arial');
+        pdf.setFontSize(15);
+            // Set the font and font size
+        pdf.setFont('arial');
+        pdf.setFontSize(12); // Set the font size to 12
+
+        // Set header
+        pdf.setPage(1); // Set the page number to 1
+        pdf.setDrawColor(0); // Set the color for the header
+        pdf.setFontSize(18); // Set the font size for the header
+        pdf.text('My PDF Header', 105, 15, { align: 'center' }); // Text, x, y, options
+
+        // Set footer
+        const pageCount = pdf.internal.getNumberOfPages(); // Get the total number of pages
+        for (let i = 1; i <= pageCount; i++) {
+          pdf.setPage(i); // Set the current page
+          pdf.setFontSize(12); // Set the font size for the footer
+          pdf.text('Page ' + i + ' of ' + pageCount, 105, pdf.internal.pageSize.height - 10, { align: 'center' }); // Text, x, y, options
         }
-      };
-      
-      pdfMake.createPdf(docDefinition).download('table_data.pdf');
-    }
+
+        pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+        pdf.save(`${this.customerName}.pdf`);
+      });
+    },
+    
+
   }
 };
 </script>
@@ -251,6 +253,7 @@ export default {
                                 <Loader />  
                               </div>
                               <div class="" v-else>
+                                
                                 <div class="table-responsive" v-if="transactionslist?.length ">
                                   <div class="text-center font-size-20" v-if="notFound"> نتیجه مورد نظر یافت نشد! </div>
                                   <table class="table table-centered table-nowrap" v-else  ref="table">
@@ -337,16 +340,7 @@ export default {
                                     {{customer_rasid}}
                                   </span>
                                 </td>
-                                <!-- <td>
-                                  <span class="badge  font-size-12" :class="transaction.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">
-                                    {{transaction.rasid_bord}}
-                                  </span>
-                                </td>
-                                <td>{{transaction.amount_equal}} {{transaction?.eq_currency?.name}}  {{transaction.rasid_bord ==='rasid'? 'به': 'از' }} <span v-if="transaction.bank_account!=null">{{transaction.bank_account.account_name}}</span>
-                                  <span v-else>{{ transaction.finance_account.account_name}}</span>
-                                </td> -->
-                            
-
+                        
                               </tr>
                             </tbody>
                           </table>

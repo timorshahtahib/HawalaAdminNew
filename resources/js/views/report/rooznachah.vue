@@ -2,14 +2,13 @@
 import Layout from "../../layouts/main.vue";
 import PageHeader from "../../../js/components/page-header.vue";
 
-import axios from 'axios';
 // import SweetAlert from "../../../SweetAlert.vue";
 import Swal from "sweetalert2";
 import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
 import DatePicker from '@alireza-ab/vue3-persian-datepicker';
 import Loader from "../loader/loader.vue";
-
+import api from '../../services/api';
 /**
  * Rasidbord component
  */
@@ -84,7 +83,7 @@ export default {
 
         async getCustomers() {
             try {
-                const response = await axios.get('/api/customer');
+                const response = await api.get('/customer');
                 this.customers = response.data.customers.data;
                 // console.log(this.customers);
 
@@ -94,7 +93,7 @@ export default {
         },
         async getCurrency() {
             try {
-                await axios.get('/api/currencies').then((response) => {
+                await api.get('/currencies').then((response) => {
                         this.currencies = response.data.currencies.data;
                         // console.log(this.currencies);
 
@@ -111,7 +110,7 @@ export default {
         async getFinanceAccount(page = 1) {
             this.isLoading=true;
             try {
-                const response = await axios.get(`/api/finance_account?page=${page}&limit=${this.limit}`);
+                const response = await api.get(`/finance_account?page=${page}&limit=${this.limit}`);
                 this.banks = response.data.financeAccounts.data;
                 this.totalPages = response.data.financeAccounts.last_page;
                 this.currentPage = page; // Update the current page
@@ -124,7 +123,7 @@ export default {
         },
    
         async getTransaction(page=1) {
-            const response = await axios.get(`/api/transaction?page=${page}&limit=${this.limit}`);
+            const response = await api.get(`/transaction?page=${page}&limit=${this.limit}`);
             this.transactions = response.data.transactions.data;
             this.totalPages = response.data.transactions.last_page;
             this.currentPage = page; // Update the current page
@@ -141,7 +140,7 @@ export default {
             }
         },
         async searchData() {
-            const response = await axios.post('/api/searchtransactions', {
+            const response = await api.post('/searchtransactions', {
                 query: this.searchQuery
             });
 
@@ -153,7 +152,7 @@ export default {
 
   async getBanks(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.banks = response.data.banks;
                 this.selectedDakhl = this.banks[0].id;
 
@@ -165,7 +164,7 @@ export default {
 
             console.log(this.start_date,'s');
             console.log(this.end_date,'e');
-            const response = await axios.post('/api/filterrooznamchah', {
+            const response = await api.post('/filterrooznamchah', {
                 transaction_type:this.transaction_type,
                 rasid_bord:this.rasid_bord,
                 customer_id:this.selectedCustomer,

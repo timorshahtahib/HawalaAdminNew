@@ -201,6 +201,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2'
 import DatePicker from '@alireza-ab/vue3-persian-datepicker';
 import Loader from '../../loader/loader.vue';
+import api from '../../../services/api';
 export default {
     name: 'customerTable',
     components: {
@@ -244,7 +245,7 @@ export default {
         async getFinanceAccount(page = 1) {
             this.isLoading=true;
             try {
-                const response = await axios.get(`/api/finance_account?page=${page}&limit=${this.limit}`);
+                const response = await api.get(`/finance_account?page=${page}&limit=${this.limit}`);
                 this.financeAccounts = response.data.financeAccounts.data;
                 this.totalPages = response.data.financeAccounts.last_page;
                 this.currentPage = page; // Update the current page

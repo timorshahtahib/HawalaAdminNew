@@ -5,6 +5,7 @@ import Emailsent from "../../components/widgets/emailsent.vue";
 import axios from 'axios';
 import Loader from "../loader/loader.vue";
 import smallLoader from "../loader/smallLoader.vue";
+import api from '../../services/api'
 /**
  * Dashboard Component
  */
@@ -36,7 +37,7 @@ export default {
     async getBanksBalance(page = 1) {
             this.isLoading=true;
             try {
-                const response = await axios.get(`/api/bankbalance?page=${page}&limit=${this.limit}`);
+                const response = await api.get(`/bankbalance?page=${page}&limit=${this.limit}`);
                 this.bank_balance = response.data.bank_balance.data;
                 this.totalPages = response.data.bank_balance.last_page;
                 this.currency_count=response.data.currency_counts;
@@ -66,7 +67,7 @@ export default {
 
         async getAllBalances(){
               try {
-                const response = await axios.get('/api/getallbalances');
+                const response = await api.get('/getallbalances');
                 this.allbalances = response.data;
               } catch (error) {
                 console.log(error.message);

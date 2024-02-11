@@ -9,6 +9,7 @@ import DatePicker from '@alireza-ab/vue3-persian-datepicker';
 import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
 import Loader from '../../loader/loader.vue'
+import api from '../../../services/api';
 /**
  * Rasidbord component
  */
@@ -115,7 +116,7 @@ export default {
         async getTransaction(page=1) {
             this.isLoading=true;
                 try {
-                    const response = await axios.get(`/api/transaction?page=${page}&limit=${this.limit}`);
+                    const response = await api.get(`/transaction?page=${page}&limit=${this.limit}`);
                     this.transactions = response.data.transactions.data;
                     this.totalPages = response.data.transactions.last_page;
                     this.currentPage = page; 
@@ -167,7 +168,7 @@ export default {
 
         async getCustomers() {
             try {
-                const response = await axios.get('/api/customer');
+                const response = await api.get('/customer');
                 this.customers = response.data.customers.data;
             } catch (error) {
                 console.error('Error fetching data: ', error.message);
@@ -175,7 +176,7 @@ export default {
         },
         async getCurrency() {
             try {
-                await axios.get('/api/currencies').then((response) => {
+                await api.get('/currencies').then((response) => {
                         this.currencies = response.data.currencies.data;
                     })
                     .catch((error) => {
@@ -189,7 +190,7 @@ export default {
         // for adding new Transaction  
         async storeTransaction() {
             try {
-                const response = await axios.post('/api/transaction', {
+                const response = await api.post('/transaction', {
                     rasid_bord: this.rasid_bord,
                     transaction_type: this.rasid_bord,
                     ref_id: this.selectedCustomer.id,
@@ -254,7 +255,7 @@ export default {
 
     
         async searchData() {
-            const response = await axios.post('/api/searchtransactions', {
+            const response = await api.post('/searchtransactions', {
                 query: this.searchQuery
             });
             this.transactions = response.data;
@@ -262,7 +263,7 @@ export default {
         },
 
         async editTransactionFunc(id) {
-            const response = await axios.get(`/api/transaction/${id}`);
+            const response = await api.get(`/transaction/${id}`);
             this.editTransaction = response.data;
             this.openModaledit(this.editTransaction[0]);
             this.edit_rasid_bord = this.editTransaction[0].rasid_bord
@@ -281,7 +282,7 @@ export default {
         },
         async submitEditTransaction() {
             let id = this.editTransaction[0].id;
-            const response = await axios.post(`/api/updateTransaction`, {
+            const response = await api.post(`/updateTransaction`, {
                 id: this.editTransaction[0].id,
                 rasid_bord: this.edit_rasid_bord,
                 transaction_type: this.edit_rasid_bord,
@@ -328,7 +329,7 @@ export default {
 
         async getBanksForEdit(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.editbanks = response.data.banks;
                 // console.log("getNBanks",this.editbanks);
                 this.editSelectedDakhl = this.editbanks[0].id;
@@ -340,7 +341,7 @@ export default {
         async getCustomerForEdit(id) {
         
             try {
-                const response = await axios.get('/api/customer');
+                const response = await api.get('/customer');
                 this.editCustomers = response.data.customers.data;
                 this.editSelectedCustomer = this.editCustomers.length > 0 ? this.editCustomers.find(custom => custom.id === id) : '';
                 
@@ -354,7 +355,7 @@ export default {
             } else {
                 try {
 
-                    const response = await axios.post(`/api/deleteonetransaction`,{id:id});
+                    const response = await api.post(`/deleteonetransaction`,{id:id});
 
                     // const response = await axios.get(`/api/transactiondelete/${id}`);
 
@@ -373,7 +374,7 @@ export default {
         },
         async getBanks(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.banks = response.data.banks;
                 this.selectedDakhl = this.banks[0].id;
 
@@ -670,7 +671,7 @@ export default {
                                             <td>{{transaction.amount}} {{transaction.tr_currency.name}} به <span v-if="transaction.bank_account!=null">{{transaction.bank_account?.account_name}}</span>
                                                 <span v-else>{{ transaction.finance_account?.account_name}}</span> </td>
 
-                                            <td>{{transaction.amount_equal}} {{transaction.eq_currency.name}} به <span v-if="transaction.bank_account!=null">{{transaction.bank_account?.account_name}}</span>
+                                            <td>{{transaction?.amount_equal}} {{transaction?.eq_currency?.name}} به <span v-if="transaction.bank_account!=null">{{transaction.bank_account?.account_name}}</span>
                                                 <span v-else>{{ transaction.finance_account?.account_name}}</span> </td>
                                             
                                             <td>{{transaction.desc}}</td>

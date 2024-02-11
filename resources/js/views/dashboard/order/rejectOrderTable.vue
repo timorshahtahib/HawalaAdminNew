@@ -121,6 +121,7 @@
   import axios from 'axios'
   import Swal from 'sweetalert2'
   import Loader from '../../loader/loader.vue'
+  import api from '../../../services/api';
   export default {
     name:'orderTable',
     components:{Loader},
@@ -145,7 +146,7 @@
         async getOrders(page = 1) {
           this.isLoading = true;
             try {
-                  const response = await axios.get(`/api/rejectedorder?page=${page}&limit=${this.limit}`);
+                  const response = await api.get(`/rejectedorder?page=${page}&limit=${this.limit}`);
                   this.orders = response.data.orders.data;
                   this.totalPages = response.data.orders.last_page;
                   this.currentPage = page; // Update the current page
@@ -168,7 +169,7 @@
    
 
           async searchData() {
-              const response = await axios.post('/api/searchorder', {
+              const response = await api.post('/searchorder', {
                   query: this.searchQuery
               });
               // console.log(response.data);

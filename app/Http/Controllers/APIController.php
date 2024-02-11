@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Laravel\Passport\Passport;
 use Throwable;
 
 class APIController extends Controller
@@ -21,12 +22,13 @@ class APIController extends Controller
     $this->middleware('auth:api', ['except' => ['login']]);
 }
   
-public function guard()
-{
-    return Auth::guard();
-}
+// public function guard()
+// {
+//     return Auth::guard();
+// }
     public function register(Request $request)
     {
+        Passport::ignoreRoutes();
             try {
                 $validator = Validator::make($request->all(), [
                     'name' => 'required|string',
@@ -59,33 +61,6 @@ public function guard()
 
     }
 
-
-  
-
-
-    public function login0(Request $request){
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            // $user->tokens->each(function ($token, $key) {
-            //     $token->delete();
-            // });
-            $token = $user->createToken("myToken")->accessToken;
-
-            return response()->json([
-                "status" => true,
-                // "user_name" => $user->name,
-                "message" => "ورود با موفقیت انجام شد",
-                "access_token" => $token
-            ]);
-        } else {
-            return response()->json([
-                "status" => false,
-                "error" => "ایمیل یا رمز عبور اشتباه است"
-            ]);
-        }
-    }
  
     public function login(Request $request)
     {
@@ -93,6 +68,7 @@ public function guard()
     
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
+            // $token = $user->createToken("myToken")->accessToken;
             $token = $user->createToken("myToken")->accessToken;
     
             if ($token) {
@@ -114,16 +90,25 @@ public function guard()
             ]);
         }
     }
-   public function logout(Request $request){
-            if(Auth::guard('api')->check()){
-                $accessToken = Auth::guard('api')->user()->token();
-                DB::table('oauth_refresh_tokens')->where('access_token_id',$accessToken)->update(['revoked'=>true]);
-                $accessToken->revoke();
-                return response()->json(['data'=>'Unauthorized','message'=>'User logout successfully'],401);
-            }
-            return response()->json(['status'=>false,'data'=>'Unauthorized'],401);
-}
 
+    public function logout(Request $request) {
+        if (Auth::guard('api')->check()) {
+            $accessToken = Auth::guard('api')->user()->token();
+            DB::table('oauth_refresh_tokens')->where('access_token_id', $accessToken)->update(['revoked' => true]);
+            $accessToken->revoke();
+            return response()->json([
+                'status' => false,
+                'data' => 'Unauthorized',
+                'message' => 'User logout successfully',
+                'accessToken' => $accessToken
+            ], 200);
+        }
+        
+        return response()->json([
+            'status' => false,
+            'data' => 'Unauthorized'
+        ],401);
+    }
 public function getUserDetails(){
         
     if(Auth::guard('(api')->check()){
