@@ -28,14 +28,6 @@
       vSelect,
       Loader
     },
-    // props:['customerbalances'],
-    // {
-    // count: {
-    //   type: Array,
-    //   default:[]
-    // }
-  // },
-    
     data() {
       return {
         profile,

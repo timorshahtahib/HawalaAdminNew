@@ -14,13 +14,7 @@ export default {
     PageHeader,
     Loader
   },
-  // props: ['customerId', 'customBalance'], 
-  // {
-    // {
-  //     type: Array,
-  //     required: true
-  //   }
-  // },
+
   data() {
     return {
       title: "صفحه خروجی گرفتن از اطلاعات مشتری",
@@ -43,10 +37,7 @@ export default {
       banks:[],
       currencies:[],
       orders:[],
-      // customerName:'',
-      // customer_rasid:'',
-      // customer_bord:'',
-      // customer_balance:'',
+      customerName:'',
       currentPage: 1,
       totalPages: 1,
       limit: 10,
@@ -79,10 +70,8 @@ export default {
         this.currentPage = page;
 
         this.customerbalances = response.data.customerBalance
-        // this.customer_rasid = this.rasid;
-        // this.customer_bord = this.bord;
-        // this.customer_balance = this.totalAmount;
-        // this.customerName = response.data?.customer?.data[0].name;
+
+        this.customerName = response.data?.customer?.data[0].name;
       } catch (error) {
         console.log(error.message);
       }
@@ -391,14 +380,16 @@ exportToPDF() {
 
                                       </tr>
                                     </tbody>
-                            
-                                          <tr>
+                                 <hr>
+                                        
+                                 <tr>
                                             <th>واحد</th>
                                             <th>کل رسید </th>
-                                            <th>کل برداشتها</th>
-                                            <th>بیلانس</th>
+                                            <th colspan="2">کل برداشتها</th>
+                                            <th colspan="2">بیلانس</th>
+                                           
                                           </tr>
-                            
+                                     
                                         <tbody>
                                           <tr v-for="(currency, key) in customerbalances" :key="key">
                                             <td>{{ key }}</td>
@@ -407,11 +398,11 @@ exportToPDF() {
                                                 {{ currency.rasid }}
                                               </span>
                                             </td>
-                                            <td>
+                                            <td colspan="2">
                                               <span class="badge  font-size-13" :class="currency.bord > 0 ? 'bg-success' : 'bg-danger'">{{ currency.bord }}</span>
                                             </td>
-                                            <td>
-                                              <span class="badge  font-size-13" :class="currency.balance > 0 ? 'bg-success' : 'bg-danger'">{{ currency.balance }}</span>
+                                            <td colspan="2">
+                                              <span class="badge  font-size-13 "   :class="currency.balance > 0 ? 'bg-success' : 'bg-danger'">{{ currency.balance }}</span>
                                             </td>
                                           </tr>
                                         </tbody>
