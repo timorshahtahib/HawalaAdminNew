@@ -13,9 +13,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Throwable;
-
+use App\Http\Controllers\api\CustomerController;
 class TransactionController extends Controller
 {
+    protected $customerService;
+
+    public function __construct(CustomerController $customerService)
+    {
+        $this->customerService = $customerService;
+    }
 
     public static function new_check_number()
     {
@@ -60,6 +66,8 @@ class TransactionController extends Controller
     // select all transaction that have the ref_id = customer id in the profile page
         public function getCustomerInfo(Request $request){
            
+            // for getting the customer balance from customer controller and send with it
+            $customBalance = $this->customerService->getCustomerBalance($request->id);
                 try {
                     $id = $request->id;
                     $limit = $request->has('limit') ? $request->limit : 10;
@@ -78,7 +86,7 @@ class TransactionController extends Controller
                         return response()->json([]);
                     }
                     $total_pages= $transaction_rasid_bord->lastPage();
-                    return response()->json(['customer'=>$customer,'transactions'=>$transaction_rasid_bord,'orders'=>$transaction_order,'rasid'=> $rasid,'bord'=>$bord,'total_amount'=>$totalAmount,'total_pages'=>$total_pages]);
+                    return response()->json(['customer'=>$customer,'transactions'=>$transaction_rasid_bord,'orders'=>$transaction_order,'rasid'=> $rasid,'bord'=>$bord,'total_amount'=>$totalAmount,'total_pages'=>$total_pages,'customerBalance'=>$customBalance]);
                       
                 } catch (Throwable $e) {
                   return response()->json(['message'=>$e->getMessage()]);

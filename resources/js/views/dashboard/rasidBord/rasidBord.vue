@@ -659,7 +659,7 @@ export default {
                                     </thead>
                                     <tbody class="text-center">
                                         <tr v-for="transaction in transactions" :key="transaction?.id">
-                                            <td>{{transaction.check_number}}</td>
+                                            <td>{{transaction?.check_number}}</td>
                                             <td v-if="transaction.customer!=null">{{ transaction.customer?.name}}</td>
                                             <td v-else>{{ transaction.finance_account?.account_name}}</td>
                                             <!-- <td>

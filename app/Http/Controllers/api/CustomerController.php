@@ -100,29 +100,7 @@ class CustomerController extends Controller
     public function updateCustomer(Request $request)
     {
         try {
-            // $validator = Validator::make($request->all(), [
-            //     'name' => 'required',
-            //     'last_name' => 'required',
-            //     'cu_number' => 'nullable',
-            //     'phone' => 'required',
-            //     'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:50',
-            //     'address' => 'nullable',
-            //     'token' => 'nullable',
-            //     'type' => 'nullable', // or provide a specific rule if 'type' is required
-            //     'desc' => '',
-            // ],
-            // [
-            //     'name.required' =>'نام ضروری است',
-            //     'last_name.required'=>'نام خانوادگی ضروری است.',
-            //     'phone.required'=>'شماره تماس ضروری است',
-            // ]);
-    
-            // if (!$validator->passes()) {
-            //     return response()->json([
-            //         'status' => false,
-            //         'error' => $validator->errors()->toArray(),
-            //     ]);
-            // }
+         
     
             $out_put = Customer::where('id', $request->id)->update($request->all());
     

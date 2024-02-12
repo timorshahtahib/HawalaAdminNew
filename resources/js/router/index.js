@@ -26,7 +26,7 @@ const routes = [{
         path: '/dashboard/customer/:id/export',
         meta: { authRequired: true, title: 'Dashboard' },
         component: () =>
-            import ('../views/dashboard/customer/exportCustomer.vue')
+            import ('../views/dashboard/customer/exportCustomer.vue'),
     },
     {
         path: '/dashboard/finance_account',

@@ -6,14 +6,21 @@ import api from '../../../services/api';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
-import vue3ToPdf from 'vue3-to-pdf'
+
 
 export default {
   components: {
     Layout,
     PageHeader,
-    Loader,vue3ToPdf
+    Loader
   },
+  // props: ['customerId', 'customBalance'], 
+  // {
+    // {
+  //     type: Array,
+  //     required: true
+  //   }
+  // },
   data() {
     return {
       title: "صفحه خروجی گرفتن از اطلاعات مشتری",
@@ -36,13 +43,14 @@ export default {
       banks:[],
       currencies:[],
       orders:[],
-      customerName:'',
-      customer_rasid:'',
-      customer_bord:'',
-      customer_balance:'',
+      // customerName:'',
+      // customer_rasid:'',
+      // customer_bord:'',
+      // customer_balance:'',
       currentPage: 1,
       totalPages: 1,
       limit: 10,
+      customerbalances:[]
     };
   },
   mounted() {
@@ -50,6 +58,8 @@ export default {
     this.getCurrency();
     this.getOrders();
     this.filter_rasid_bord='all';
+    // console.log('Customer ID:', this.customerId); // Access the customerId prop
+    // console.log('Custom Balance:', this.customerbalances);
   },
   methods: {
     async getTransactionbycid(page = 1) {
@@ -68,10 +78,11 @@ export default {
         this.totalPages = response.data.customers?.last_page();
         this.currentPage = page;
 
-        this.customer_rasid = this.rasid;
-        this.customer_bord = this.bord;
-        this.customer_balance = this.totalAmount;
-        this.customerName = response.data?.customer?.data[0].name;
+        this.customerbalances = response.data.customerBalance
+        // this.customer_rasid = this.rasid;
+        // this.customer_bord = this.bord;
+        // this.customer_balance = this.totalAmount;
+        // this.customerName = response.data?.customer?.data[0].name;
       } catch (error) {
         console.log(error.message);
       }
@@ -92,9 +103,7 @@ export default {
       const response = await api.get('/currencies');
       this.currencies = response.data.currencies.data;
     },
-    change_currency() {
-      this.getBanks(this.currencyModel);
-    },
+
     async getBanks(id) {
       try {
         const response = await api.get('/getbankbyid/' + id);
@@ -116,7 +125,7 @@ export default {
         console.log(error.message)
       }
     },
-    exportToPDF() {
+    exportToPDF0() {
       const table = this.$refs.table;
       html2canvas(table).then(canvas => {
         const imgData = canvas.toDataURL('image/png');
@@ -149,7 +158,101 @@ export default {
         pdf.save(`${this.customerName}.pdf`);
       });
     },
-    
+    exportToPDF1() {
+  const table = this.$refs.table;
+  html2canvas(table).then(canvas => {
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const imgWidth = 190; // Adjust as needed
+    const imgHeight = canvas.height * imgWidth / canvas.width;
+    const farsiFont = '../../../../fonts/arial.ttf'; // Replace ... with your base64 font
+    pdf.addFileToVFS('arial.ttf', farsiFont);
+    pdf.setFont('arial');
+    pdf.setFontSize(12); // Set the font size to 12
+
+    // Set header
+    const header = 'My PDF Header';
+    const headerFontSize = 18;
+    const headerX = pdf.internal.pageSize.getWidth() / 2;
+    const headerY = 15;
+    pdf.setFontSize(headerFontSize);
+    pdf.text(header, headerX, headerY, { align: 'center' });
+
+    // Set footer
+    const pageCount = pdf.internal.getNumberOfPages(); // Get the total number of pages
+    for (let i = 1; i <= pageCount; i++) {
+      pdf.setPage(i); // Set the current page
+      const footerText = `Page ${i} of ${pageCount}`;
+      const footerFontSize = 12;
+      const footerX = pdf.internal.pageSize.getWidth() / 2;
+      const footerY = pdf.internal.pageSize.getHeight() - 10;
+      pdf.setFontSize(footerFontSize);
+      pdf.text(footerText, footerX, footerY, { align: 'center' });
+    }
+
+    pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+    pdf.save(`${this.customerName}.pdf`);
+  });
+},
+
+exportToPDF() {
+  const tables = [
+    this.$refs.table1,
+    this.$refs.table2,
+    // this.$refs.table3
+  ];
+
+  const pdf = new jsPDF('p', 'mm', 'a4');
+  const imgWidth = 190; // Adjust as needed
+  const farsiFont = '../../../../fonts/arial.ttf'; // Replace ... with your base64 font
+  pdf.addFileToVFS('arial.ttf', farsiFont);
+  pdf.setFont('arial');
+  pdf.setFontSize(12); // Set the font size to 12
+
+  // Set header
+  // const header = 'My PDF Header';
+  // const headerFontSize = 18;
+  // const headerX = pdf.internal.pageSize.getWidth() / 2;
+  // const headerY = 15;
+  // pdf.setFontSize(headerFontSize);
+  // pdf.text(header, headerX, headerY, { align: 'center' });
+
+  // Iterate through each table
+  let yOffset = 20; // Initial y offset below the header
+  tables.forEach((table, index) => {
+    html2canvas(table).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+      
+      // Add image to PDF
+      pdf.addImage(imgData, 'PNG', 10, yOffset, imgWidth, imgHeight);
+
+      // Increment y offset for the next table
+      yOffset += imgHeight + 10;
+
+      // If it's the last table, save the PDF
+      if (index === tables.length - 1) {
+        // Set footer
+        const pageCount = pdf.internal.getNumberOfPages(); // Get the total number of pages
+        for (let i = 1; i <= pageCount; i++) {
+          pdf.setPage(i); // Set the current page
+          const footerText = `Page ${i} of ${pageCount}`;
+          const footerFontSize = 12;
+          const footerX = pdf.internal.pageSize.getWidth() / 2;
+          const footerY = pdf.internal.pageSize.getHeight() - 10;
+          pdf.setFontSize(footerFontSize);
+          pdf.text(footerText, footerX, footerY, { align: 'center' });
+        }
+
+        // Save PDF
+        pdf.save(`${this.customerName}.pdf`);
+      }
+    });
+  });
+},
+
+
+
 
   }
 };
@@ -236,18 +339,18 @@ export default {
                       <div class="me-2 mb-2 d-inline-block">
                         <div class="position-relative">
                             <button class="btn btn-primary" @click="exportToPDF">خروجی گرفتن</button>
-                          
                         </div>
                       </div>
                     </div>
                   </div>
-                  <b-tabs content-class="p-4" class="pt-2" nav-wrapper-class="nav-item" nav-class="justify-content-center nav-tabs-custom">
-                    <b-tab title="ترانزکشن" active>
+                  <!-- <b-tabs content-class="p-4" class="pt-2" nav-wrapper-class="nav-item" nav-class="justify-content-center nav-tabs-custom"> -->
+                    <!-- <b-tab title="ترانزکشن" active> -->
                       <div>
                         <div class="row justify-content-center">
                           <div class="col-xl-12">
                             <div>
                               <hr class="mb-4" />
+                              <h3 ref="table1"> لیست تمامی تراکنش های {{customerName}}</h3>
                               <div v-if="isLoading">
                                 <!-- Loader or loading message here -->
                                 <Loader />  
@@ -256,7 +359,7 @@ export default {
                                 
                                 <div class="table-responsive" v-if="transactionslist?.length ">
                                   <div class="text-center font-size-20" v-if="notFound"> نتیجه مورد نظر یافت نشد! </div>
-                                  <table class="table table-centered table-nowrap" v-else  ref="table">
+                                  <table class="table table-centered table-nowrap" v-else  ref="table2">
                                     <thead>
                                       <tr>
                                         <th class="text-center">نمبر چک</th>
@@ -288,7 +391,33 @@ export default {
 
                                       </tr>
                                     </tbody>
-                                  </table>
+                            
+                                          <tr>
+                                            <th>واحد</th>
+                                            <th>کل رسید </th>
+                                            <th>کل برداشتها</th>
+                                            <th>بیلانس</th>
+                                          </tr>
+                            
+                                        <tbody>
+                                          <tr v-for="(currency, key) in customerbalances" :key="key">
+                                            <td>{{ key }}</td>
+                                            <td>
+                                              <span class="badge  font-size-13" :class="currency.rasid > 0 ? 'bg-success' : 'bg-danger'">
+                                                {{ currency.rasid }}
+                                              </span>
+                                            </td>
+                                            <td>
+                                              <span class="badge  font-size-13" :class="currency.bord > 0 ? 'bg-success' : 'bg-danger'">{{ currency.bord }}</span>
+                                            </td>
+                                            <td>
+                                              <span class="badge  font-size-13" :class="currency.balance > 0 ? 'bg-success' : 'bg-danger'">{{ currency.balance }}</span>
+                                            </td>
+                                          </tr>
+                                        </tbody>
+                                       
+                                      </table>
+                                
 
                           
                                   <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
@@ -316,9 +445,9 @@ export default {
                           </div>
                         </div>
                       </div>
-                    </b-tab>    
+                    <!-- </b-tab>     -->
                         
-                          <table class="table table-centered table-nowrap"  ref="table">
+                          <!-- <table class="table table-centered table-nowrap"  ref="table">
                             <thead>
                               <tr>
                              
@@ -343,13 +472,13 @@ export default {
                         
                               </tr>
                             </tbody>
-                          </table>
+                          </table> -->
                                  
-                    <b-tab title="سفارشات">
+                    <!-- <b-tab title="سفارشات">
                       <div>
                         <div class="row justify-content-center">
                           <div class="col-xl-12">
-                            <!-- <h5>Archive</h5> -->
+                          
                             <div class="mt-5" v-if="orderslist?.length">
                               <hr class="mt-2" />
                               <div class="table-responsive">
@@ -401,8 +530,8 @@ export default {
                           </div>
                         </div>
                       </div>
-                    </b-tab>
-                  </b-tabs>
+                    </b-tab> -->
+                  <!-- </b-tabs> -->
                   <!-- Nav tabs -->
                 </div>
               </div>

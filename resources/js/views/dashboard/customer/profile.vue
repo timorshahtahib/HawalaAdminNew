@@ -19,6 +19,7 @@
   /**
    * customer-Profile component
    */
+  
   export default {
     components: {
       Layout,
@@ -27,11 +28,18 @@
       vSelect,
       Loader
     },
+    // props:['customerbalances'],
+    // {
+    // count: {
+    //   type: Array,
+    //   default:[]
+    // }
+  // },
+    
     data() {
       return {
         profile,
         avatar1,
-        revenueChart: revenueChart,
         title: "پروفایل مشتری",
         items: [{
           text: "مشتری",
@@ -518,9 +526,7 @@
                     <div class="col-md-1">
                       <div class="me-2 mb-2 d-inline-block">
                         <div class="position-relative">
-                          <!-- <button class="btn btn-primary" @click="gotoExportPage">خروجی</button> -->
                           <router-link class="btn btn-xs btn-primary" :to="`/dashboard/customer/${customer.id}/export`">خروجی</router-link>
-                          
                         </div>
                       </div>
                     </div>

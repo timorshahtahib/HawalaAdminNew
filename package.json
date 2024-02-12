@@ -69,7 +69,6 @@
         "vue3-datepicker": "^0.3.4",
         "vue3-dropzone": "^2.0.1",
         "vue3-google-map": "^0.15.0",
-        "vue3-to-pdf": "^1.0.8",
         "vuelidate": "^0.7.7",
         "vuex": "^4.0.2"
     }
