@@ -17,18 +17,18 @@ use Throwable;
 class APIController extends Controller
 {
 
-    public function __construct()
-{
-    $this->middleware('auth:api', ['except' => ['login']]);
-}
-  
-// public function guard()
+//     public function __construct()
 // {
-//     return Auth::guard();
+//     $this->middleware('auth:api', ['except' => ['login']]);
 // }
+  
+public function guard()
+{
+    return Auth::guard();
+}
     public function register(Request $request)
     {
-        Passport::ignoreRoutes();
+        // Passport::ignoreRoutes();
             try {
                 $validator = Validator::make($request->all(), [
                     'name' => 'required|string',

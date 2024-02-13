@@ -2,13 +2,15 @@
 import Layout from "../../layouts/main.vue";
 import PageHeader from "../../../js/components/page-header.vue";
 
-import axios from 'axios';
+
 // import SweetAlert from "../../../SweetAlert.vue";
 import Swal from "sweetalert2";
 import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
 import DatePicker from '@alireza-ab/vue3-persian-datepicker';
 import Loader from '../loader/loader.vue'
+
+import api from '../../services/api'
 /**
  * Rasidbord component
  */
@@ -102,7 +104,7 @@ export default {
         async searchbankTransaction(){
 
             try {
-                const response = await axios.post('/api/filterBankTransactions', {
+                const response = await api.post('/filterBankTransactions', {
                     tr_type: this.rasid_bord_type,
                     bank_acount_id: this.$route.params.id,
                     start_date: this.start_date,
@@ -150,7 +152,7 @@ export default {
         async getCustomers(page =1) {
        
             try {
-                const response = await axios.get(`/api/customer?page=${page}&limit=${this.limit}`);
+                const response = await api.get(`/customer?page=${page}&limit=${this.limit}`);
                 this.customers = response.data.customers.data;
               
                 this.totalPages = response.data.customers.last_page;
@@ -164,7 +166,7 @@ export default {
       
         async getCurrency() {
             try {
-                await axios.get('/api/currencies').then((response) => {
+                await api.get('/currencies').then((response) => {
                         this.currencies = response.data.currencies.data;
                         // console.log(this.currencies);
 
@@ -188,7 +190,7 @@ export default {
             this.isLoading=true;
            try {
             let d= this.$route.params.id
-            const response = await axios.get('/api/bankdetails/'+d);
+            const response = await api.get('/bankdetails/'+d);
             this.transactions = response.data.banksTransaction;
            } catch (error) {
             console.log(error.message);
@@ -207,7 +209,7 @@ export default {
             }
         },
         async searchData() {
-            const response = await axios.post('/api/searchtransactions', {
+            const response = await api.post('/searchtransactions', {
                 query: this.searchQuery
             });
 
@@ -222,10 +224,10 @@ export default {
             } else {
                 try {
 
-                    // const response = await axios.post(`/api/deleteonetransaction`,{id:id});
+                    // const response = await api.post(`/deleteonetransaction`,{id:id});
 
                    
-                    const response = await axios.post(`/api/deleteOneTransaction`,{id:id});
+                    const response = await api.post(`/deleteOneTransaction`,{id:id});
 
                     // this.transactions = response.data;
                     if (response.status === 204) {
@@ -244,7 +246,7 @@ export default {
         },
         async getBanks(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.banks = response.data.banks;
                 this.selectedDakhl = this.banks[0].id;
                 // console.log("selected Dakhl", this.selectedDakhl);
@@ -282,13 +284,13 @@ export default {
                       </div>
                       <div class="mb-3 col-lg-2">
                         <label for="email">تاریخ شروع</label>
-                        <date-picker @select="select_start_date" mode="single" type="date" locale="fa" :column="1" required>
+                        <date-picker @select="select_start_date" mode="single" type="date" locale="fa" :column="1" clearable required>
                         </date-picker>
                       </div>
 
                       <div class="mb-3 col-lg-2">
                         <label for="email">تاریخ ختم</label>
-                        <date-picker @select="select_end_date" mode="single" type="date" locale="fa" :column="1" required>
+                        <date-picker @select="select_end_date" mode="single" type="date" locale="fa" :column="1" clearable required>
                         </date-picker>
                       </div>
 

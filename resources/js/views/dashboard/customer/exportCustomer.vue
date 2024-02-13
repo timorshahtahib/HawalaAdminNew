@@ -29,32 +29,32 @@ export default {
       notFound: false,
       searchQuery: '',
       transactionslist: [],
-      orderslist: [],
       filter_rasid_bord:'',
+      typeOfExchange:'',
       orderModel:'',
       currencyModel:'',
       SelectedDakhl:'',
       banks:[],
       currencies:[],
-      orders:[],
       customerName:'',
       currentPage: 1,
       totalPages: 1,
       limit: 10,
-      customerbalances:[]
+      customerbalances:[],
+      isFiltering : false,
     };
   },
   mounted() {
     this.getTransactionbycid();
     this.getCurrency();
-    this.getOrders();
+
     this.filter_rasid_bord='all';
-    // console.log('Customer ID:', this.customerId); // Access the customerId prop
-    // console.log('Custom Balance:', this.customerbalances);
+    this.typeOfExchange = 'all';
   },
   methods: {
     async getTransactionbycid(page = 1) {
       try {
+        this.isLoading=true;
         const response = await api.post(`/customerinfo`, {
           id: this.$route.params.id,
           rasid_bord:this.rasid_bord,
@@ -74,115 +74,50 @@ export default {
         this.customerName = response.data?.customer?.data[0].name;
       } catch (error) {
         console.log(error.message);
-      }
-    },
-    async getOrders() {
-      try {
-        const response = await api.get(`/orders`);
-        this.orders = response.data.orders.data;
-      
-        // console.log(this.orderModel);
-      } catch (error) {
-        console.error('Error fetching orders:', error);
-      } finally {
+      }finally{
         this.isLoading=false;
       }
     },
+ 
     async getCurrency(){
       const response = await api.get('/currencies');
       this.currencies = response.data.currencies.data;
+ 
     },
-
+    change_currency() {
+      this.getBanks(this.currencyModel);
+        },
     async getBanks(id) {
       try {
         const response = await api.get('/getbankbyid/' + id);
         this.banks = response.data.banks;
         this.SelectedDakhl = this.banks[0].id;
+        // console.log("this.banks",this.banks);
       } catch (error) {
         console.log(error.message);
       }
     },
     async filterCustomerExport() {
-      try {
-        const response = await api.post('/exportcustomertopdf',{
-          id: this.$route.params.id,
-          rasid_bord:this.filter_rasid_bord,
-          currency:this.currencyModel
-        });
-        this.transactionslist = response.data.customerExportFilter.data;
-      } catch (error) {
-        console.log(error.message)
-      }
-    },
-    exportToPDF0() {
-      const table = this.$refs.table;
-      html2canvas(table).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const imgWidth = 190; // Adjust as needed
-        const imgHeight = canvas.height * imgWidth / canvas.width;
-        const farsiFont = '../../../../fonts/arial.ttf'; // Replace ... with your base64 font
-        pdf.addFileToVFS('arial.ttf', farsiFont);
-        pdf.setFont('arial');
-        pdf.setFontSize(15);
-            // Set the font and font size
-        pdf.setFont('arial');
-        pdf.setFontSize(12); // Set the font size to 12
-
-        // Set header
-        pdf.setPage(1); // Set the page number to 1
-        pdf.setDrawColor(0); // Set the color for the header
-        pdf.setFontSize(18); // Set the font size for the header
-        pdf.text('My PDF Header', 105, 15, { align: 'center' }); // Text, x, y, options
-
-        // Set footer
-        const pageCount = pdf.internal.getNumberOfPages(); // Get the total number of pages
-        for (let i = 1; i <= pageCount; i++) {
-          pdf.setPage(i); // Set the current page
-          pdf.setFontSize(12); // Set the font size for the footer
-          pdf.text('Page ' + i + ' of ' + pageCount, 105, pdf.internal.pageSize.height - 10, { align: 'center' }); // Text, x, y, options
-        }
-
-        pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-        pdf.save(`${this.customerName}.pdf`);
+    try {
+      // Set isFiltering to true to disable the button
+      this.isFiltering = true;
+      
+      const response = await api.post('/exportcustomertopdf', {
+        id: this.$route.params.id,
+        transaction_type: this.typeOfExchange,
+        rasid_bord: this.filter_rasid_bord,
+        currency: this.currencyModel
       });
-    },
-    exportToPDF1() {
-  const table = this.$refs.table;
-  html2canvas(table).then(canvas => {
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const imgWidth = 190; // Adjust as needed
-    const imgHeight = canvas.height * imgWidth / canvas.width;
-    const farsiFont = '../../../../fonts/arial.ttf'; // Replace ... with your base64 font
-    pdf.addFileToVFS('arial.ttf', farsiFont);
-    pdf.setFont('arial');
-    pdf.setFontSize(12); // Set the font size to 12
-
-    // Set header
-    const header = 'My PDF Header';
-    const headerFontSize = 18;
-    const headerX = pdf.internal.pageSize.getWidth() / 2;
-    const headerY = 15;
-    pdf.setFontSize(headerFontSize);
-    pdf.text(header, headerX, headerY, { align: 'center' });
-
-    // Set footer
-    const pageCount = pdf.internal.getNumberOfPages(); // Get the total number of pages
-    for (let i = 1; i <= pageCount; i++) {
-      pdf.setPage(i); // Set the current page
-      const footerText = `Page ${i} of ${pageCount}`;
-      const footerFontSize = 12;
-      const footerX = pdf.internal.pageSize.getWidth() / 2;
-      const footerY = pdf.internal.pageSize.getHeight() - 10;
-      pdf.setFontSize(footerFontSize);
-      pdf.text(footerText, footerX, footerY, { align: 'center' });
+      
+      this.transactionslist = response.data.customerExportFilter.data;
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      // Ensure to set isFiltering back to false after the function finishes
+      this.isFiltering = false;
     }
-
-    pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-    pdf.save(`${this.customerName}.pdf`);
-  });
-},
+  }
+,
 
 exportToPDF() {
   const tables = [
@@ -259,22 +194,23 @@ exportToPDF() {
                   <div>
                     <div  class="row">
                       <div class="mb-3 col-md-2">
+                        <label for="email">نوع معامله</label>
+                        <select class="form-control form-control-lg  required" v-model="typeOfExchange" >
+                            <option value="all" selected>همه</option>
+                            <option value="rasid">رسید</option>
+                            <option value="bord">برد</option>
+                            <option value="bord">سفارش</option>
+                        </select>
+                      </div>
+                      <div class="mb-3 col-md-2">
                         <label for="email">نوع رسید وبرد</label>
                         <select class="form-control form-control-lg  required" v-model="filter_rasid_bord">
-                            <option value="all">All</option>
+                            <option value="all">همه</option>
                             <option value="rasid">رسید</option>
                             <option value="bord">برد</option>
                         </select>
                       </div>
-                      <div class="col-md-2 col-xs-12">
-                        <label for="supplier">سفارش:</label>
-                        <select class="form-control form-control-lg select2 required"  v-model="orderModel" >
-                            <option disabled selected> سفارش</option>
-                            <option v-for="order in orders" :key="order?.id" :value="order?.id">
-                                {{order?.id}}</option>
-                        </select>
-                        <span class="text-danger error-text currency_error"></span>
-                    </div>
+                  
                         <div class="col-md-2 col-xs-12">
                             <label for="supplier">واحد پول :</label>
                             <select class="form-control form-control-lg select2 required" @change="change_currency" v-model="currencyModel" >
@@ -294,12 +230,20 @@ exportToPDF() {
                         </div>
                         <div class="col-lg-1 align-self-center">
                             <div class="d-grid">
-                           <input
+                           <!-- <input
                              type="button"
                              class="btn btn-primary btn-block"
                              value="جستجو"
                              @click="filterCustomerExport"
-                           />
+                           > -->
+                        
+                           <input
+                           type="button"
+                           class="btn btn-primary btn-block"
+                           value="جستجو"
+                           :disabled="isSearching"
+                           @click="filterCustomerExport"
+                         >
                             </div>
                         </div>
                        

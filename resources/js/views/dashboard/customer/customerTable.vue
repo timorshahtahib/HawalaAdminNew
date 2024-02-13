@@ -320,6 +320,8 @@ export default {
             });
         },
         async storeCustomer() {
+         try {
+            this.isLoading = true;
             this.submitted = true;
             if (this.name && this.phone && this.username && this.password) {
                 const response = await api.post("/customer", {
@@ -361,6 +363,12 @@ export default {
             else {
                 this.isError = true;
                 this.formError = "فیلد ها خالی است";
+            }
+         } catch (error) {
+            console.log(error.message);
+         }finally {
+                this.isLoading = false;
+                console.log("isloading");
             }
             // stop here if form is invalid
         },
@@ -410,21 +418,27 @@ export default {
             }
         },
         async deleteCustomer(id) {
+
             if (!window.confirm('آیا میخواهید که مشتری حذف شود؟')) {
                 return;
             }
             else {
+                
                 try {
                     const response = await api.delete(`/customer/${id}`);
                     this.customers = response.data;
                     if (response.status === 204) {
-                        this.getCustomers();
+                       
                         this.showalert('مشتری با موفقیت حذف شد!', 'موفقانه', 'success');
+                      
                     }
                 }
                 catch (error) {
                     this.showalert('مشتری با موفقیت حذف نشد!', 'ناموفقانه', 'error');
-                }
+                }finally {
+                
+                this.getCustomers();
+            }
             }
         },
         async searchData() {
@@ -465,6 +479,6 @@ export default {
             }
         }
     },
-    components: { Loader }
+   
 }
 </script>

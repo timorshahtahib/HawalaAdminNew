@@ -471,7 +471,7 @@ export default {
                                             </label>
                                             <div class="input-group ">
                                                 <!-- @alireza-ab/vue3-persian-datepicker -->
-                                                <date-picker @select="edit_select" mode="single" type="date" locale="fa" :column="1" required>
+                                                <date-picker @select="edit_select" mode="single" type="date" locale="fa" :column="1" clearable required>
                                                 </date-picker>
                                             </div>
                                             <span class="text-danger error-text afrad_error" v-if="errors.date">{{errors.date[0]}}</span>
@@ -577,7 +577,7 @@ export default {
                                     </label>
                                     <div class="input-group ">
                                         <!-- @alireza-ab/vue3-persian-datepicker -->
-                                        <date-picker @select="select" mode="single" type="date" locale="fa" :column="1" required>
+                                        <date-picker @select="select" mode="single" type="date" locale="fa" :column="1" clearable required>
                                         </date-picker>
                                     </div>
                                     <span class="text-danger error-text afrad_error" v-if="errors.date">{{errors.date[0]}}</span>

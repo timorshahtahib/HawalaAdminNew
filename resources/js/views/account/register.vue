@@ -42,10 +42,7 @@ export default {
             email:this.email,
             password:this.password
          });
-        //  if (this.password !== this.password_confirmation) {
-        //     this.regError = 'رمز عبور و تائید رمز عبور باهم مطابقت ندارند';
-        //     return;
-        // }
+  
          if(response.data.status===true){
           this.showalert("ثبت نام با موفقیت انجام شد", 'موفقانه', 'success');
           this.$router.push('/login');

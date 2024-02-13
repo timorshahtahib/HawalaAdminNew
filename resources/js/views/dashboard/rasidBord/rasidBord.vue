@@ -464,7 +464,7 @@ export default {
                                             </label>
                                             <div class="input-group ">
                                                 <!-- @alireza-ab/vue3-persian-datepicker -->
-                                                <date-picker @select="editSelect" mode="single" type="date" locale="fa" :column="1">
+                                                <date-picker @select="editSelect" mode="single" type="date" locale="fa" clearable :column="1">
                                                 </date-picker>
                                                 <span class="">{{editDate}}</span>
                                             </div>
@@ -574,7 +574,7 @@ export default {
                                         </label>
                                         <div class="input-group ">
                                             <!-- @alireza-ab/vue3-persian-datepicker -->
-                                            <date-picker @select="select" mode="single" type="date" locale="fa" :column="1" required>
+                                            <date-picker @select="select" mode="single" type="date" locale="fa" :column="1" clearable required>
                                             </date-picker>
 
                                         </div>

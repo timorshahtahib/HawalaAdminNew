@@ -277,7 +277,7 @@ export default {
         },
         async getcurrencies() {
             try {
-                await axios.get('/api/currencies').then((response) => {
+                await api.get('/currencies').then((response) => {
                         this.currencies = response.data.currencies;
                     
                     })
@@ -291,7 +291,7 @@ export default {
         },
         async get_edit_currencies() {
            try {
-            const response = await axios.get('/api/currencies');
+            const response = await api.get('/currencies');
             this.edit_currencies = response.data.currencies.data;
            } catch (error) {
             console.log(error.message);
@@ -314,7 +314,7 @@ export default {
             })
         },
         async editfinanceAccount(id) {
-            const response = await axios.get(`/api/finance_account/${id}`);
+            const response = await api.get(`/finance_account/${id}`);
             // console.log("finance Account response",response.data);
             this.editFinance = response.data;
 
@@ -329,7 +329,7 @@ export default {
         },
         async submitEditedForm(id) {
             try {
-                const responseUpdate = await axios.put(`/api/finance_account/${id}`, {
+                const responseUpdate = await api.put(`/finance_account/${id}`, {
                     account_name: this.editAccountName,
                     type: this.editType,
                     currency: this.editCurrency,
@@ -380,7 +380,7 @@ export default {
             } else {
                 try {
                     console.log("inside try");
-                    const response = await axios.delete(`/api/finance_account/${id}`);
+                    const response = await api.delete(`/finance_account/${id}`);
                     this.financeAccounts = response.data;
                     if (response.status === 204) {
                         this.showalert('حساب با موفقیت حذف شد!', 'موفقانه', 'success');
@@ -395,13 +395,13 @@ export default {
         },
 
         async searchData() {
-            const response = await axios.post('/api/searchfinanceaccount', {
+            const response = await api.post('/searchfinanceaccount', {
                 query: this.searchQuery
             });
             this.financeAccounts = response.data;
         },
         async financetypefilter() {
-            const response = await axios.post('/api/financetypefilter', {
+            const response = await api.post('/financetypefilter', {
                 type:this.type_of_banks ,
                 account:this.account,
             });

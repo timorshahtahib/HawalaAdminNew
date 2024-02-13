@@ -136,7 +136,7 @@ const routes = [{
             import ('../views/account/login.vue')
     },
     {
-        path: '/auth/register',
+        path: '/register',
         name: 'register',
         meta: { title: 'Register' },
         component: () =>

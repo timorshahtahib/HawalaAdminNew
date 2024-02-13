@@ -265,29 +265,26 @@ class CustomerController extends Controller
                 try {
                     $limit = $request->has('limit') ? $request->limit : 10;
                     $id = $request->id;
+                    $typeOfExchange = $request->transaction_type;
                     $rasid_bord = $request->rasid_bord;
-                    // $order_id = $request->order_id;
                     $currency = $request->currency;
-                    // $bank_acount_id = $request->bank_acount_id;
+               
+                    $customerExportFilter = Transaction::where('status', '1')->where('ref_id',$id)->orderBy('id', 'desc');
                 
-                    // Building the query
-                    $customerExportFilter = Transaction::where('status', '1')->where('ref_id',$id);
-                    // ->where('ref_id',$id);
-                
+                    if ($typeOfExchange!='all') {
+                        
+                        $customerExportFilter->where('transaction_type', $typeOfExchange);
+                    }
                     if ($rasid_bord!='all') {
                         
                         $customerExportFilter->where('rasid_bord', $rasid_bord);
                     }
                 
-                    // if ($order_id) {
-                    //     $customerExportFilter->where('order_id', $order_id);
-                    // }
+              
                     if ($currency) {
                         $customerExportFilter->where('currency',  $currency);
                     }
-                    // if ($bank_acount_id) {
-                    //     $customerExportFilter->where('bank_acount_id',  $bank_acount_id);
-                    // }
+                  
                 
             
                     $result = $customerExportFilter->with(['financeAccount','customer','tr_currency','bank_account'])->paginate($limit);

@@ -225,13 +225,13 @@ export default {
                     <div class="row">
                         <div class="mb-3 col-lg-2">
                             <label for="email">تاریخ شروع</label>
-                            <date-picker @select="select_start_date" mode="single" type="date" locale="fa" :column="1" >
+                            <date-picker @select="select_start_date" mode="single" type="date" locale="fa" :column="1" clearable>
                             </date-picker>
                           </div>
     
                           <div class="mb-3 col-lg-2">
                             <label for="email">تاریخ ختم</label>
-                            <date-picker @select="select_end_date" mode="single" type="date" locale="fa" :column="1" >
+                            <date-picker @select="select_end_date" mode="single" type="date" locale="fa" :column="1" clearable>
                             </date-picker>
                           </div>
     
