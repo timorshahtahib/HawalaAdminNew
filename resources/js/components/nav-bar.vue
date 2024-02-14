@@ -409,7 +409,7 @@ export default {
           </b-dropdown-item>
         </b-dropdown>
 
-        <b-dropdown
+        <!-- <b-dropdown
           class="d-none d-lg-inline-block noti-icon"
           menu-class="dropdown-menu-lg dropdown-menu-end"
           right
@@ -463,7 +463,7 @@ export default {
               </div>
             </div>
           </div>
-        </b-dropdown>
+        </b-dropdown> -->
 
         <div class="dropdown d-none d-lg-inline-block ms-1">
           <button type="button" class="btn header-item noti-icon" @click="initFullScreen">
@@ -471,7 +471,9 @@ export default {
           </button>
         </div>
 
-        <b-dropdown
+
+        <!-- notification -->
+        <!-- <b-dropdown
           right
           menu-class="dropdown-menu-lg p-0 dropdown-menu-end"
           toggle-class="header-item noti-icon"
@@ -578,7 +580,7 @@ export default {
               <span key="t-view-more"> {{ $t('navbar.dropdown.notification.button')}} </span>
             </a>
           </div>
-        </b-dropdown>
+        </b-dropdown> -->
 
         <b-dropdown right variant="black" toggle-class="header-item" menu-class="dropdown-menu-end">
           <template v-slot:button-content>
@@ -592,24 +594,12 @@ export default {
           </template>
           <!-- item-->
       
-          <b-dropdown-item href="/contacts/profile">
+          <!-- <b-dropdown-item href="/contacts/profile">
             <i class="bx bx-user font-size-16 align-middle me-1"></i>
             {{ $t('navbar.dropdown.henry.list.profile') }}
-          </b-dropdown-item>
+          </b-dropdown-item> -->
         
-          <b-dropdown-item href="javascript: void(0);">
-            <i class="bx bx-wallet font-size-16 align-middle me-1"></i>
-            {{ $t('navbar.dropdown.henry.list.mywallet') }}
-          </b-dropdown-item>
-          <b-dropdown-item class="d-block" href="javascript: void(0);">
-            <span class="badge bg-success float-end">11</span>
-            <i class="bx bx-wrench font-size-16 align-middle me-1"></i>
-            {{ $t('navbar.dropdown.henry.list.settings') }}
-          </b-dropdown-item>
-          <b-dropdown-item href="javascript: void(0);">
-            <i class="bx bx-lock-open font-size-16 align-middle me-1"></i>
-            {{ $t('navbar.dropdown.henry.list.lockscreen') }}
-          </b-dropdown-item>
+      
           <b-dropdown-divider></b-dropdown-divider>
           <a href="javascript:void(0)" @click="logout()" class="dropdown-item text-danger">
             <i class="bx bx-power-off font-size-16 align-middle me-1 text-danger"></i>

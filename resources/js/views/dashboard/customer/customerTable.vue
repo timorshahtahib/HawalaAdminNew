@@ -220,6 +220,9 @@ import Loader from '../../loader/loader.vue';
 import api from '../../../services/api';
 
 export default {
+    components:{
+        Loader
+    },
     name: 'customerTable',
     data() {
         return {

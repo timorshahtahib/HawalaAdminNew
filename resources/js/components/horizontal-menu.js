@@ -100,6 +100,13 @@ export const menuItems = [{
                 parentId: 2,
 
             },
+            {
+                id: 7,
+                label: "روزنامچه",
+                link: "/report/rooznachah",
+                parentId: 2,
+
+            },
         ]
     },
     {
