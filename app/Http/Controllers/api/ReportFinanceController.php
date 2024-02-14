@@ -11,6 +11,7 @@ use App\Models\Transaction;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class ReportFinanceController extends Controller
@@ -240,6 +241,30 @@ class ReportFinanceController extends Controller
        
             
 
+            public function getRooznamcha(Request $request){
+                try {
+                    $start_date = $request->current_date;
+                    $limit = $request->has('limit') ? $request->limit : 10;
+        
+                    $transaction = Transaction::where('status', '=', '1')->where('date', $start_date)
+                    ->with(['financeAccount','customer','tr_currency','eq_currency','bank_account','referencedTransaction'])->orderBy('id','desc')
+                    ->paginate($limit);
+        
+                    if ($transaction->isEmpty()) {
+                        return response()->json(['error' => 'Transaction not found'], 404);
+                    }
+                    $total_pages= $transaction->lastPage();
+                    return response()->json(['transactions' =>$transaction,'total_pages'=>$transaction]);
+                }
+                catch (Exception $e) {
+                    return response()->json(['error' => $e->getMessage()], 500);
+                }
+            }
+
+           
+           
+
+    
            
            
           

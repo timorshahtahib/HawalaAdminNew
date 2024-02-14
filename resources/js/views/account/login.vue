@@ -148,7 +148,7 @@ export default {
           <div class="mt-5 text-center">
             <p>
               آیا حساب ندارید؟
-              <router-link to="/auth/register" class="fw-medium text-primary">حالا ثبت نام نمائید</router-link>
+              <router-link to="/register" class="fw-medium text-primary">حالا ثبت نام نمائید</router-link>
             </p>
             <p>
               © {{ new Date().getFullYear() }}

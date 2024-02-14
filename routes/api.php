@@ -162,6 +162,7 @@ Route::middleware('auth:api')->group(function(){
     // for exporting the customer transaction table
     Route::get('/transactions/pdf', [TransactionController::class, 'exportTransactionsToPDF'])->name('transactions.pdf');
     // rooznacha 
+    Route::post('/getrooznamchah',[ReportFinanceController::class, 'getRooznamcha']);
     Route::post('/filterrooznamchah',[ReportFinanceController::class, 'filterRooznachah']);
 });
 

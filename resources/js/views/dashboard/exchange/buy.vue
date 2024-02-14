@@ -538,6 +538,7 @@ export default {
                                     </select>
                                     <span class="text-danger error-text dakhl_error"></span>
                                 </div>
+                                
                                <div class="row">
                                     <span class="border-bottom w-100 font-size-16">
                                         پول خارج شده از دخل

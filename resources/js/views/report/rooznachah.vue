@@ -9,6 +9,8 @@ import 'vue-select/dist/vue-select.css';
 import DatePicker from '@alireza-ab/vue3-persian-datepicker';
 import Loader from "../loader/loader.vue";
 import api from '../../services/api';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 /**
  * Rasidbord component
  */
@@ -41,16 +43,17 @@ export default {
             rasid_bord:'',
             selectedCustomer:'',
             currencyModel:'',
-            SelectedDakhl:'',
-           
-            start_date: new Date(),
+            SelectedDakhl: '',
+
+            start_date: new Date().toISOString().slice(0, 10), // Set today's date as default
+            // start_date: '', // Set today's date as default
+
             end_date:'',
             customers:[],
             // Currency V-Model and arrays
             currencies: [],
-          
     
-        
+            // date: new Date(),
             // pagination
             currentPage: 1,
             totalPages: 1,
@@ -62,34 +65,25 @@ export default {
         this.getCurrency();
         this.getTransaction();
         this.getCustomers();
-        this.getFinanceAccount()
-        this.transaction_type='all'
-        this.rasid_bord='all'
-        this.getTodayResult();
-    
+        this.getFinanceAccount();
+        this.transaction_type='all';
+        this.rasid_bord='all';
     },
 
     methods: {
 
 
-        getTodayResult(){
-                this.start_date = new Date();
-                const today = new Date();
-                const formattedDate = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
-                this.start_date = formattedDate;
-                console.log(this.start_date);
-                // console.log("hello");
-        },
-     
+    
         //   this is for getting the jalali date value
         select(date) {
             this.start_date = date.toString();
+            
 
         },
         
         select_end_date(date) {
             this.end_date =  date.toString();
-            console.log('date.toString()',date.toString());
+            // console.log('date.toString()',date.toString());
         },
 
         async getCustomers() {
@@ -134,11 +128,11 @@ export default {
         },
    
         async getTransaction(page=1) {
-            const response = await api.get(`/transaction?page=${page}&limit=${this.limit}`);
+            console.log("start_date",this.start_date);
+            const response = await api.post(`/getrooznamchah?page=${page}&limit=${this.limit}`,{current_date:'1402/11/25'});
             this.transactions = response.data.transactions.data;
             this.totalPages = response.data.transactions.last_page;
             this.currentPage = page; // Update the current page
-
         },
         prevPage() {
             if (this.currentPage > 1) {
@@ -158,10 +152,15 @@ export default {
             this.transactions = response.data;
         },
         change_currency() {
-            this.getBanks(this.currencyModel);
+            // this.getBanks(this.currencyModel);
+            if (this.currencyModel) {
+               this.getBanks(this.currencyModel);
+                }else{
+                    console.log("Error in change_currency")
+                }
         },
 
-  async getBanks(id) {
+     async getBanks(id) {
             try {
                 const response = await api.get('/getbankbyid/' + id);
                 this.banks = response.data.banks;
@@ -187,7 +186,7 @@ export default {
             });
           
             this.transactions = response.data.transactions;
-            console.log("filterRooznamchah",this.transactions);
+            // console.log("filterRooznamchah",this.transactions);
         },
 
         displayTransactionType(transactionType) {
@@ -206,7 +205,42 @@ export default {
 
                 return 'کمیشن';
             }
-        }
+        },
+        exportToPDF() {
+                // Select the table you want to export
+                const table = this.$refs.table1;
+
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgWidth = 190; // Adjust as needed
+                const farsiFont = '../../../../fonts/arial.ttf'; // Replace ... with your base64 font
+                pdf.addFileToVFS('arial.ttf', farsiFont);
+                pdf.setFont('arial');
+                pdf.setFontSize(12); // Set the font size to 12
+
+                html2canvas(table).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const imgHeight = canvas.height * imgWidth / canvas.width;
+                    
+                    // Add image of the table to PDF
+                    pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+
+                    // Set footer
+                    const pageCount = pdf.internal.getNumberOfPages(); // Get the total number of pages
+                    for (let i = 1; i <= pageCount; i++) {
+                    pdf.setPage(i); // Set the current page
+                    const footerText = `Page ${i} of ${pageCount}`;
+                    const footerFontSize = 12;
+                    const footerX = pdf.internal.pageSize.getWidth() / 2;
+                    const footerY = pdf.internal.pageSize.getHeight() - 10;
+                    pdf.setFontSize(footerFontSize);
+                    pdf.text(footerText, footerX, footerY, { align: 'center' });
+    }
+
+    // Save PDF
+    pdf.save("rooznamchah.pdf");
+  });
+}
+
 
 
    
@@ -261,8 +295,8 @@ export default {
                             <label for="supplier">انتخاب دخل :
                             </label>
                             <select class="form-control form-control-lg select2 required" v-model="SelectedDakhl">
-                                <option disabled selected>ابتدا واحد پول را انتخاب کنید.</option>
-                                <option v-for="bank in banks" :key="bank.id" :value="bank.id">{{bank.account_name}}</option>
+                                <option >ابتدا واحد پول را انتخاب کنید.</option>
+                                <option  v-for="bank in banks" :key="bank.id" :value="bank.id">{{bank.account_name}}</option>
                             </select>
                             <span class="text-danger error-text dakhl_error"></span>
                         </div>
@@ -272,9 +306,12 @@ export default {
                     <div class="row">
                         <div class="mb-3 col-lg-2">
                             <label for="email">تاریخ شروع</label>
-                           
-                            <date-picker @select="select" mode="single" type="date" locale="fa" :column="1" required clearable>
+
+                            <date-picker v-model="start_date" mode="single" type="date" locale="fa" :column="1" clearable>
                             </date-picker>
+                          
+                            <!-- <date-picker @select="start_date" mode="single" type="date" locale="fa" :column="1"  clearable>
+                            </date-picker> -->
                           </div>
     
                           <div class="mb-3 col-lg-2">
@@ -314,17 +351,24 @@ export default {
             <div class="card">
 
                 <div class="card-body">
-
-                    <div class="col-sm-4">
-
-                        <div class="search-box me-2 mb-2 d-inline-block">
-
-                            <div class="position-relative">
-                                <input type="text" v-model="searchQuery" class="form-control" placeholder="جستجوی مشتری..." @input="searchData" />
-                                <i class="bx bx-search-alt search-icon"></i>
+                
+                        <div class="row">
+                            <div class="col-md-10">
+                                <div class="search-box me-2 mb-2 d-inline-block">
+        
+                                    <div class="position-relative">
+                                    <!-- <div class="position-relative"> -->
+                                        <input type="text" v-model="searchQuery" class="form-control" placeholder="جستجوی مشتری..." @input="searchData" />
+                                        <i class="bx bx-search-alt search-icon"></i>
+                                    </div>
+                                </div>
+                              
+                            </div>
+                            <div class="col-md-2 flex space-around">
+                                <button class="btn btn-primary" @click="exportToPDF">خروجی گرفتن</button>
                             </div>
                         </div>
-                    </div>
+                 
                     <div class="row">
                         <div class="col-sm-12 ">
                             <div v-if="isLoading">
@@ -332,7 +376,7 @@ export default {
                               </div>
                           <div v-else>
                             <div class="table-responsive " v-if="transactions?.length">
-                                <table class="table table-centered table-nowrap text-start">
+                                <table class="table table-centered table-nowrap text-start" ref="table1">
                                     <thead>
                                         <tr>
                                            
@@ -353,7 +397,7 @@ export default {
                                       
                                           
                                             <td>{{transaction?.date}}</td>
-                                            <td class="badge  font-size-12" :class="transaction.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">{{ 
+                                            <td class="badge   " :class="transaction.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">{{ 
                                                 displayTransactionType(transaction.transaction_type)}}</td>
                                             <td v-if="transaction.customer!=null">{{ transaction.customer?.name}}</td>
                                             <td v-else>{{ transaction.finance_account?.account_name}}</td>
