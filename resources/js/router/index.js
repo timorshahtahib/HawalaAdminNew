@@ -96,10 +96,10 @@ const routes = [{
             import ('../views/report/bankDetails.vue')
     },
     {
-        path: '/report/rooznachah',
+        path: '/report/rooznamchah',
         meta: { authRequired: true, title: 'روزنامچه' },
         component: () =>
-            import ('../views/report/rooznachah.vue')
+            import ('../views/report/rooznamchah.vue')
     },
     {
         path: '/exchange/buy',

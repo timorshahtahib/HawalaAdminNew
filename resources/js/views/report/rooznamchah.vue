@@ -1,6 +1,6 @@
 <script>
 import Layout from "../../layouts/main.vue";
-import PageHeader from "../../../js/components/page-header.vue";
+import PageHeader from "../../components/page-header.vue";
 
 // import SweetAlert from "../../../SweetAlert.vue";
 import Swal from "sweetalert2";
@@ -72,8 +72,6 @@ export default {
 
     methods: {
 
-
-    
         //   this is for getting the jalali date value
         select(date) {
             this.start_date = date.toString();
