@@ -6,82 +6,86 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+ 
+    public function index(Request $request)
     {
         try {
-            $user = User::all();
+            $limit = $request->has('limit') ? $request->limit : 10;
+    
+            $user = User::where('status',1)->orderBy('id', 'desc')->paginate($limit);
     
             if ($user->isEmpty()) {
-                return response()->json(['error' => 'user not found'], 404);
+                return response()->json(['کاربری برای نمایش وجود ندارد']);
             }
-            return response()->json($user);
-        } 
-        catch (Exception $e) {
+    
+            $totalPages = $user->lastPage();
+    
+            return response()->json(['users' => $user, 'total_pages' => $totalPages]);
+        } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $validated =$request->validate([
-                'id'=>'required',
-                'name'=>'required',
-                'email'=>'required',
-                'email_verified_at'=>'nullable',
-                'password'=>'required',
-                'remember_token'=>'nullable'
-                      
-        ]);
-        $user = User::create($request->all());
-        return response()->json($user);
-      
+   
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show($id)
     {
-        return response()->json($user->id,200);
+        $user = User::findOrFail($id);
+        return response()->json($user);
+
+        // return response()->json("Hello");
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request,User $user)
+    public function updateUser(Request $request,User $user)
     {
-    
-        $validated =$request->validate([
-            'id'=>'required',
-            'name'=>'required',
-            'email'=>'required',
-            'email_verified_at'=>'nullable',
-            'password'=>'required',
-            'remember_token'=>'nullable'
-                  
-    ]);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
+            'email' => 'required|string|email|max:255|unique:users',
+            'role' => 'required', // Fixed typo here
+        ], [
+            'name.required' => 'نام ضروری میباشد',
+            'email.required' => 'ایمیل ضروری میباشد',
+            'email.unique' => 'ایمیل از قبل موجود میباشد',
+            'role.required' => 'تعین سطح دسترسی ضروری میباشد', // Fixed typo here
+        ]);
+       
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'error' => $validator->errors()->toArray()]);
+        }
+
         $user->update($request->all());
         return response()->json($user,201);
-        // $user['password']= bcrypt(array_get($validated, 'password'));
+      
     }
+  
+
+
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request,$id)
+    public function deleteUser(Request$request)
     {
-        $user = User::findOrFail($id);
-        $user->field_name = $request->input('status');
-    
+        $user = User::findOrFail($request->id);
+        $user->status = $request->input('status');
         $user->update(['status'=>0]);
         return response()->json(['message' => 'User deleted successfully', 'data' => $user], 204);
     }

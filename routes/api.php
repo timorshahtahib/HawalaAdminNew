@@ -33,7 +33,8 @@ use App\Http\Controllers\api\UserController;
 
 
 Route::post('/login', [APIController::class, 'login']);
-Route::post('/register', [APIController::class, 'register']);
+Route::post('/loginCustomer', [APIController::class, 'loginCustomer']);
+
 Route::post('/forget-password', [APIController::class, 'forget_pass']);
 Route::post('/reset-password', [APIController::class, 'reset_pass']);
 
@@ -42,13 +43,12 @@ Route::post('/reset-password', [APIController::class, 'reset_pass']);
 
 Route::middleware('auth:api')->group(function(){
 
-// });
-// Route::group([
-//     "middleware"=>["auth:api"]
-// ],function(){
-// for logout user
+    Route::post('/register', [APIController::class, 'register']);
+    
     Route::post('/logout', [APIController::class, 'logout']);
     Route::apiResource('user', UserController::class);
+    Route::put('/updateuser', [UserController::class,'updateUser']);
+    Route::post('/deleteuser', [UserController::class,'deleteUser']);
     
     Route::apiResource('customer',CustomerController::class);
     Route::post('/updatecustomer', [CustomerController::class, 'updateCustomer']);

@@ -108,7 +108,7 @@ export default {
 
           <div class="page-title-right">
             <ol class="breadcrumb mb-0">
-              <li class="breadcrumb-item active">Welcome to Skote Dashboard</li>
+              <li class="breadcrumb-item active">Welcome to hawala Dashboard</li>
             </ol>
           </div>
         </div>

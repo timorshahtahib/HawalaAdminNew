@@ -11,6 +11,12 @@ const routes = [{
             import ('../views/home.vue'),
     },
     {
+        path: '/dashboard/usermangement',
+        meta: { authRequired: true, title: 'Dashboard' },
+        component: () =>
+            import ('../views/user/usermangement.vue')
+    },
+    {
         path: '/dashboard/customer',
         meta: { authRequired: true, title: 'Dashboard' },
         component: () =>

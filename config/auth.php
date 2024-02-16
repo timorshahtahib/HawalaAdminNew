@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Customer;
+
 return [
 
     /*
@@ -47,6 +49,10 @@ return [
             'expire_in' => 60, 
        
         ],
+        'customer' => [
+            'driver' => 'passport',
+            'provider' => 'customer',
+        ],
     ],
  
     /*
@@ -72,10 +78,12 @@ return [
             'model' => App\Models\User::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'customer' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Customer::class
+        ],
+
+      
     ],
 
     /*
@@ -100,6 +108,8 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
+    
+        
     ],
 
     /*

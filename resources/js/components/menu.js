@@ -8,9 +8,15 @@ export const menuItems = [{
         label: "خانه",
         icon: "bx-home-circle",
         subItems: [{
-                id: 3,
+                id: 2,
                 label: "menuitems.dashboards.list.default",
                 link: "/",
+                parentId: 2
+            },
+            {
+                id: 3,
+                label: "مدیریت کاربران",
+                link: "/dashboard/usermangement",
                 parentId: 2
             },
             {

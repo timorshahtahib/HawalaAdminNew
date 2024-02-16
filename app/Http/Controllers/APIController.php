@@ -26,40 +26,43 @@ public function guard()
 {
     return Auth::guard();
 }
-    public function register(Request $request)
-    {
-        // Passport::ignoreRoutes();
-            try {
-                $validator = Validator::make($request->all(), [
-                    'name' => 'required|string',
-                    'email' => 'required|string|email|max:255|unique:users',
-                    'password' =>'required|min:8|max:255',
-                   ],
-                   [
-                    'name.required' => 'نام ضروری میباشد',
-                    'email.required' => 'ایمیل ضروری میباشد',
-                    'email.unique' => 'ایمیل از قبل موجود میباشد',
-                    'password.required' => 'رمز عبور ضروری میباشد',
-                    'password.min' => 'رمز عبور باید بیشتر از8 کاراکتر باشد',
-                ]
-                );
-            
-                if (!$validator->passes()) {
-                    return response()->json(['status'=>false,'error'=>$validator->errors()->toArray()]);
-                }
-                $user = User::create([
-                    'name' => $request->name,
-                    'email' => $request->email,
-                    'password' => Hash::make($request->password),
-                ]);
-            
-                return response()->json(['status'=>true,'message'=>'کاربر با موفقیت ثبت شد!'],200);
-            
-            } catch (Throwable $e) {
-                return response()->json(['status'=>false,$e->getMessage()]);
-            }
+public function register(Request $request)
+{
+    try {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|min:8|max:255',
+            'role' => 'required', // Fixed typo here
+        ], [
+            'name.required' => 'نام ضروری میباشد',
+            'email.required' => 'ایمیل ضروری میباشد',
+            'email.unique' => 'ایمیل از قبل موجود میباشد',
+            'password.required' => 'رمز عبور ضروری میباشد',
+            'password.min' => 'رمز عبور باید بیشتر از 8 کاراکتر باشد',
+            'role.required' => 'تعین سطح دسترسی ضروری میباشد', // Fixed typo here
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'error' => $validator->errors()->toArray()]);
+        }
+
+        // dd($request->all());
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
+        ]);
+
+        return response()->json(['status' => true, 'message' => 'کاربر با موفقیت ثبت شد!', 'new_user' => $user], 200);
+
+    } catch (Throwable $e) {
+        return response()->json(['status' => false, "message"=>$e->getMessage()]);
     }
+}
+
 
  
     public function login(Request $request)
@@ -83,7 +86,31 @@ public function guard()
                     "error" => "خطا در ایجاد توکن"
                 ]);
             }
-        } else {
+        
+        
+        
+        } 
+
+        // If login attempt for user fails, try with customers table
+    // if (auth('customer')->attempt($credentials)) {
+    //     $customer = auth('customer')->user();
+    //     $token = $customer->createToken('myToken')->accessToken;
+    //     if ($token) {
+    //         return response()->json([
+    //             "status" => true,
+    //             "message" => "ورود با موفقیت انجام شد",
+    //             "access_token" => $token
+    //         ]);
+    //     } else {
+    //         return response()->json([
+    //             "status" => false,
+    //             "error" => "خطا در ایجاد توکن"
+    //         ]);
+    //     }
+    // }
+        
+        
+        else {
             return response()->json([
                 "status" => false,
                 "error" => "ایمیل یا رمز عبور اشتباه است"
@@ -91,6 +118,29 @@ public function guard()
         }
     }
 
+
+    public function loginCustomer(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'username' => 'required',
+            'password' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
+        $credentials = request(['username ', 'password']);
+
+        if (Auth::guard('customer')->attempt($credentials)) {
+            $customer = Auth::guard('customer');
+            $accessToken = $customer->createToken('myToken')->accessToken;
+
+            return response()->json(['access_token' => $accessToken], 200);
+        } else {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
+    }
     public function logout(Request $request) {
         if (Auth::guard('api')->check()) {
             $accessToken = Auth::guard('api')->user()->token();

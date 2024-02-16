@@ -64,75 +64,7 @@ class IncomeExpController extends Controller
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    // public function store(Request $request)
-    // {
 
-    //     // $validator = Validator::make($request->all(), [
-    //     //     // 'id' => 'required|max:20',
-    //     //     'type' => 'required|in:expense,income',
-    //     //     'amount' => 'required',
-    //     //     'currency'=>'required|max:20',
-    //     //     'amount_equal' => 'nullable',
-    //     //     'currency_equal' => 'nullable|max:20',
-    //     //     'date'=>'required|max:20',
-    //     //     'transaction_id' => 'nullable|max:20',
-    //     //     'finance_acount_id'=>'required|max:20',
-    //     //     'user_id' => 'required|max:200',
-    //     //     'ref_type'=>'required|max:20',
-    //     //     'desc'=>'nullabel',
-    //     //     'state'=>'reqiured|in:pending,payed,unpaid',
-    //     // ],
-    //     // [
-    //     //     'type.required' =>'نوعیت حساب ضروری میباشد',
-    //     //     'amount.required' =>'لطفا مقداری را وارد نمائید',
-    //     //     'currency.required' =>'انتخاب واحد پولی ضروری میباشد',
-    //     //     'date.required' =>'لطفا تاریخ را انتخاب نمائید',
-    //     //     'finance_acount_id.required' =>'فایننس اکانت آیدی ضروری میباشد',
-    //     //     'user_id.required' =>'آیدی کاربر ضروری میباشد',
-    //     //     'ref_type.required' =>'آیدی ریفرنس ضروری میباشد',
-    //     // ]);
-       
-    //     //     if($validator->fails()){
-    //     //         return response()->json(['error'=>$validator->errors()->toArray(),]);
-    //     //     }
-    //     //     else{
-              
-    //         $IncomeExp_Values = [
-    //         'type' => $request->type,
-    //         'amount' => $request->amount,
-    //         'currency'=>$request->currency,
-    //         'amount_equal' => $request->amount_equal,
-    //         'currency_equal' => $request->currency_equal,
-    //         'date'=>$request->date,
-    //         'transaction_id' => $request->transaction_id,
-    //         'finance_acount_id'=>$request->finance_acount_id,
-    //         'user_id' => $request->user_id,
-    //         'ref_type'=>$request->ref_type,
-    //         'state'=>$request->state,
-    //         'desc'=>$request->desc,
-                
-    //         ];
-
-    //         $incomeEpx_id = IncomeExp::insertGetId($IncomeExp_Values);
-    //             if($incomeEpx_id){
-    //                 $update_values = ['incomeExp_id'=>$incomeEpx_id,];
-    //                 $output_data = Transaction::where('id',$incomeEpx_id)->with(['expense_bank','customer','expense_currency'])->first();
-    //             }
-    //             return response()->json(
-    //                 [
-    //                 'status'=>true,
-    //                 'message' => 'با موفقیت ثبت شد', 'new_data' => $output_data], 201);
-           
-            
-    //                 // }
-    // }
-
-    /**
-     * Display the specified resource.
-     */
     public function showExpens($id)
     {
         // $expense = IncomeExp::find($id);

@@ -322,15 +322,14 @@ export default {
                 confirmButtonText: 'بستن'
             });
         },
-        async storeCustomer() {
+        async storeCustomer444() {
          try {
             this.isLoading = true;
             this.submitted = true;
-            if (this.name && this.phone && this.username && this.password) {
+            if (this.name && this.email && this.password ) {
                 const response = await api.post("/customer", {
                     name: this.name,
-                    last_name: this.last_name,
-                    phone: this.phone,
+                    email: this.email,
                     username: this.username,
                     password: this.password,
                     image: this.image,
@@ -373,8 +372,9 @@ export default {
                 this.isLoading = false;
                 console.log("isloading");
             }
-            // stop here if form is invalid
+           
         },
+        
         async editCustomer(id) {
             const response = await api.get(`/customer/${id}`);
             this.editCust = response.data.customer;

@@ -9,21 +9,27 @@ export const menuItems = [{
                 parentId: 2
             },
             {
-
                 id: 3,
+                label: "مدیریت کاربران",
+                link: "/dashboard/usermangement",
+                parentId: 2
+            },
+            {
+
+                id: 4,
                 label: "مشتریان",
                 icon: "bx-customer",
                 link: "/dashboard/customer",
 
             },
             {
-                id: 4,
+                id: 5,
                 label: "فایننس اکانتها",
                 icon: "bx-file",
                 link: "/dashboard/finance_account"
             },
             {
-                id: 7,
+                id: 6,
                 label: "واحد پولی",
                 link: "/dashboard/currency",
                 parentId: 2
@@ -31,7 +37,7 @@ export const menuItems = [{
         ]
     },
     {
-        id: 19,
+        id: 7,
         label: "سفارشات",
         icon: "bx-dollar",
         subItems: [{
@@ -56,7 +62,7 @@ export const menuItems = [{
                 link: "/dashboard/pendingorder"
             },
             {
-                id: 9,
+                id: 10,
                 label: "سفارشات رد شده",
                 icon: "bx-file",
                 link: "/dashboard/rejectorder"
@@ -65,7 +71,7 @@ export const menuItems = [{
     },
 
     {
-        id: 19,
+        id: 11,
         label: "رسید و بردها",
         icon: "bx-dollar",
         subItems: [{
@@ -76,7 +82,7 @@ export const menuItems = [{
 
             },
             {
-                id: 9,
+                id: 12,
                 label: "رسید برد",
                 icon: "bx-file",
                 link: "/dashboard/rasidbord"
@@ -84,24 +90,24 @@ export const menuItems = [{
         ]
     },
     {
-        id: 19,
+        id: 13,
         icon: 'bxs-report',
         label: "گزارشات",
         subItems: [{
-                id: 6,
+                id: 1,
                 label: "گزارش بانک ها",
                 link: "/report/financereport",
                 parentId: 2
             },
             {
-                id: 7,
+                id: 2,
                 label: "قرض ها و رسیدها",
                 link: "/report/borrowpaid",
                 parentId: 2,
 
             },
             {
-                id: 7,
+                id: 3,
                 label: "روزنامچه",
                 link: "/report/rooznachah",
                 parentId: 2,
@@ -110,24 +116,24 @@ export const menuItems = [{
         ]
     },
     {
-        id: 19,
+        id: 14,
         label: "تبادله",
         icon: "bx-dollar",
         subItems: [{
-                id: 6,
+                id: 1,
                 label: "خرید",
                 link: "/exchange/buy",
                 parentId: 2
             },
             {
-                id: 7,
+                id: 2,
                 label: "فروش",
                 link: "/exchange/sale",
                 parentId: 2,
 
             },
             {
-                id: 8,
+                id: 3,
                 label: "انتقال",
                 link: "/exchange/transfer",
                 parentId: 2,

@@ -45,9 +45,8 @@ export default {
             currencyModel:'',
             SelectedDakhl: '',
 
-            start_date: new Date().toISOString().slice(0, 10), // Set today's date as default
-            // start_date: '', // Set today's date as default
-
+            // start_date: new Date().toISOString().slice(0, 10), // Set today's date as default
+            start_date: '', 
             end_date:'',
             customers:[],
             // Currency V-Model and arrays
@@ -387,7 +386,7 @@ export default {
                                             
                                             <th class="text-center">تفصیلات</th>
                                             <th class="text-center">نمبر چک</th>
-                                            <th class="text-center">توسط</th>                                      
+                                            <!-- <th class="text-center">توسط</th>                                       -->
                                         </tr>
                                     </thead>
                                     <tbody class="text-center">
@@ -408,7 +407,7 @@ export default {
                                             </td>
                                            <td>{{transaction.desc}}</td>
                                            <td>{{transaction.check_number}}</td>
-                                            <td>{{transaction.user_id}}</td>
+                                            <!-- <td>{{transaction.user_id}}</td> -->
 
 
                                         </tr>
