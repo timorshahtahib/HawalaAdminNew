@@ -78,7 +78,6 @@
             this.users = response.data.users.data;
             this.totalPages = response.data.users.last_page;
             this.currentPage = page; // Update the current page
-            console.log("status",this.users[0].status);
           
            } catch (error) {
             console.log(error.message);
@@ -171,85 +170,80 @@
         
         },
 
-        async submitUpdateUser(){
-           
-            this.editProcessing = true;
+   
+        async submitUpdateUser(id) {
+      
+            console.log("editRole",this.editRole);
             try {
                 const response = await api.post('/updateuser', {
                     id:this.user.id,
                     name:this.editName,
                     email:this.editEmail,
-                    role:this.editrole
+                    role:this.editRole
                 });
-
-                console.log("response",response.data.error);
-
+                    
                 if (response.data != null) {
+                    console.log('response.data != null')
                     if (response.data.status === false) {
-                        console.log("response.data.status === false",response.data.error);
-                        if (response.data.errors != null) {
+                        if (response.data.message != null) {
+                            this.showalert(response.data.message, "error", "error");
+                        } else {
                             this.errors = response.data.error;
-                            this.editNameError = this.errors.name;
-                            this.editEmailError = this.errors.email;
-                            this.editPasswordError = this.errors.password;
-                            this.editroleError = this.errors.role;
-                            console.log("response.data.message != null");
+                            console.log("Errors", this.errors);
+                            console.log("status false");
                         }
-                       
-                    }
-                    else {
+
+                    } else {
+  
                         this.editerrors = {};
                         this.editName = '';
                         this.editEmail = '';
                         this.editrole = '';
-                        console.log("response.data.new_user");
                         this.showeditModal = false;
-                        this.users.unshift(response.data.new_user);
-                        this.showalert("کاربر با موفقیت ثبت شد!", '', 'success');
+                        this.getUser();
+                        this.showalert("حساب با موفقبت ویرایش شد", "", "success");
                     }
+
                 }
- 
-         } catch (error) {
-            console.log(error.message);
-         }finally{
-        this.editProcessing = false
-         }
-
-
-
+            } catch (error) {
+                console.log(error);
+                this.showalert('حساب با موفقیت ویرایش نشد!', "", "error");
+            }
+            
+            
 
         },
-
-    
-
-
         async deleteUser(id) {
-            if (!window.confirm('آیا میخواهید که کاربر حذف شود؟')) {
+            if (!window.confirm('آیا میخواهید که حساب حذف شود؟')) {
                 return;
             } else {
                 try {
-                   
+                    console.log("inside try");
                     const response = await api.post('/deleteuser',{id:id});
-                            console.log("id",id);
+                    this.financeAccounts = response.data;
                     if (response.status === 204) {
-                        this.showalert('کاربر با موفقیت حذف شد!', 'موفقانه', 'success');
+                        this.showalert('حساب با موفقیت حذف شد!', 'موفقانه', 'success');
                         this.getUser();
                     }
 
                 } catch (error) {
-                    console.log(error.message);
-                    this.showalert('کاربر با موفقیت حذف نشد!', 'ناموفقانه', 'error');
+                    // console.log("inside catch");
+                    this.showalert('حساب با موفقیت حذف نشد!', 'ناموفقانه', 'error');
                 }
             }
         },
 
         async searchData() {
-            const response = await api.post('/searchUser', {
-                query: this.searchQuery
-            });
-            this.users = response.data.users.data;
-            // this.totalPages = response.data.users.last_page;
-            // this.currentPage = page;
+            // const response = await api.post('/searchUser', {
+            //     query: this.searchQuery
+            // });
+            // // this.users = response.data.users.data;
+            // this.users = response.data;
+            // console.log(this.searchQuery);
+            // // this.totalPages = response.data.users.last_page;
+            // // this.currentPage = page;
+
+            console.log("search");
         },
     },
   };
@@ -283,8 +277,8 @@
   <div class="row">
     <div class="col-md-12 col-sm-12 col-lg-12">
         <div class="mb-3">
-            <label for="editRole">تعین صلاحیت</label>
-              <select class="form-control form-control-lg" v-model="editRole" >
+            <label for="editRo">تعین صلاحیت</label>
+            <select class="form-control form-control-lg  " v-model="editRole" >
                 <option value="" disabled>انتخاب سطح دسترسی</option>
                 <option value="customer">مشتری</option>
                 <option value="user">یوزر</option>
@@ -297,7 +291,8 @@
 </div>
     <div class="text-end pt-5 mt-1 g-2">
       <b-button type="submit" :disabled="processing"  variant="primary" class="btn-block m-2">
-        {{ processing ? "لطفا منتظر باشید..." : "آپدیت" }}
+        <!-- {{ editProcessing ? "لطفا منتظر باشید..." : "آپدیت" }} -->
+         آپدیت 
       </b-button>
       <b-button variant="danger" @click="showeditModal = false">بستن</b-button>
     </div>
@@ -310,7 +305,7 @@
 <!-- edit modal end -->
 
 
-
+<!-- add new user -->
       <div class="col-xl-12">
           <div class="card">
 

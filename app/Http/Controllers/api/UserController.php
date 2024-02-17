@@ -69,7 +69,11 @@ class UserController extends Controller
         }
 
         try {
-            $out_put = User::where('status','=',1)->where('id', $request->id)->update($request->all());
+            $out_put = User::where('status','=',1)->where('id', $request->id)->update([
+                'name' => $request->name,
+                'email' => $request->email,
+                'role' => $request->role
+            ]);
     
             if ($out_put) {
                 $output_data = User::where('status',1)->where('id', $request->id)->get(); 
@@ -92,52 +96,32 @@ class UserController extends Controller
         }
       
     }
-  
 
- 
-
-    /**
-     * Remove the specified resource from storage.
-     */
-  
-
-
-    public function deleteOneUser0(Request $request)
-{
-        try {
-            $user = User::findOrFail($request->id);
-            $user->update(['status' => 0]);
-            return response()->json(['status' => true, 'message' => 'عملیات با موفقیت انجام شد']);
-        } catch (Throwable $e) {
-            return response()->json(['status' => false, 'message' =>$e->getMessage()]);
-        }
-}
+     
 
         public function deleteOneUser(Request $request)
         {
             $id = $request->id;
-            $user = User::where('status', '1')->where('id', $id)->first();
-            
-            if ($user) {
-                $user->update(['status' => '0']); // Update status to 0
-                $user_output = User::where('status', 1)->where('id', $id)->get();
-                
-                return response()->json([
-                    'status' => true,
-                    'user' => $user_output,
-                    'message' => 'عملیات انجام شد',
-                ]);
-            } else {
+            $user = User::find($id);
+    
+            if (!$user) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'کاربر مورد نظر یافت نشد',
-                ], 404);
+                    'message' => 'User not found'
+                ]);
             }
+    
+            $user->status = 0;
+            // $user->update(['status' => '0']); 
+            $user->save();
+    
+            return response()->json([
+                'status' => true,
+                'message' => 'User deleted successfully'
+            ],204);
         }
 
-
-
-        public function searchUsers(Request $request){
+        public function searchUsers0(Request $request){
             try {
                 $limit = $request->has('limit') ? $request->limit : 10;
 
@@ -163,6 +147,19 @@ class UserController extends Controller
             }
         }
         
+
+        public function searchUsers(Request $request)
+        {
+            $query=$request->input('query');
+            $searchTerm = $request->input('query');
+              $user =User::query()
+              ->where('status', '=', '1')->Where('id',  'like', '%' . $searchTerm . '%')
+              ->orWhere('name',  'like', '%' . $searchTerm . '%')
+              ->orWhere('email',  'like', '%' . $searchTerm . '%')
+              ->orWhere('role',  'like', '%' . $searchTerm . '%')
+              ->get();
+            return response()->json($user);
+        }
 
 
 }
