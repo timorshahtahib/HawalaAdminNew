@@ -44,7 +44,7 @@ public function register(Request $request)
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['status' => false, 'error' => $validator->errors()->toArray()]);
+            return response()->json(['status' => false,'message' => 'Error', 'error' => $validator->errors()->toArray()]);
         }
 
         // dd($request->all());

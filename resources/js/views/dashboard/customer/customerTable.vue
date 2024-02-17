@@ -215,14 +215,11 @@
 </template>
 
 <script>
+import { createStore } from 'vuex';
+import api from '../../../services/api';
 import Swal from 'sweetalert2'
 import Loader from '../../loader/loader.vue';
-import api from '../../../services/api';
-
 export default {
-    components:{
-        Loader
-    },
     name: 'customerTable',
     data() {
         return {
@@ -266,8 +263,7 @@ export default {
         async getCustomers(page = 1) {
             this.isLoading = true;
             try {
-               const response = await api.get(`/customer?page=${page}&limit=${this.limit}`);
-                // const response = await api.get(`/customer`);
+                const response = await api.get(`/customer?page=${page}&limit=${this.limit}`);
                 this.customers = response.data.customers.data;
                 this.totalPages = response.data.customers?.last_page;
                 this.currentPage = page; // Update the current page
@@ -322,14 +318,13 @@ export default {
                 confirmButtonText: 'بستن'
             });
         },
-        async storeCustomer444() {
-         try {
-            this.isLoading = true;
+        async storeCustomer() {
             this.submitted = true;
-            if (this.name && this.email && this.password ) {
+            if (this.name && this.phone && this.username && this.password) {
                 const response = await api.post("/customer", {
                     name: this.name,
-                    email: this.email,
+                    last_name: this.last_name,
+                    phone: this.phone,
                     username: this.username,
                     password: this.password,
                     image: this.image,
@@ -366,15 +361,8 @@ export default {
                 this.isError = true;
                 this.formError = "فیلد ها خالی است";
             }
-         } catch (error) {
-            console.log(error.message);
-         }finally {
-                this.isLoading = false;
-                console.log("isloading");
-            }
-           
+            // stop here if form is invalid
         },
-        
         async editCustomer(id) {
             const response = await api.get(`/customer/${id}`);
             this.editCust = response.data.customer;
@@ -421,27 +409,21 @@ export default {
             }
         },
         async deleteCustomer(id) {
-
             if (!window.confirm('آیا میخواهید که مشتری حذف شود؟')) {
                 return;
             }
             else {
-                
                 try {
                     const response = await api.delete(`/customer/${id}`);
                     this.customers = response.data;
                     if (response.status === 204) {
-                       
+                        this.getCustomers();
                         this.showalert('مشتری با موفقیت حذف شد!', 'موفقانه', 'success');
-                      
                     }
                 }
                 catch (error) {
                     this.showalert('مشتری با موفقیت حذف نشد!', 'ناموفقانه', 'error');
-                }finally {
-                
-                this.getCustomers();
-            }
+                }
             }
         },
         async searchData() {
@@ -482,6 +464,6 @@ export default {
             }
         }
     },
-   
+    components: { Loader }
 }
 </script>

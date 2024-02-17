@@ -47,8 +47,9 @@ Route::middleware('auth:api')->group(function(){
     
     Route::post('/logout', [APIController::class, 'logout']);
     Route::apiResource('user', UserController::class);
-    Route::put('/updateuser', [UserController::class,'updateUser']);
-    Route::post('/deleteuser', [UserController::class,'deleteUser']);
+    Route::post('/updateuser', [UserController::class,'updateUser']);
+    Route::post('/deleteuser', [UserController::class,'deleteOneUser']);
+    Route::post('/searchuser', [UserController::class,'searchUsers']);
     
     Route::apiResource('customer',CustomerController::class);
     Route::post('/updatecustomer', [CustomerController::class, 'updateCustomer']);
