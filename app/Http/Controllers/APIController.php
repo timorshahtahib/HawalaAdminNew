@@ -92,22 +92,22 @@ public function register(Request $request)
         } 
 
         // If login attempt for user fails, try with customers table
-    // if (auth('customer')->attempt($credentials)) {
-    //     $customer = auth('customer')->user();
-    //     $token = $customer->createToken('myToken')->accessToken;
-    //     if ($token) {
-    //         return response()->json([
-    //             "status" => true,
-    //             "message" => "ورود با موفقیت انجام شد",
-    //             "access_token" => $token
-    //         ]);
-    //     } else {
-    //         return response()->json([
-    //             "status" => false,
-    //             "error" => "خطا در ایجاد توکن"
-    //         ]);
-    //     }
-    // }
+    if (auth('customer')->attempt($credentials)) {
+        $customer = auth('customer')->user();
+        $token = $customer->createToken('myToken')->accessToken;
+        if ($token) {
+            return response()->json([
+                "status" => true,
+                "message" => "ورود با موفقیت انجام شد",
+                "access_token" => $token
+            ]);
+        } else {
+            return response()->json([
+                "status" => false,
+                "error" => "خطا در ایجاد توکن"
+            ]);
+        }
+    }
         
         
         else {

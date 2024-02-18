@@ -10,6 +10,7 @@ use App\Http\Controllers\api\deleteTransaction;
 use App\Http\Controllers\api\ExchangeController;
 use App\Http\Controllers\api\FinanceAccountController;
 use App\Http\Controllers\api\IncomeExpController;
+use App\Http\Controllers\api\myHomeController;
 use App\Http\Controllers\api\OrderController;
 use App\Http\Controllers\api\ReportFinanceController;
 use App\Http\Controllers\api\TestController;
@@ -43,8 +44,12 @@ Route::post('/reset-password', [APIController::class, 'reset_pass']);
 
 Route::middleware('auth:api')->group(function(){
 
+    // default page or index(myHomeController) page controller 
+    Route::get('/showindex', [myHomeController::class, 'showIndexPage']);
+
     Route::post('/register', [APIController::class, 'register']);
     
+
     Route::post('/logout', [APIController::class, 'logout']);
     Route::apiResource('user', UserController::class);
     Route::post('/updateuser', [UserController::class,'updateUser']);

@@ -64,7 +64,7 @@ export default {
               data.id
             }}</a>
           </td>
-          <td>{{ data.name }}</td>
+          <td>{{ data.rasid_bord }}</td>
           <td>{{ data.date }}</td>
           <td>{{ data.total }}</td>
           <td>

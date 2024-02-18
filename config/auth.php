@@ -49,7 +49,7 @@ return [
             'expire_in' => 60, 
        
         ],
-        'customer' => [
+        'customer-login' => [
             'driver' => 'passport',
             'provider' => 'customer',
         ],
@@ -78,9 +78,9 @@ return [
             'model' => App\Models\User::class,
         ],
 
-        'customer' => [
+        'customers' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Customer::class
+            'model' => App\Models\Customer::class,
         ],
 
       
