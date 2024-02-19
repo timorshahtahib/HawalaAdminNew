@@ -121,25 +121,37 @@ public function register(Request $request)
 
     public function loginCustomer(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'username' => 'required',
-            'password' => 'required',
-        ]);
 
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 422);
-        }
+        $credentials = $request->only('username', 'password');
 
-        $credentials = request(['username ', 'password']);
+    if (Auth::guard('customers')->attempt($credentials)) {
+        $user = Auth::guard('customers')->user();
+        $token = $user->createToken('Customer Access Token')->accessToken;
+        
+        return response()->json(['token' => $token], 200);
+    }
 
-        if (Auth::guard('customer')->attempt($credentials)) {
-            $customer = Auth::guard('customer');
-            $accessToken = $customer->createToken('myToken')->accessToken;
+    return response()->json(['message' => 'Unauthorized'], 401);
+    
+        // $validator = Validator::make($request->all(), [
+        //     'username' => 'required',
+        //     'password' => 'required',
+        // ]);
 
-            return response()->json(['access_token' => $accessToken], 200);
-        } else {
-            return response()->json(['error' => 'Unauthenticated'], 401);
-        }
+        // if ($validator->fails()) {
+        //     return response()->json(['error' => $validator->errors()], 422);
+        // }
+
+        // $credentials = request(['username ', 'password']);
+
+        // if (Auth::guard('customer')->attempt($credentials)) {
+        //     $customer = Auth::guard('customer');
+        //     $accessToken = $customer->createToken('myToken')->accessToken;
+
+        //     return response()->json(['access_token' => $accessToken], 200);
+        // } else {
+        //     return response()->json(['error' => 'Unauthenticated'], 401);
+        // }
     }
     public function logout(Request $request) {
         if (Auth::guard('api')->check()) {

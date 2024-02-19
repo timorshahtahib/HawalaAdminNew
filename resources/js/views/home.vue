@@ -120,9 +120,9 @@ export default {
                   </div>
                   <h5 class="font-size-15">تعداد کاربران</h5>
                   <div class="avatar-xs mx-auto mb-3">
-                    <span class="avatar-title rounded-circle bg-success font-size-16 cover">
+                    <router-link to="/dashboard/usermangement" class="avatar-title rounded-circle bg-success font-size-16 cover">
                       {{users}}
-                    </span>
+                    </router-link>
                   </div>
                 </div>
               </div>
@@ -139,9 +139,9 @@ export default {
                   </div>
                   <h5 class="font-size-15">تعداد مشتریان</h5>
                   <div class="avatar-xs mx-auto mb-3">
-                    <span class="avatar-title rounded-circle bg-success font-size-16 cover">
+                    <router-link to="/dashboard/customer" class="avatar-title rounded-circle bg-success font-size-16 cover">
                       {{customers}}
-                    </span>
+                    </router-link>
                   </div>
     
                 </div>
@@ -176,9 +176,9 @@ export default {
            
             <div class="text-center">
               <div class="avatar-sm mx-auto mb-4">
-                <span class="avatar-title rounded-circle bg-primary font-size-18">
+                <router-link to="/dashboard/order" class="avatar-title rounded-circle bg-primary font-size-18">
                   {{ all_orders }}
-                </span>
+                </router-link>
               </div>
             </div>
             <div class="row mt-4">
@@ -194,9 +194,9 @@ export default {
                   </div>
                   <h5 class="font-size-15">سفارشات قبول شده</h5>
                   <div class="avatar-xs mx-auto mb-3">
-                    <span class="avatar-title rounded-circle bg-success font-size-16 cover">
+                    <router-link to="/dashboard/acceptorder" class="avatar-title rounded-circle bg-success font-size-16 cover">
                       {{accepted_orders}}
-                    </span>
+                    </router-link>
                   </div>
                 </div>
               </div>
@@ -213,9 +213,9 @@ export default {
                   </div>
                   <h5 class="font-size-15">در حال انتظار</h5>
                   <div class="avatar-xs mx-auto mb-3">
-                    <span class="avatar-title rounded-circle bg-warning font-size-16 cover">
+                    <router-link to="/dashboard/pendingorder" class="avatar-title rounded-circle bg-warning font-size-16 cover">
                           {{ pending_orders }}
-                    </span>
+                    </router-link>
                   </div>
                 </div>
               </div>
@@ -230,9 +230,9 @@ export default {
                   </div>
                   <h5 class="font-size-15">سفارشات رد شده</h5>
                   <div class="avatar-xs mx-auto mb-3">
-                    <span class="avatar-title rounded-circle bg-danger font-size-16 cover">
+                    <router-link to="/dashboard/rejectorder" class="avatar-title rounded-circle bg-danger font-size-16 cover">
                       {{rejected_orders}}
-                    </span>
+                    </router-link>
                   </div>
                 </div>
               </div>
@@ -267,9 +267,9 @@ export default {
                   </div>
                   <h5 class="font-size-15">تمام تراکنشها</h5>
                   <div class="avatar-xs mx-auto mb-3">
-                    <span class="avatar-title rounded-circle bg-success font-size-16 cover">
+                    <router-link to="/report/rooznamchah" class="avatar-title rounded-circle bg-success font-size-16 cover">
                       {{all_transactions}}
-                    </span>
+                    </router-link>
                   </div>
                 </div>
               </div>
@@ -322,64 +322,47 @@ export default {
       <div class="col-lg-12">
         <div class="card">
           <div class="card-body">
-            <h4 class="card-title mb-4">Latest Transaction</h4>
+            <h4 class="card-title mb-4 text-center">آخرین تراکنشــــــها</h4>
             <div class="table-responsive " >
-              <table class="table table-centered table-nowrap text-start" ref="table1">
+              <table class="table table-centered table-nowrap text-start">
                   <thead>
                       <tr>
-                         
                           <th class="text-center">تاریخ</th>
-
                           <th class="text-center">نوع تراکنش</th>
                           <th class="text-center">نام مشتری</th>
                           <!-- <th class="text-center">رسید برد</th> -->
                           <th class="text-center">مقدار پول</th>
-                          
                           <th class="text-center">تفصیلات</th>
                           <th class="text-center">نمبر چک</th>
-                          <!-- <th class="text-center">توسط</th>                                       -->
+                          <!-- <th class="text-center">توسط</th> -->
                       </tr>
                   </thead>
-                  <tbody class="text-center">
+                  <tbody class="text-center font-size-14">
                       <tr v-for="transaction in transactions" :key="transaction?.id">
-                    
-                        
-                          <td>{{transaction?.date}}</td>
-                          <td class="badge   " :class="transaction.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">{{ 
-                              displayTransactionType(transaction.transaction_type)}}</td>
-                          <td v-if="transaction.customer!=null">{{ transaction.customer?.name}}</td>
-                          <td v-else>{{ transaction.finance_account?.account_name}}</td>
-                      
-                         
-                          <td >{{transaction.amount}} {{transaction.tr_currency?.name}}
+                        <td>{{ transaction.date }}</td>
+                        <td>
+                          <span
+                            class="badge badge-pill badge-soft-success font-bold p-2"
+                            :class="{
+                              'badge-soft-success': `${transaction.rasid_bord}` === 'rasid',
+                              'badge-soft-warning': `${transaction.rasid_bord}` === 'bord',
+                            }"
+                            >{{displayTransactionType(transaction.transaction_type)}}</span
+                          >
+                        </td>
+                        <td v-if="transaction.customer!=null">{{ transaction.customer?.name}}</td>
+                        <td v-else>{{ transaction.finance_account?.account_name}}</td>
+                        <td>{{transaction.amount}} {{transaction.tr_currency?.name}}
                           {{transaction.rasid_bord ==='rasid'? 'به': 'از' }}
                               <span v-if="transaction?.bank_account!=null">{{transaction.bank_account?.account_name}}</span>
                               <span v-else>{{ transaction.finance_account?.account_name}}</span>
                           </td>
                          <td>{{transaction.desc}}</td>
                          <td>{{transaction.check_number}}</td>
-                          <!-- <td>{{transaction.user_id}}</td> -->
-
-
                       </tr>
+                      
                   </tbody>
               </table>
-
-              <ul class="pagination pagination-rounded justify-content-center mb-2" style="text-center">
-                  <li class="page-item">
-                      <a class="page-link" href="javascript: void(0);" aria-label="Previous" @click="prevPage" :disabled="currentPage === 1">
-                          <i class="mdi mdi-chevron-left"></i>
-                      </a>
-                  </li>
-                  <li :class="['page-item', { 'active': pa === currentPage }]" v-for="(pa, index) in totalPages" :key="index">
-                      <a class="page-link" href="javascript: void(0);">{{ pa }}</a>
-                  </li>
-                  <li class="page-item">
-                      <a class="page-link" href="javascript: void(0);" aria-label="Next" @click="nextPage" :disabled="currentPage === totalPages">
-                          <i class="mdi mdi-chevron-right"></i>
-                      </a>
-                  </li>
-              </ul>
           </div>
           </div>
         </div>

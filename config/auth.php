@@ -49,9 +49,9 @@ return [
             'expire_in' => 60, 
        
         ],
-        'customer-login' => [
+        'customers' => [
             'driver' => 'passport',
-            'provider' => 'customer',
+            'provider' => 'customers',
         ],
     ],
  
