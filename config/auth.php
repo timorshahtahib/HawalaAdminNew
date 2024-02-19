@@ -46,7 +46,6 @@ return [
         'api' => [
             'driver' => 'passport',
             'provider' => 'users',
-            'expire_in' => 60, 
        
         ],
         'customers' => [

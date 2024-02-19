@@ -26,6 +26,22 @@ public function guard()
 {
     return Auth::guard();
 }
+
+public static function new_check_number()
+    {
+        $last = User::orderBy('id','desc')->pluck('cu_number')->first();
+        
+        $new_check_number='';
+        if($last){
+            $number = explode("-",$last);
+            $new_number  = $number[1]+1;
+            $new_check_number = 'AD-'.$new_number;
+        }else{
+            $new_check_number = 'AD-1';
+        }
+
+        return $new_check_number;
+    }
 public function register(Request $request)
 {
     try {
@@ -44,16 +60,20 @@ public function register(Request $request)
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['status' => false,'message' => 'Error', 'error' => $validator->errors()->toArray()]);
+            return response()->json(['status' => false,'message' => 'Error', 'error' => $validator->errors()->toArray()],402);
         }
 
         // dd($request->all());
+        $check_number = $this->new_check_number();
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
+            'type' => $request->role,
+            'cu_number'=> $check_number,
+
         ]);
 
         return response()->json(['status' => true, 'message' => 'کاربر با موفقیت ثبت شد!', 'new_user' => $user], 200);
@@ -71,6 +91,7 @@ public function register(Request $request)
     
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
+            $username = Auth::user()->name;
             // $token = $user->createToken("myToken")->accessToken;
             $token = $user->createToken("myToken")->accessToken;
     
@@ -78,7 +99,8 @@ public function register(Request $request)
                 return response()->json([
                     "status" => true,
                     "message" => "ورود با موفقیت انجام شد",
-                    "access_token" => $token
+                    "access_token" => $token,
+                    'username'=>$username
                 ]);
             } else {
                 return response()->json([
@@ -86,29 +108,9 @@ public function register(Request $request)
                     "error" => "خطا در ایجاد توکن"
                 ]);
             }
-        
-        
-        
         } 
 
-        // If login attempt for user fails, try with customers table
-    if (auth('customer')->attempt($credentials)) {
-        $customer = auth('customer')->user();
-        $token = $customer->createToken('myToken')->accessToken;
-        if ($token) {
-            return response()->json([
-                "status" => true,
-                "message" => "ورود با موفقیت انجام شد",
-                "access_token" => $token
-            ]);
-        } else {
-            return response()->json([
-                "status" => false,
-                "error" => "خطا در ایجاد توکن"
-            ]);
-        }
-    }
-        
+    
         
         else {
             return response()->json([
@@ -119,40 +121,40 @@ public function register(Request $request)
     }
 
 
-    public function loginCustomer(Request $request)
-    {
+    // public function loginCustomer(Request $request)
+    // {
 
-        $credentials = $request->only('username', 'password');
+    //     $credentials = $request->only('username', 'password');
 
-    if (Auth::guard('customers')->attempt($credentials)) {
-        $user = Auth::guard('customers')->user();
-        $token = $user->createToken('Customer Access Token')->accessToken;
+    // if (Auth::guard('customers')->attempt($credentials)) {
+    //     $user = Auth::guard('customers')->user();
+    //     $token = $user->createToken('Customer Access Token')->accessToken;
         
-        return response()->json(['token' => $token], 200);
-    }
+    //     return response()->json(['token' => $token], 200);
+    // }
 
-    return response()->json(['message' => 'Unauthorized'], 401);
+    // return response()->json(['message' => 'Unauthorized'], 401);
     
-        // $validator = Validator::make($request->all(), [
-        //     'username' => 'required',
-        //     'password' => 'required',
-        // ]);
+    //     // $validator = Validator::make($request->all(), [
+    //     //     'username' => 'required',
+    //     //     'password' => 'required',
+    //     // ]);
 
-        // if ($validator->fails()) {
-        //     return response()->json(['error' => $validator->errors()], 422);
-        // }
+    //     // if ($validator->fails()) {
+    //     //     return response()->json(['error' => $validator->errors()], 422);
+    //     // }
 
-        // $credentials = request(['username ', 'password']);
+    //     // $credentials = request(['username ', 'password']);
 
-        // if (Auth::guard('customer')->attempt($credentials)) {
-        //     $customer = Auth::guard('customer');
-        //     $accessToken = $customer->createToken('myToken')->accessToken;
+    //     // if (Auth::guard('customer')->attempt($credentials)) {
+    //     //     $customer = Auth::guard('customer');
+    //     //     $accessToken = $customer->createToken('myToken')->accessToken;
 
-        //     return response()->json(['access_token' => $accessToken], 200);
-        // } else {
-        //     return response()->json(['error' => 'Unauthenticated'], 401);
-        // }
-    }
+    //     //     return response()->json(['access_token' => $accessToken], 200);
+    //     // } else {
+    //     //     return response()->json(['error' => 'Unauthenticated'], 401);
+    //     // }
+    // }
     public function logout(Request $request) {
         if (Auth::guard('api')->check()) {
             $accessToken = Auth::guard('api')->user()->token();
@@ -171,14 +173,7 @@ public function register(Request $request)
             'data' => 'Unauthorized'
         ],401);
     }
-public function getUserDetails(){
-        
-    if(Auth::guard('(api')->check()){
-        $user = Auth::guard('api')->user();
-        return response()->json(['data'=>$user],200);
-    }
-    return response()->json(['data'=>'Unauthorized'],401);
-}
+
   
     // password forget
     public function forget_pass(Request $request)

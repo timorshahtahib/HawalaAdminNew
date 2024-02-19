@@ -33,14 +33,52 @@ class UserController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    /**
-     * Store a newly created resource in storage.
-     */
+
+
     public function store(Request $request)
     {
-   
+        $validator = Validator::make($request->all(),[
+                'name' => 'required',
+                'cu_number'=>'',
+                'phone' => 'required|unique:users,phone',
+                'email' => 'required|unique:users,email',
+                'password'=>'required',
+                // 'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:50',
+                'image' => 'nullable',
+                'address'=>'',
+                'token' => '',
+                'type'=>'',
+                'acount_currency'=>'',
+                'desc'=>'',
+                'status'=>'1',
+        ],
+        [
+            'name.required' =>'نام ضروری است',
+            'phone.required'=>'شماره تماس ضروری است',
+            'phone.unique'=>'شماره تماس از قبل موجود است',
+            'username.required'=>'نام کاربری ضروری است',
+            'username.unique'=>'نام کاربری از قبل موجود است',
+            'password.required'=>'رمز عبور را وارد کنید.',
+        ]);
+            if(!$validator->passes()){
+                return response()->json([
+                    'status'=>false,
+                    'error'=>$validator->errors()->toArray(),
+                ]);
+            }
+            $input = $request->all();
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $name = time().'.'.$image->getClientOriginalExtension();
+                $destinationPath = public_path('/images');
+                $image->move($destinationPath, $name);
+                $input['image'] = $name;
+            }
+         
+                return response()->json([ 'status'=>true,'message' => 'User created successfully!'], 201);
+            
+          
     }
-
     /**
      * Display the specified resource.
      */

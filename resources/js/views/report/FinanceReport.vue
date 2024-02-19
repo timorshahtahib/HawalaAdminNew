@@ -1,7 +1,5 @@
 <script>
 import Layout from "../../layouts/main.vue";
-import Transaction from "../../components/widgets/transaction.vue";
-import Emailsent from "../../components/widgets/emailsent.vue";
 import axios from 'axios';
 import Loader from "../loader/loader.vue";
 import smallLoader from "../loader/smallLoader.vue";
@@ -10,7 +8,7 @@ import api from '../../services/api'
  * Dashboard Component
  */
 export default {
-  components: { Layout, Transaction,Loader ,smallLoader },
+  components: { Layout, Loader ,smallLoader },
   data() {
     return {
       title: "گزارشات",

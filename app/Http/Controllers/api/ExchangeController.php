@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Throwable;
@@ -159,6 +160,7 @@ class ExchangeController extends Controller
                     'currency_rate'=>$request->currency_rate,
                     'desc'=>$request->desc,
                     'date'=>$request->date,
+                    'user_id'=>Auth::user()->id,
                     'check_number'=>$check_number,
                     
                 ];
@@ -177,6 +179,7 @@ class ExchangeController extends Controller
                     'currency_rate'=>$request->currency_rate,
                     'desc'=>$request->desc,
                     'date'=>$request->date,
+                    'user_id'=>Auth::user()->id,
                     'check_number'=>$check_number2,
                     
                 ];
@@ -292,6 +295,7 @@ class ExchangeController extends Controller
                     'currency_rate'=>$request->currency_rate,
                     'desc'=>$request->desc,
                     'date'=>$request->date,
+                    'user_id'=>Auth::user()->id,
                     'check_number'=>$check_number,
                     
                 ];
@@ -310,6 +314,7 @@ class ExchangeController extends Controller
                     'currency_rate'=>$request->currency_rate,
                     'desc'=>$request->desc,
                     'date'=>$request->date,
+                    'user_id'=>Auth::user()->id,
                     'check_number'=>$check_number2,
                 ];
                 
@@ -427,6 +432,7 @@ class ExchangeController extends Controller
                 'bank_acount_id'=>$request->rasid_bank_acount_id,
                 'desc'=>$request->desc,
                 'date'=>$request->date,
+                'user_id'=>Auth::user()->id,
                 'currency_rate'=>$request->currency_rate,
             ];
             $tr_bordv = [
@@ -435,6 +441,7 @@ class ExchangeController extends Controller
                 'bank_acount_id'=>$request->bord_bank_acount_id,
                 'desc'=>$request->desc,
                 'date'=>$request->date,
+                'user_id'=>Auth::user()->id,
                 'currency_rate'=>$request->currency_rate,
             ];
 
@@ -653,6 +660,7 @@ class ExchangeController extends Controller
                     'currency_rate'=>$request->currency_rate,
                     'desc'=>$request->desc,
                     'date'=>$request->date,
+                    'user_id'=>Auth::user()->id,
                     'check_number'=>$check_number,
                     
                 ];
@@ -671,6 +679,7 @@ class ExchangeController extends Controller
                     'currency_rate'=>$request->currency_rate,
                     'desc'=>$request->desc,
                     'date'=>$request->date,
+                    'user_id'=>Auth::user()->id,
                     'check_number'=>$check_number2,
                 ];
                 
@@ -789,6 +798,7 @@ class ExchangeController extends Controller
                 'bank_acount_id'=>$request->bord_bank_acount_id,
                 'desc'=>$request->desc,
                 'date'=>$request->date,
+                'user_id'=>Auth::user()->id,
                 'currency_rate'=>$request->currency_rate,
             ];
             
@@ -798,6 +808,7 @@ class ExchangeController extends Controller
                 'bank_acount_id'=>$request->rasid_bank_acount_id,
                 'desc'=>$request->desc,
                 'date'=>$request->date,
+                'user_id'=>Auth::user()->id,
                 'currency_rate'=>$request->currency_rate,
             ];
 
@@ -906,6 +917,7 @@ class ExchangeController extends Controller
                     'bank_acount_id'=>$request->source_bank_acount_id,
                     'desc'=>$request->desc,
                     'date'=>$request->date,
+                    'user_id'=>Auth::user()->id,
                     'check_number'=>$check_number,
                     
                 ];
@@ -923,6 +935,7 @@ class ExchangeController extends Controller
                     'bank_acount_id'=>$request->destination_bank_acount_id,
                     'desc'=>$request->desc,
                     'date'=>$request->date,
+                    'user_id'=>Auth::user()->id,
                     'check_number'=>$check_number2,
                     
                 ];
@@ -942,6 +955,7 @@ class ExchangeController extends Controller
                         'bank_acount_id'=>$request->commission_bank_acount_id,
                         'desc'=>$request->desc,
                         'date'=>$request->date,
+                        'user_id'=>Auth::user()->id,
                         'check_number'=>$check_number3,
                         
                     ];

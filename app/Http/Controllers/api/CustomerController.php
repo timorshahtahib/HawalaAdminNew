@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Currency;
 use App\Models\Customer;
 use App\Models\Transaction;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Throwable;
@@ -15,6 +17,21 @@ use Throwable;
 class CustomerController extends Controller
 {
    
+    public static function new_check_number()
+    {
+        $last = User::orderBy('id','desc')->pluck('cu_number')->first();
+        
+        $new_check_number='';
+        if($last){
+            $number = explode("-",$last);
+            $new_number  = $number[1]+1;
+            $new_check_number = 'Cu-'.$new_number;
+        }else{
+            $new_check_number = 'Cu-1';
+        }
+
+        return $new_check_number;
+    }
     public function index(Request $request)
     {
         try {
@@ -39,89 +56,71 @@ class CustomerController extends Controller
  
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(),[
-                'name' => 'required',
-                // 'last_name' => 'required',
-                'cu_number'=>'',
-                'phone' => 'required|unique:customer,phone',
-                'username' => 'required|unique:customer,username',
-                'password'=>'required',
-                // 'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:50',
-                'image' => 'nullable',
-                'address'=>'',
-                'token' => '',
-                'type'=>'',
-                'acount_currency'=>'',
-                'desc'=>'',
-                'status'=>'1',
-        ],
-        [
+
+        $check_number = $this->new_check_number();
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'phone' => 'required|unique:users,phone',
+            'email' => 'required|unique:users,email',
+            'password'=>'required',
+            'image' => 'nullable',
+            'address'=>'',
+            'type'=>'',
+            'desc'=>'',
+        ], [
             'name.required' =>'نام ضروری است',
-            // 'last_name.required'=>'نام خانوادگی ضروری است.',
             'phone.required'=>'شماره تماس ضروری است',
             'phone.unique'=>'شماره تماس از قبل موجود است',
-            'username.required'=>'نام کاربری ضروری است',
-            'username.unique'=>'نام کاربری از قبل موجود است',
+            'email.required'=>'نام کاربری ضروری است',
+            'email.unique'=>'نام کاربری از قبل موجود است',
             'password.required'=>'رمز عبور را وارد کنید.',
         ]);
-            if(!$validator->passes()){
-                return response()->json([
-                    'status'=>false,
-                    'error'=>$validator->errors()->toArray(),
-                ]);
-            }
-            $input = $request->all();
-            if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $name = time().'.'.$image->getClientOriginalExtension();
-                $destinationPath = public_path('/images');
-                $image->move($destinationPath, $name);
-                $input['image'] = $name;
-            }
-         
-                $out_put = Customer::create($input);
-                return response()->json([ 'status'=>true,'message' => 'User created successfully!', 'new_data' => $out_put], 201);
-            
-      
-        
-          
-    }
-
-
-    public function show(Customer $customer)
-    {
-
-       $blances=$this->getCustomerBalance( $customer->id);
-        return response()->json(["customer"=>$customer,"balances"=>$blances],200);
-    }
-
-
-
-    public function updateCustomer(Request $request)
-    {
-        try {
-         
-    
-            $out_put = Customer::where('id', $request->id)->update($request->all());
-    
-            if ($out_put) {
-                $output_data = Customer::where('id', $request->id)->first(); // Change to Customer model
-                return response()->json([
-                    'status' => true,
-                    'new_data' => $out_put,
-                    'message' => 'اطلاعات موفقانه آپدیت شد.',
-                ]);
-    
-            } else {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'عملیات انجام نشد',
-                ]);
-            }
-    
-        } catch (Throwable $e) {
-            return response()->json($e->getMessage());
+       
+        if ($validator->fails()) {
+            return response()->json([
+                'status'=>false,
+                'error'=>$validator->errors()->toArray(),
+            ]);
         }
+        
+        // If validation passes, proceed to store the new customer
+        
+        // Check for unique constraints in a try-catch block
+       
+      
+        try {
+            $transaction_values = [
+                'name'=> $request->name,
+                'phone'=>$request->phone,
+                'email'=>$request->email,
+                'password'=>Hash::make($request->password),
+                'image'=>"",
+                'address'=>$request->address,
+                'type'=>'customer',
+                'user_id'=>Auth::user()->id,
+                'role' =>'customer',
+             'cu_number'=> $check_number,
+                'desc'=>$request->desc,
+            ];
+
+            // dd();
+        
+            $customer = User::create($transaction_values);
+        
+            return response()->json([
+                'status'=>true,
+                'new_data'=>$customer,
+                'message'=>'عملیات انجام شد',
+            ]);
+        } catch (Exception $e) {
+           
+            return response()->json([
+                'status' => false,
+                'message' => 'خطا در انجام عملیات: ' . $e->getMessage(),
+            ]);
+        }
+        
     }
     
     

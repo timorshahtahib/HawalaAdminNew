@@ -61,10 +61,9 @@ export default {
         };
     },
     mounted() {
-        this.getCurrency();
+        
         this.getTransaction();
-        this.getCustomers();
-        this.getFinanceAccount();
+     
         this.transaction_type='all';
         this.rasid_bord='all';
     },
@@ -125,9 +124,11 @@ export default {
         },
    
         async getTransaction(page=1) {
-            console.log("start_date",this.start_date);
             const response = await api.post(`/getrooznamchah?page=${page}&limit=${this.limit}`,{current_date:'1402/11/25'});
             this.transactions = response.data.transactions.data;
+            this.currencies=response.data.currencies;
+            this.customers = response.data.customers;
+            this.banks = response.data.financeAccounts;
             this.totalPages = response.data.transactions.last_page;
             this.currentPage = page; // Update the current page
         },
@@ -394,8 +395,16 @@ export default {
                                       
                                           
                                             <td>{{transaction?.date}}</td>
-                                            <td class="badge   " :class="transaction.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">{{ 
-                                                displayTransactionType(transaction.transaction_type)}}</td>
+                                            <td>
+                                                <span
+                                                class="badge badge-pill badge-soft-success font-bold p-2"
+                                                :class="{
+                                                  'badge-soft-success': `${transaction.rasid_bord}` === 'rasid',
+                                                  'badge-soft-warning': `${transaction.rasid_bord}` === 'bord',
+                                                }"
+                                                >
+                                                {{ 
+                                                displayTransactionType(transaction.transaction_type)}}</span></td>
                                             <td v-if="transaction.customer!=null">{{ transaction.customer?.name}}</td>
                                             <td v-else>{{ transaction.finance_account?.account_name}}</td>
                                         

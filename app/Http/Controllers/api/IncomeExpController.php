@@ -10,7 +10,8 @@ use App\Models\IncomeExp;
 use App\Models\Transaction;
 use Exception;
 use Response;
-use Auth;
+use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -219,8 +220,8 @@ class IncomeExpController extends Controller
                     'date'=>$request->date,
                     'finance_acount_id'=>$expense_acount->id,
                     'bank_id'=>$request->bank_id,
-                    // 'user_id'=>Auth::user()->id,
-                    'user_id'=>1,
+                    'user_id'=>Auth::user()->id,
+                
                     'state'=>'payed',
                     'ref_type'=>'expense',
                     'desc'=>$request->desc,
@@ -237,8 +238,8 @@ class IncomeExpController extends Controller
                     'ref_id'=>$expense_id,
                     'finance_acount_id'=>$expense_acount->id,
                     'bank_acount_id'=>$request->bank_id,
-                    // 'user_id'=>Auth::user()->id,
-                    'user_id'=>1,
+                    'user_id'=>Auth::user()->id,
+                  
                     'desc'=>$request->desc,
                     'date'=>$request->date,
                     'check_number'=>$check_number,

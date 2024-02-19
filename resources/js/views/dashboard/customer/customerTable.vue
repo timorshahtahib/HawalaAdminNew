@@ -22,15 +22,15 @@
                         <div class="row flex justify-between">
                             <div class="col-md-6 col-sm-12 col-lg-6">
                                 <div class="mb-3">
-                                    <label for="username">نام کاربری</label>
-                                    <input id="username" v-model="username" type="text" class="form-control" placeholder="نام کاربری خود را وارد کنید" required/>
-                                    <span class="text-danger error-text afrad_error" v-if="errors.username">{{errors.username[0]}}</span>
+                                    <label for="email">ایمیل</label>
+                                    <input id="email" v-model="email" type="email" class="form-control" placeholder=" ایمیل خود را وارد کنید" required/>
+                                    <span class="text-danger error-text afrad_error" v-if="errors.email">{{errors.email[0]}}</span>
                                 </div>
                             </div>
                             <div class="col-sm-12 col-md-6 col-lg-6">
                                 <div class="mb-3">
                                     <label for="password">رمز عبور</label>
-                                    <input id="password" v-model="password" type="password" class="form-control" placeholder="رمز خود را وارکنید" required/>
+                                    <input id="password" v-model="password" type="password" class="form-control" placeholder="رمز خود را واردکنید" required/>
                                 </div>
                             </div>
                         </div>
@@ -234,7 +234,7 @@ export default {
             name: '',
             phoneError: '',
             phone: '',
-            username: '',
+            email: '',
             password: '',
             image: null,
             address: '',
@@ -243,7 +243,7 @@ export default {
             // edit modal
             editshowModal: false,
             editname: '',
-            editUsername: '',
+            editemail: '',
             editPassword: '',
             editPhone: '',
             editImage: null,
@@ -296,7 +296,7 @@ export default {
             this.showModal = false;
             this.name = '';
             this.phone = '';
-            this.username = '';
+            this.email = '';
             this.password = '';
             this.image = null;
             this.address = '';
@@ -320,17 +320,19 @@ export default {
         },
         async storeCustomer() {
             this.submitted = true;
-            if (this.name && this.phone && this.username && this.password) {
+
+            if (this.name && this.phone && this.email && this.password) {
                 const response = await api.post("/customer", {
                     name: this.name,
-                    last_name: this.last_name,
-                    phone: this.phone,
-                    username: this.username,
+                    email: this.email,
                     password: this.password,
+                    phone: this.phone,
                     image: this.image,
                     address: this.address,
                     desc: this.desc,
                 });
+
+                console.log("response",response);
                 if (response.data != null) {
                     if (response.data.status === false) {
                         if (response.data.message != null) {
@@ -345,7 +347,7 @@ export default {
                         this.errors = {};
                         this.name = '';
                         this.phone = '';
-                        this.username = '';
+                        this.email = '';
                         this.password = '';
                         this.image = null;
                         this.address = '';
@@ -361,7 +363,6 @@ export default {
                 this.isError = true;
                 this.formError = "فیلد ها خالی است";
             }
-            // stop here if form is invalid
         },
         async editCustomer(id) {
             const response = await api.get(`/customer/${id}`);

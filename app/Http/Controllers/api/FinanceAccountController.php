@@ -9,6 +9,7 @@ use App\Models\FinanceAccount;
 use App\Models\IncomeExp;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Enum;
@@ -53,7 +54,7 @@ class FinanceAccountController extends Controller
             'type' => 'in:asset,equity,liablity',
             'currency'=>'nullable|max:20',
             'description' => '',
-            'user_id' => '',
+           
             'status'=>'',
             'account'=>''
     ]);
@@ -75,7 +76,7 @@ class FinanceAccountController extends Controller
                 'type' =>  $request->type,
                 'currency'=> $request->currency,
                 'description' =>$request->description,
-                'user_id' => 1,
+                'user_id'=>Auth::user()->id,
                 'account'=>$request->account
                 
             ];

@@ -1,16 +1,13 @@
 <script>
 import Layout from "../layouts/main.vue";
 import Profile from "../components/widgets/profile.vue";
-import Earning from "../components/widgets/earning.vue";
-import Stat from "../components/widgets/stat.vue";
-import Emailsent from "../components/widgets/emailsent.vue";
 import api from '../services/api';
 
 /**
  * Dashboard Component
  */
 export default {
-  components: { Layout, Profile, Stat,  Earning, Emailsent },
+  components: { Layout, Profile },
   data() {
     return {
       title: "داشبورد",
@@ -25,7 +22,7 @@ export default {
       accepted_orders:0,
       pending_orders:0,
       rejected_orders:0,
-  
+      
      
       transactions: []
     };
@@ -41,13 +38,14 @@ export default {
             this.users = response.data.users;
             this.all_transactions = response.data.all_transactions;
             this.transactions = response.data.transactions;
-            console.log("last_transaction",this.transactions);
             this.today_transactions = response.data.today_transactions;
             this.deleted_transactions = response.data.deleted_transactions;
             this.all_orders = response.data.all_orders;
             this.accepted_orders = response.data.accept_orders;
             this.pending_orders = response.data.pending_orders;
             this.rejected_orders = response.data.rejected_orders;
+            this.user_name = response.data.user_name;
+            // console.log(this.user_name);
         }, 
          displayTransactionType(transactionType) {
             if (transactionType === 'rasid_bord') {

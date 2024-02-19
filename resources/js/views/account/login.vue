@@ -33,7 +33,7 @@ export default {
        
 
         async login() {
-  this.processing = true;
+          this.processing = true;
 
   try {
     const response = await axios.post('/api/login', {
@@ -43,17 +43,19 @@ export default {
 
     if (response.data.status === true && response.data.access_token) {
       const token = response.data.access_token;
+      const user_name = response.data.user_name;
 
       // Store user data including token
       localStorage.setItem('user', JSON.stringify({
-        token: token
+        token: token,
+        username:user_name
       }));
 
       // Set the token in the axios defaults for future requests
       axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
 
       // Redirect to the desired route after successful login
-      this.$router.push('/');
+      this.$router.push('/home');
     } else {
       // Handle authentication errors
       this.authError = response.data.error || "Authentication failed.";
@@ -107,7 +109,6 @@ export default {
 
               <div class="alert alert-warning alert-dismissible fade show" role="alert" v-if="authError">
                 <strong> {{ authError }}</strong> 
-                <!-- <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> -->
               </div>
 
               <form class="p-2" action="javascript:void(0)" method="POST" @submit.prevent="login">
@@ -133,12 +134,7 @@ export default {
                     {{ processing ? "لطفا صبر نمائید..." : "ورود" }}
                   </button>
                 </div>
-           
-                <!-- <div class="mt-4 text-center">
-                  <router-link to="/forget-password" class="text-muted">
-                    <i class="mdi mdi-lock mr-1"></i> رمز عبور خود را فراموش کرده اید؟
-                  </router-link>
-                </div> -->
+
               </form>
             </div>
             <!-- end card-body -->

@@ -9,6 +9,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Morilog\Jalali\Jalalian;
 
 class myHomeController extends Controller
@@ -20,7 +21,8 @@ class myHomeController extends Controller
     {
         $date = Jalalian::now();
         $today_date = $date->getYear() ."/" .$date->getMonth() ."/" .$date->getDay();
-           
+        $account_name = Auth::user()->name;
+        
         try {
             $customers = Customer::where('status',1)->count();
             $deleted_customers = Customer::where('status',0)->count();
@@ -42,7 +44,7 @@ class myHomeController extends Controller
              return response()->json(['customers'=>$customers,'deleted_customers'=>$deleted_customers,'users'=>$users,
              'all_transactions'=>$allTransaction,'deleted_transactions'=>$deletdTransaction,
              'today_transactions' =>$todayTransaction,'all_orders'=>$allOrders,
-             'accept_orders'=>$acceptedOrders ,'rejected_orders'=>$rejectedOrders,'pending_orders'=> $pendingOrders,'transactions'=>$lastTenTransactions]);
+             'accept_orders'=>$acceptedOrders ,'rejected_orders'=>$rejectedOrders,'pending_orders'=> $pendingOrders,'transactions'=>$lastTenTransactions,'user_name'=>$account_name]);
           
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);

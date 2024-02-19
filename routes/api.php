@@ -34,10 +34,11 @@ use App\Http\Controllers\api\UserController;
 
 
 Route::post('/login', [APIController::class, 'login']);
-Route::post('/loginCustomer', [APIController::class, 'loginCustomer']);
+// Route::post('/loginCustomer', [APIController::class, 'loginCustomer']);
 
 Route::post('/forget-password', [APIController::class, 'forget_pass']);
 Route::post('/reset-password', [APIController::class, 'reset_pass']);
+Route::post('/register', [APIController::class, 'register']);
 
 
 
@@ -47,7 +48,6 @@ Route::middleware('auth:api')->group(function(){
     // default page or index(myHomeController) page controller 
     Route::get('/showindex', [myHomeController::class, 'showIndexPage']);
 
-    Route::post('/register', [APIController::class, 'register']);
     
 
     Route::post('/logout', [APIController::class, 'logout']);

@@ -9,8 +9,8 @@ export const menuItems = [{
         icon: "bx-home-circle",
         subItems: [{
                 id: 2,
-                label: "menuitems.dashboards.list.default",
-                link: "/",
+                label: "صفحه اصلی",
+                link: "/home",
                 parentId: 2
             },
             {

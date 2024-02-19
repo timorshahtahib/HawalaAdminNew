@@ -42,17 +42,19 @@ export default {
             email:this.email,
             password:this.password
          });
+
+         console.log("object",response);
   
          if(response.data.status===true){
           this.showalert("ثبت نام با موفقیت انجام شد", 'موفقانه', 'success');
           this.$router.push('/login');
          }else{
   
-          // this.showalert(response.data.error, 'خطا', 'error');
+          this.showalert(response.data.error, 'خطا', 'error');
           this.nameError=response.data.error.name;
           this.emailError=response.data.error.email;
           this.passwordError=response.data.error.password;
-          // console.log("response",response.data.error);
+          console.log("response",response.data.error);
          }
        }
       } catch (error) {

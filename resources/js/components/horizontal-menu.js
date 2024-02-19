@@ -5,7 +5,7 @@ export const menuItems = [{
         subItems: [{
                 id: 2,
                 label: "menuitems.dashboards.list.default",
-                link: "/",
+                link: "/home",
                 parentId: 2
             },
             {

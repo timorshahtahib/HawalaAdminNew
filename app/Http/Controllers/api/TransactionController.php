@@ -110,7 +110,7 @@ class TransactionController extends Controller
             'amount_equal'=>'required',
             'currency_equal'=>'required',
             'currency_rate'=>'required',
-            'ref_id'=>"required|max:20|exists:customer,id",
+            'ref_id'=>"required|max:20|exists:users,id",
             'bank_acount_id'=>'required',
             'desc'=>'nullable'
            
@@ -142,7 +142,7 @@ class TransactionController extends Controller
                     'currency_rate'=>$request->currency_rate,
                     'ref_id'=>$request->ref_id,
                     'user_id'=>Auth::user()->id,
-                    // 'user_id'=>1,
+                  
                     'desc'=>$request->desc,
                     'date'=>$request->date,
                     'check_number'=>$check_number,
@@ -241,8 +241,8 @@ class TransactionController extends Controller
                 'currency_equal'=>$request->currency_equal,
                 'currency_rate'=>$request->currency_rate,
                 'ref_id'=>$request->ref_id,
-                // 'user_id'=>Auth::user()->id,
-                'user_id'=>1,
+               'user_id'=>Auth::user()->id,
+          
                 'desc'=>$request->desc,
                 'date'=>$request->date,
             
@@ -329,8 +329,8 @@ class TransactionController extends Controller
                 'currency_equal'=>$request->currency_equal,
                 'currency_rate'=>$request->currency_rate,
                 'ref_id'=>$request->ref_id,
-                // 'user_id'=>Auth::user()->id,
-                'user_id'=>1,
+               'user_id'=>Auth::user()->id,
+             
                 'desc'=>$request->desc,
                 'date'=>$request->date,
             
