@@ -1,11 +1,7 @@
 <script>
 import simplebar from "simplebar-vue";
 
-import us from '../../images/flags/us.jpg';
-import fr from '../../images/flags/french.jpg';
-import es from '../../images/flags/spain.jpg';
-import zh from '../../images/flags/chaina.png';
-import ar from '../../images/flags/arabic.png';
+
 
 import logoDarkLg from '../../images/logo-dark.png';
 import logoDarkSm from '../../images/logo.svg';
@@ -15,14 +11,7 @@ import logoLightSm from '../../images/logo-light.svg';
 import avatar2 from '../../images/users/avatar-2.jpg';
 
 
-// import github from '../../images/brands/github.png';
-// import bitbucket from '../../images/brands/bitbucket.png';
-// import dribbble from '../../images/brands/dribbble.png';
-// import dropbox from '../../images/brands/dropbox.png';
-// import mail_chimp from '../../images/brands/mail_chimp.png';
-// import slack from '../../images/brands/slack.png';
 
-import megamenu from '../../images/megamenu-img.png';
 
 export default {
   components: {
@@ -55,9 +44,9 @@ export default {
     };
   },
   mounted() {
-    this.value = this.languages.find((x) => x.language === this.$i18n.locale);
-    this.text = this.value.title;
-    this.flag = this.value.flag;
+    // this.value = this.languages.find((x) => x.language === this.$i18n.locale);
+    // this.text = this.value.title;
+    // this.flag = this.value.flag;
   },
   methods: {
     toggleRightSidebar() {
@@ -94,13 +83,13 @@ export default {
         }
       }
     },
-    setLanguage(locale, country, flag) {
-      this.lan = locale;
-      this.text = country;
-      this.flag = flag;
-      this.$i18n.locale = locale;
-      localStorage.setItem("locale", locale);
-    },
+    // setLanguage(locale, country, flag) {
+    //   this.lan = locale;
+    //   this.text = country;
+    //   this.flag = flag;
+    //   this.$i18n.locale = locale;
+    //   localStorage.setItem("locale", locale);
+    // },
   },
 };
 </script>

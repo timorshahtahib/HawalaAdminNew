@@ -391,7 +391,7 @@
                             </div>
                         <div v-else>
                           <div class="table-responsive " v-if="users?.length" >
-                              <table class="table table-centered table-nowrap text-start" ref="table1">
+                              <table class="table table-centered table-nowrap text-start">
                                   <thead>
                                       <tr>
                                           <th class="text-center">آیدی</th>

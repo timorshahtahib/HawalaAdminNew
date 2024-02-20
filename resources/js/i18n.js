@@ -3,7 +3,6 @@ import en from './locales/en.json'
 import fr from './locales/fr.json'
 import ar from './locales/ar.json'
 import es from './locales/es.json'
-import zh from './locales/zh.json'
 import fa from './locales/fa.json'
 
 const messages = {
@@ -11,7 +10,6 @@ const messages = {
     fr,
     ar,
     es,
-    zh,
     fa
 }
 

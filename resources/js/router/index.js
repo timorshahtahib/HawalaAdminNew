@@ -146,42 +146,8 @@ const routes = [
         component: () =>
             import ('../views/account/register.vue')
     },
-    // {
-    //     path: '/forget-password',
-    //     meta: { title: 'Forget Password' },
-    //     component: () =>
-    //         import ('../views/account/forgot-password.vue')
-    // },
-    // {
-    //     path: '/reset-password/:token',
-    //     meta: { title: 'Reset Password' },
-    //     component: () =>
-    //         import ('../views/account/reset-password.vue')
-    // },
-    // {
-    //     path: '/auth/recoverpw',
-    //     meta: { authRequired: true, title: 'Reset Password' },
-    //     component: () =>
-    //         import ('../views/sample-pages/recoverpw-sample.vue')
-    // },
-    // {
-    //     path: '/auth/recoverpwd-2',
-    //     meta: { authRequired: true, title: 'Reset Password' },
-    //     component: () =>
-    //         import ('../views/sample-pages/recoverpwd-2.vue')
-    // },
-    // {
-    //     path: '/auth/confirm-mail',
-    //     meta: { authRequired: true, title: 'Confirm Mail' },
-    //     component: () =>
-    //         import ('../views/sample-pages/confirm-mail.vue')
-    // },
-    // {
-    //     path: '/auth/email-verification',
-    //     meta: { authRequired: true, title: 'Email Verification' },
-    //     component: () =>
-    //         import ('../views/sample-pages/email-verification.vue')
-    // },
+
+
 
 
 

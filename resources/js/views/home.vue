@@ -153,7 +153,7 @@ export default {
                         </svg>
                     </span>
                   </div>
-                  <h5 class="font-size-15">تعداد مشتریان حذف شده</h5>
+                  <h5 class="font-size-15">مشتریان حذف شده</h5>
                   <div class="avatar-xs mx-auto mb-3">
                     <span class="avatar-title rounded-circle bg-danger font-size-16 cover">
                       {{deleted_customers}}
