@@ -630,7 +630,6 @@ export default {
                                     <thead class="text-end">
                                         <tr>
                                             <th class="text-center">نمبر چک</th>
-                                            <!-- <th class="text-center">رسید برد</th> -->
                                             <th class="text-center">مقدار فروش </th>
                                             <th class="text-center">مقدار دریافت شده  </th>
                                             <th class="text-center">تفصیلات</th>
@@ -643,11 +642,7 @@ export default {
                                         <tr v-for="transaction in transactions" :key="transaction?.id">
                                             
                                             <td>{{transaction?.check_number}}</td>
-                                            <!-- <td>
-                                                <span class="badge  font-size-12" :class="transaction?.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">
-                                                    {{transaction?.rasid_bord}}
-                                                    </span>
-                                                </td> -->
+                                    
                                             <td>{{transaction?.amount}} {{transaction?.tr_currency.name}}
                                                 به 
                                                 <span v-if="transaction?.bank_account!=null">{{transaction?.bank_account.account_name}}</span>
@@ -660,7 +655,7 @@ export default {
                                                 <span v-else>{{ transaction?.referenced_transaction.finance_account.account_name}}</span> -->
                                             </td>
                                             <td>{{transaction?.desc}}</td>
-                                            <td>{{transaction?.user_id}}</td>
+                                            <td>{{transaction?.user.name}}</td>
 
                                             <td>
 

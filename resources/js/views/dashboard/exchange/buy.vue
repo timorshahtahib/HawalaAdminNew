@@ -658,7 +658,7 @@ export default {
                                             </td>
 
                                             <td>{{transaction?.desc}}</td>
-                                            <td>{{transaction?.user_id}}</td>
+                                            <td>{{transaction?.user.name}}</td>
 
                                             <td>
                                                 <button class="btn btn-xs">

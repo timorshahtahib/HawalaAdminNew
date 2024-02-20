@@ -7,6 +7,8 @@ use App\Models\OrderModel;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Throwable;
+
 class OrderController extends Controller
 {
     /**
@@ -98,6 +100,7 @@ class OrderController extends Controller
     public function store(Request $request)
     {
      
+           try {
             $input = validator::make($request->all(), [
                 'customer_id' => 'required',
                 'transaction_id' => 'required',
@@ -156,9 +159,13 @@ class OrderController extends Controller
                 ]);
             }
     
+         
             $order = OrderModel::create($request->all());
             return response()->json(['orders' => $order], 201);
         
+           } catch (Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+           }
     }
 
 

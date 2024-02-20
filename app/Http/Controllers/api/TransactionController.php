@@ -48,7 +48,7 @@ class TransactionController extends Controller
             $limit = $request->has('limit') ? $request->limit : 10;
 
             $transaction = Transaction::where('status', '=', '1')
-            ->with(['financeAccount','customer','tr_currency','eq_currency','bank_account','referencedTransaction'])->orderBy('id','desc')
+            ->with(['financeAccount','customer','tr_currency','eq_currency','bank_account','referencedTransaction','user'])->orderBy('id','desc')
             ->paginate($limit);
 
             if ($transaction->isEmpty()) {
@@ -73,10 +73,10 @@ class TransactionController extends Controller
                     $limit = $request->has('limit') ? $request->limit : 10;
 
                     $transaction_rasid_bord = Transaction::where('status', '=', '1')->where('ref_id',$id)
-                    ->with(['financeAccount','tr_currency','eq_currency','bank_account','referencedTransaction',])->orderBy('id','desc')->paginate($limit);
+                    ->with(['financeAccount','tr_currency','eq_currency','bank_account','referencedTransaction','user',])->orderBy('id','desc')->paginate($limit);
                     $customer = Customer::where('id',$id)->paginate($limit);
                     $transaction_order = Transaction::where('status', '=', '1')
-                    ->where('ref_id',$id)->where('transaction_type','order')->with(['financeAccount','tr_currency','eq_currency','bank_account','referencedTransaction','referencedTransaction'])->orderBy('id','desc')->paginate($limit);
+                    ->where('ref_id',$id)->where('transaction_type','order')->with(['financeAccount','tr_currency','eq_currency','bank_account','referencedTransaction','user'])->orderBy('id','desc')->paginate($limit);
                 
                     $rasid=Transaction::where('status', '=', '1')->where('ref_id',$id)->sum('amount');
                     $bord=Transaction::where('status', '=', '1')->where('ref_id',$id)->sum('amount_equal');
@@ -128,7 +128,7 @@ class TransactionController extends Controller
                 ////transaction chek number generate
                 $check_number = TransactionController::new_check_number();
                 // dd($check_number);
-
+          
                 $transaction_values = [
                     'rasid_bord'=> $request->rasid_bord,
                     'transaction_type'=>'rasid_bord',
@@ -142,7 +142,6 @@ class TransactionController extends Controller
                     'currency_rate'=>$request->currency_rate,
                     'ref_id'=>$request->ref_id,
                     'user_id'=>Auth::user()->id,
-                  
                     'desc'=>$request->desc,
                     'date'=>$request->date,
                     'check_number'=>$check_number,
@@ -250,7 +249,7 @@ class TransactionController extends Controller
             $transaction_update = Transaction::where('id',$request->id)->update($transaction_values);
             if($transaction_update){
               
-                $output_data = Transaction::where('id',$request->id)->with(['financeAccount','customer','tr_currency','eq_currency','bank_account','referencedTransaction'])->first();
+                $output_data = Transaction::where('id',$request->id)->with(['financeAccount','customer','tr_currency','eq_currency','bank_account','referencedTransaction','user'])->first();
 
                 DB::commit();
                 return  response()->json([
@@ -314,8 +313,6 @@ class TransactionController extends Controller
     }else{
         DB::beginTransaction();
 
-
-        // dd($request);
         try{
             ////transaction chek number generate
             // $check_number = TransactionController::new_check_number();

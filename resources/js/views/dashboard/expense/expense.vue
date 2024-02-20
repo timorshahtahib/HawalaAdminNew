@@ -112,6 +112,7 @@ export default {
                 this.ExpenseList = response.data.expenses.data;
                 this.totalPages = response.data.total_pages;
                 this.currentPage = page; // Update the current page
+                // console.log("this.ExpenseList",this.ExpenseList);
             } catch (error) {
                 console.error('Error fetching IncomeExpenses:', error);
             }finally{
@@ -345,8 +346,7 @@ export default {
     <div class="row">
         <div class="col-xl-4">
             <div class="card">
-          
-           
+        
                 <!-- edit modal start -->
                 <div class="col-sm-8">
                     <div class="text-sm-end">
@@ -467,7 +467,6 @@ export default {
                                             {{ gettedFinanceCurrencyId.name }}
                                         </option>
                                     </select>
-                                    <!-- <span class="text-danger error-text afrad_error" v-if="errors.bank_id">{{errors.bank_id}}</span> -->
                                 </div>
                               </div>
 
@@ -543,12 +542,9 @@ export default {
                                                     <th class="text-center">حساب</th>
                                                     <th class="text-center">نوع</th>
                                                     <th class="text-center">مقدار پول</th>
-                                                    <!-- <th class="text-center">واحد</th>
-                                                    <th class="text-center">دخل</th> -->
                                                     <th class="text-center">تفصیلات</th>
                                                     <th class="text-center">توسط</th>
                                                     <th class="text-center">عملیه</th>
-        
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -559,13 +555,10 @@ export default {
                                                     <td>{{expenesel.expense_acount?.account_name}}</td>
                                                     <td>{{expenesel.type ? "مصرف" :""}}</td>
                                                     <td>{{expenesel.amount}} {{expenesel.expense_currency.name}} به {{expenesel.expense_bank?.account_name}}</td>
-                                            
                                                     <td>{{expenesel.desc}}</td>
-                                                    <td>{{expenesel.user_id}}</td>
+                                                    <td>{{expenesel.user.name}}</td>
         
                                                     <td>
-                                                     
-        
                                                             <button class="btn btn-xs">
                                                                 <i class="fas fa-pencil-alt text-success me-1" @click="editExpense(expenesel.id)"></i>
                                                             </button>

@@ -29,7 +29,7 @@ class IncomeExpController extends Controller
         try {
             $limit = $request->has('limit') ? $request->limit : 10;
 
-            $IncomeExp = IncomeExp::where('status', '=', '1')->limit($limit)->with(['expense_bank','customer','expense_currency'])
+            $IncomeExp = IncomeExp::where('status', '=', '1')->limit($limit)->with(['expense_bank','customer','expense_currency','user'])
             ->orderBy('id','desc')->paginate($limit);
             if ($IncomeExp->isEmpty()) {
                 return response()->json([]);
@@ -49,7 +49,7 @@ class IncomeExpController extends Controller
             $limit = $request->has('limit') ? $request->limit : 10;
           
 
-            $expenses = IncomeExp::where('status', '=', '1')->where('type','expense')->with(['expense_currency','inserted_by_user','expense_acount','expense_bank'])
+            $expenses = IncomeExp::where('status', '=', '1')->where('type','expense')->with(['expense_currency','inserted_by_user','expense_acount','expense_bank','user'])
             ->orderBy('id','desc')->limit($limit)->paginate($limit);
 
             if ($expenses->isEmpty()) {
@@ -70,7 +70,7 @@ class IncomeExpController extends Controller
     {
         // $expense = IncomeExp::find($id);
         $expense = IncomeExp::where('id',$id)->where('status', '=', '1')->where('type','expense')
-        ->with(['expense_currency','expense_acount','expense_bank'])->first();
+        ->with(['expense_currency','expense_acount','expense_bank','user'])->first();
 
 
         // dd($expense);
@@ -132,8 +132,7 @@ class IncomeExpController extends Controller
                 // 'currency_equal' => $request->currency_equal,
                 'date'=>$request->date,
                 'state'=>$request->state,
-                'desc'=>$request->desc,
-                    
+                'desc'=>$request->desc,  
                 ];
              
                 $incomeEpx_id = IncomeExp::insertGetId($IncomeExp_Values);
@@ -146,8 +145,6 @@ class IncomeExpController extends Controller
                         'status'=>true,
                         'message' => 'با موفقیت ویرایش شد', 'new_data' => $output_data], 201);
                
-
-
     }
 
     /**
@@ -340,8 +337,8 @@ class IncomeExpController extends Controller
                     'date'=>$request->date,
                     'finance_acount_id'=>$expense_acount->id,
                     'bank_id'=>$request->bank_id,
-                    // 'user_id'=>Auth::user()->id,
-                    'user_id'=>1,
+                    'user_id'=>Auth::user()->id,
+                    // 'user_id'=>1,
                     'state'=>'payed',
                     'ref_type'=>'expense',
                     'desc'=>$request->desc,
@@ -356,8 +353,7 @@ class IncomeExpController extends Controller
                     'currency'=>$expense_acount->currency,
                     'finance_acount_id'=>$expense_acount->id,
                     'bank_acount_id'=>$request->bank_id,
-                    // 'user_id'=>Auth::user()->id,
-                    'user_id'=>1,
+                    'user_id'=>Auth::user()->id,
                     'desc'=>$request->desc,
                     'date'=>$request->date,
                 ];

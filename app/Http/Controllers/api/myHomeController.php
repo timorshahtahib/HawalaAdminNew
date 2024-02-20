@@ -21,7 +21,7 @@ class myHomeController extends Controller
     {
         $date = Jalalian::now();
         $today_date = $date->getYear() ."/" .$date->getMonth() ."/" .$date->getDay();
-        $account_name = Auth::user()->name;
+        $account_name = Auth::user()->id;
         
         try {
             $customers = Customer::where('status',1)->count();

@@ -747,7 +747,7 @@ export default {
                                            
                                             <td>{{transaction?.commission}}</td>
                                             <td>{{transaction?.desc}}</td>
-                                            <td>{{transaction?.user_id}}</td>
+                                            <td>{{transaction?.user.name}}</td>
 
                                             <td>
 

@@ -111,8 +111,6 @@
             });
         },
 
-
-
         async register(){
         try {
                 this.processing = true;
@@ -362,7 +360,6 @@
                                   <select class="form-control form-control-lg  " v-model="role" >
                                     <option value="" disabled>انتخاب سطح دسترسی</option>
                                     <option value="customer">مشتری</option>
-                                    <option value="user">یوزر</option>
                                     <option value="superadmin">سوپرادمین</option>
                                     <option value="admin">ادمین</option>
                                   </select>

@@ -52,10 +52,6 @@ class deleteTransaction extends Controller
     public function deleteTransaction(Request $request)
     {
        
-        // $transaction = Transaction::all();
-        // return response()->json($transaction);
-
-
         try {
             $id = $request->id;
             $transaction = Transaction::findOrFail($id);

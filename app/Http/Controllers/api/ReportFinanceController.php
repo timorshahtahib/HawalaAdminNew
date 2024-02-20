@@ -247,6 +247,8 @@ class ReportFinanceController extends Controller
                 try {
                     $date = Jalalian::now();
                      $today_date = $date->getYear() ."/" .$date->getMonth() ."/" .$date->getDay();
+
+         
                     $limit = $request->has('limit') ? $request->limit : 10;
         
                     $transaction = Transaction::where('status', '=', '1')->where('date', $today_date)
@@ -254,7 +256,7 @@ class ReportFinanceController extends Controller
                     ->paginate($limit);
         
                     if ($transaction->isEmpty()) {
-                        return response()->json(['error' => 'Transaction not found'], 404);
+                        return response()->json([], 404);
                     }
                     $total_pages= $transaction->lastPage();
 

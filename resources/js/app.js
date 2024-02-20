@@ -35,10 +35,10 @@ app.component("example-component", App);
 app.use(routes);
 app.use(App);
 app.use(i18n);
-app.use(Maska);
+// app.use(Maska);
 app.mixin(helper);
 app.use(Vuelidate);
-app.use(VueApexCharts);
+// app.use(VueApexCharts);
 app.use(BootstrapVueNext);
 
 

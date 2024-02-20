@@ -44,4 +44,8 @@ class IncomeExp extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+    public function user()
+    {
+        return $this->belongsto(User::class);
+    }
 }

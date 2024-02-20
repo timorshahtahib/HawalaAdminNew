@@ -440,7 +440,9 @@ export default {
                                 </ul>
                             </div>
                             <div v-else class="text-center font-size-20">
-                                نتیجه مورد نظر یافت نشد!
+                                <div class="" style="height:50vh;display:flex; flex-direction:column;justify-content:center">
+                                    تراکنشی برای نمایش وجود ندارد!
+                                </div>
                             </div>
                           </div>
                         </div>

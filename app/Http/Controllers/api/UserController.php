@@ -20,8 +20,8 @@ class UserController extends Controller
         try {
             $limit = $request->has('limit') ? $request->limit : 10;
     
-            $user = User::where('status','=',1)->orderBy('id', 'desc')->paginate($limit);
-    
+            // $user = User::where('status','=',1)->where('role','admin')->orWhere('role','superadmin')->orderBy('id', 'desc')->paginate($limit);
+            $user = User::where('status','=',1) ->where('role','admin') ->orWhere('role','superadmin') ->orderBy('id', 'desc') ->paginate($limit);
             if ($user->isEmpty()) {
                 return response()->json(['کاربری برای نمایش وجود ندارد']);
             }

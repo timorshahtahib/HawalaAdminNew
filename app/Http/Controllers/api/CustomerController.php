@@ -37,7 +37,7 @@ class CustomerController extends Controller
         try {
             $limit = $request->has('limit') ? $request->limit : 10;
     
-            $customers = Customer::where('status', '=', '1')
+            $customers = Customer::where('status', '=', '1')->where('role','customer')
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
     

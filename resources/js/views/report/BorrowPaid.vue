@@ -315,7 +315,7 @@ export default {
                                                 <span v-else>{{ transaction.finance_account?.account_name}}</span>
                                             </td>
                                            <td>{{transaction.desc}}</td>
-                                            <td>{{transaction.user_id}}</td>
+                                            <td>{{transaction.user.name}}</td>
 
 
                                         </tr>
