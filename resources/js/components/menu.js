@@ -56,10 +56,6 @@ export const menuItems = [{
                 label: "ثبت مصرف جدید",
                 icon: "bx-file",
                 link: "/dashboard/expense",
-                // badge: {
-                //     variant: "success",
-                //     text: "menuitems.dashboards.list.jobs.badge"
-                // },
             },
             {
                 id: 9,

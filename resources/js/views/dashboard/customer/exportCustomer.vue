@@ -69,6 +69,8 @@ export default {
         this.totalPages = response.data.customers?.last_page();
         this.currentPage = page;
 
+        console.log("this.transactionslist",this.transactionslist);
+
         this.customerbalances = response.data.customerBalance
 
         this.customerName = response.data?.customer?.data[0].name;
@@ -120,7 +122,8 @@ export default {
 ,
 
 exportToPDF() {
-  const tables = [
+      try {
+        const tables = [
     this.$refs.table1,
     this.$refs.table2,
     // this.$refs.table3
@@ -132,16 +135,6 @@ exportToPDF() {
   pdf.addFileToVFS('arial.ttf', farsiFont);
   pdf.setFont('arial');
   pdf.setFontSize(12); // Set the font size to 12
-
-  // Set header
-  // const header = 'My PDF Header';
-  // const headerFontSize = 18;
-  // const headerX = pdf.internal.pageSize.getWidth() / 2;
-  // const headerY = 15;
-  // pdf.setFontSize(headerFontSize);
-  // pdf.text(header, headerX, headerY, { align: 'center' });
-
-  // Iterate through each table
   let yOffset = 20; // Initial y offset below the header
   tables.forEach((table, index) => {
     html2canvas(table).then(canvas => {
@@ -173,6 +166,9 @@ exportToPDF() {
       }
     });
   });
+      } catch (error) {
+        console.log(error.message);
+      }
 },
 
 
@@ -187,7 +183,7 @@ exportToPDF() {
     <PageHeader :title="title" :items="items" />
     <div class="row">
         <div class="col-12">
-            <div class="card">
+            <div class="card" >
               <div class="card-body">
                 <h4 class="card-title mb-4">جستجوی معامله</h4>
                 <form class="repeater" enctype="multipart/form-data">
@@ -258,7 +254,7 @@ exportToPDF() {
             <!-- end card -->
           </div>
       <div class="col-xl-12">
-        <div class="card h-100">
+        <div class="card"  style="min-height:100vh">
           <div class="card-body">
             <!-- <div class="table-responsive mb-0"> -->
             <div class="text-center">

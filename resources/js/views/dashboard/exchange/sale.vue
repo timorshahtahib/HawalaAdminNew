@@ -79,7 +79,6 @@ export default {
         };
     },
     mounted() {
-        this.getCurrency();
         this.getTransaction();
 
     },
@@ -118,6 +117,7 @@ export default {
             this.transactions = response.data.transactions.data;
             this.totalPages = response.data.transactions.last_page;
             this.currentPage = page;
+            this.currencies = response.data.currencies;
            } catch (error) {
             console.log(error.message);
            }finally{
@@ -136,21 +136,7 @@ export default {
                 this.getTransaction(this.currentPage + 1); // Update the page parameter
             }
         },
-        async getCurrency() {
-            try {
-                await api.get('/currencies').then((response) => {
-                        this.currencies = response.data.currencies.data;
-                        // console.log(this.currencies);
-
-                    })
-                    .catch((error) => {
-                        console.error('Error fetching currencies:', error);
-                    });
-
-            } catch (error) {
-                console.error('Error fetching data: ', error.message);
-            }
-        },
+    
         async get_edite_Currency() {
             try {
                 await api.get('/currencies').then((response) => {
@@ -395,7 +381,7 @@ export default {
     <PageHeader :title="title" :items="items" />
     <div class="row">
         <div class="col-xl-4">
-            <div class="card">
+            <div class="card"  style="min-height:100vh;">
 
                 <!-- edit modal start -->
                 <div class="col-sm-8">
@@ -605,7 +591,7 @@ export default {
         <!-- end col -->
 
         <div class="col-xl-8">
-            <div class="card">
+            <div class="card"  style="min-height:100vh;">
 
                 <div class="card-body">
 

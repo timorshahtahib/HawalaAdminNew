@@ -345,7 +345,7 @@ export default {
     <PageHeader :title="title" :items="items" />
     <div class="row">
         <div class="col-xl-4">
-            <div class="card">
+            <div class="card" style="min-height:100vh">
         
                 <!-- edit modal start -->
                 <div class="col-sm-8">
@@ -515,7 +515,7 @@ export default {
         <!-- end col -->
 
         <div class="col-xl-8">
-            <div class="card">
+            <div class="card" style="min-height:100vh">
                 
                 <div class="card-body">
                     <div class="col-sm-4">

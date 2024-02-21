@@ -72,7 +72,7 @@ class TransactionController extends Controller
                     $id = $request->id;
                     $limit = $request->has('limit') ? $request->limit : 10;
 
-                    $transaction_rasid_bord = Transaction::where('status', '=', '1')->where('ref_id',$id)
+                    $transaction_rasid_bord = Transaction::where('status', '1')->where('ref_id',$id)
                     ->with(['financeAccount','tr_currency','eq_currency','bank_account','referencedTransaction','user',])->orderBy('id','desc')->paginate($limit);
                     $customer = Customer::where('id',$id)->paginate($limit);
                     $transaction_order = Transaction::where('status', '=', '1')
@@ -85,6 +85,7 @@ class TransactionController extends Controller
                     if($transaction_rasid_bord->isEmpty()){
                         return response()->json([]);
                     }
+                   
                     $total_pages= $transaction_rasid_bord->lastPage();
                     return response()->json(['customer'=>$customer,'transactions'=>$transaction_rasid_bord,'orders'=>$transaction_order,'rasid'=> $rasid,'bord'=>$bord,'total_amount'=>$totalAmount,'total_pages'=>$total_pages,'customerBalance'=>$customBalance]);
                       

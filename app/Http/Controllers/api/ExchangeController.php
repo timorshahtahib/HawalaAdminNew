@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Currency;
 use App\Models\Transaction;
 use Exception;
 use Illuminate\Http\Request;
@@ -41,16 +42,17 @@ class ExchangeController extends Controller
             $limit = $request->has('limit') ? $request->limit : 10;
             $transaction = Transaction::where('status', '=', '1')->where('transaction_type','exchange')->where('rasid_bord','rasid')
             ->whereNotNull('or_tra')  // Add this condition to filter by non-null or_tra
-
             ->with(['financeAccount','customer','tr_currency','eq_currency','bank_account','referencedTransaction','user'])
             ->orderBy('id','desc')->paginate($limit);
+            // for getting transaction in select input
+            $currency = Currency::where('status', '=', '1')->get();
 
             if ($transaction->isEmpty()) {
                 return response()->json([]);
             }
             $total_pages = $transaction->lastPage();
 
-            return response()->json(['transactions'=>$transaction,'total_pages'=>$transaction]);
+            return response()->json(['transactions'=>$transaction,'total_pages'=>$transaction,'currencies' => $currency]);
         }
         catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -64,13 +66,13 @@ class ExchangeController extends Controller
             ->whereNotNull('or_tra')  // Add this condition to filter by non-null or_tra
             ->with(['financeAccount','customer','tr_currency','eq_currency','bank_account','referencedTransaction','user'])
             ->orderBy('id','desc')->paginate($limit);
-
+            $currency = Currency::where('status', '=', '1')->get();
             if ($transaction->isEmpty()) {
                 return response()->json([]);
             }
             $total_pages = $transaction->lastPage();
 
-            return response()->json(['transactions'=>$transaction,'total_pages'=>$transaction]);
+            return response()->json(['transactions'=>$transaction,'currencies' => $currency,'total_pages'=>$total_pages,]);
         }
         catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -79,20 +81,19 @@ class ExchangeController extends Controller
     public function getTransfer(Request $request)
     {
         try {
-            
             $limit = $request->has('limit') ? $request->limit : 10;
 
             $transaction = Transaction::where('transaction_type','transfer')
                 ->orWhere('transaction_type','commission')->where('status', '=', '1')
             ->with(['financeAccount','customer','tr_currency','eq_currency','bank_account','referencedTransaction','user'])
             ->orderBy('id','desc')->paginate($limit);
-
+            $currency = Currency::where('status', '=', '1')->get();
             if ($transaction->isEmpty()) {
                 return response()->json([]);
             }
             $total_pages = $transaction->lastPage();
 
-            return response()->json(['transactions'=>$transaction,'total_pages'=>$transaction]);
+            return response()->json(['transactions'=>$transaction,'currencies' => $currency,'total_pages'=>$total_pages]);
         }
         catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);

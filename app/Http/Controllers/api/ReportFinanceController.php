@@ -248,10 +248,9 @@ class ReportFinanceController extends Controller
                     $date = Jalalian::now();
                      $today_date = $date->getYear() ."/" .$date->getMonth() ."/" .$date->getDay();
 
-         
                     $limit = $request->has('limit') ? $request->limit : 10;
         
-                    $transaction = Transaction::where('status', '=', '1')->where('date', $today_date)
+                    $transaction = Transaction::where('status', '1')->whereDate('date', $today_date)
                    ->with(['financeAccount','customer','tr_currency','eq_currency','bank_account','referencedTransaction'])->orderBy('id','desc')
                     ->paginate($limit);
         

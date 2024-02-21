@@ -82,7 +82,7 @@ export default {
         };
     },
     mounted() {
-        this.getCurrency();
+        // this.getCurrency();
         this.getTransferTransaction();
 
     },
@@ -101,9 +101,7 @@ export default {
             this.showModal = true;
             this.get_edit_Currency();
         },
-        // closeModaledit() {
-        //     this.showModal = false;
-        // },
+
         closeModal() {
             this.showModal = false;
         },
@@ -122,6 +120,7 @@ export default {
                     this.transfers = response.data.transactions.data;
                     this.totalPages = response.data.transactions.last_page;
                     this.currentPage = page;
+                     this.currencies = response.data.currencies;
                 } catch (error) {
                     console.log(error.message);
                 }finally{
@@ -140,20 +139,7 @@ export default {
                 this.getTransferTransaction(this.currentPage + 1); // Update the page parameter
             }
         },
-        async getCurrency() {
-            try {
-                await api.get('/currencies').then((response) => {
-                        this.currencies = response.data.currencies.data;
-
-                    })
-                    .catch((error) => {
-                        console.error('Error fetching currencies:', error);
-                    });
-
-            } catch (error) {
-                console.error('Error fetching data: ', error.message);
-            }
-        },
+       
 
         // for adding new Transaction  
         async storeTransferTransaction() {
@@ -694,7 +680,7 @@ export default {
         <!-- end col -->
 
         <div class="col-xl-8">
-            <div class="card">
+            <div class="card"  style="min-height:100vh">
 
                 <div class="card-body">
 

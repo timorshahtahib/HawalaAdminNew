@@ -228,7 +228,7 @@ export default {
                             this.currencyModel = ''
                         this.selectedDakhl = ''
                         this.amount = 0,
-                            this.currency_rate = 1
+                        this.currency_rate = 0.00
                         this.equal_amount = 0
                         this.transaction_date =''
                         this.currencyModel = ''
@@ -597,7 +597,7 @@ export default {
 
                                     <div class="col-sm-8 col-xs-12">
                                         <label for="name"> مقدار پول رسید:‌</label>
-                                        <input type="number" id="amount" v-model="equal_amount" class="form-control required">
+                                        <input type="number" id="amount" step="0.01" v-model="equal_amount" class="form-control required">
                                         <span class="text-danger error-text amount_error"></span>
                                     </div>
                                 </div>
@@ -623,7 +623,7 @@ export default {
         <!-- end col -->
 
         <div class="col-xl-8">
-            <div class="card">
+            <div class="card" style="min-height:100vh">
 
                 <div class="card-body">
 

@@ -82,7 +82,7 @@
         const response = await api.get(`/customer/${this.$route.params.id}`);
         this.customer = response.data.customer;
         this.customerbalances = response.data.balances
-        // console.log("cutomBalances",this.customerbalances);
+        console.log("cutomBalances",this.customerbalances);
       } catch (error) {
         console.error(error.message);
       } finally {
@@ -141,6 +141,18 @@
       nextPage() {
         if (this.currentPage < this.totalPages) {
           this.getTransactionbycid(this.currentPage + 1); // Update the page parameter
+        }
+      },
+      async getCurrency() {
+        try {
+          await api.get('/currencies').then((response) => {
+            this.edit_currencies = response.data.currencies.data;
+            // console.log("this.edit_currencies", this.edit_currencies);
+          }).catch((error) => {
+            console.error('Error fetching currencies:', error);
+          });
+        } catch (error) {
+          console.error('Error fetching data: ', error.message);
         }
       },
       async editCustomer(id) {
@@ -346,18 +358,7 @@
           }
         }
       },
-      async getCurrency() {
-        try {
-          await api.get('/currencies').then((response) => {
-            this.edit_currencies = response.data.currencies.data;
-            // console.log("this.edit_currencies", this.edit_currencies);
-          }).catch((error) => {
-            console.error('Error fetching currencies:', error);
-          });
-        } catch (error) {
-          console.error('Error fetching data: ', error.message);
-        }
-      },
+    
       editChange_currency() {
         this.getBanksForEdit(this.editCurrencyModel);
       },
@@ -420,7 +421,7 @@
                   <!-- Loader or loading message here -->
                   <Loader />
                 </div>
-                <div class="card" style="margin-bottom:-60px !important">
+                <div class="card" style="margin-bottom:10px !important">
                   <div class="card-body">
                     <h4 class="card-title mb-4">اطلاعات شخصی</h4>
                     <div class="table-responsive mb-0">
@@ -432,18 +433,20 @@
                           </tr>
                           <tr>
                             <th scope="row">شماره تماس :</th>
-                            <td>{{customer.phone}}</td>
+                            <td v-if="customer.phone">{{customer.phone}}</td>
+                            <p class="text-muted mb-4" v-else>شماره تماس وجود ندارد</p>
+
                           </tr>
                           <tr>
-                            <th scope="row">آدرس :</th>
-                            <td>{{customer.address}}</td>
-                            <!-- <td v-if="customer.address > 0">{{customer.address}}</td> -->
-                            <!-- <td v-else>آدرس وجود ندارد</td> -->
+                            <th>آدرس :</th>
+                            <td v-if="customer.address">{{customer.address}}</td>
+                
+                             <td v-else>آدرس وجود ندارد</td> 
                           </tr>
                           <tr>
-                            <th scope="row">توضیحات :</th>
-                            <p class="text-muted mb-4" v-if="customer!=null">{{customer.desc}}</p>
-                            <p class="text-muted mb-4" v-else>توصیحاتی وجود ندارد</p>
+                            <th class="">توضیحات :</th>
+                            <p class="text-muted"  v-if="customer.desc">{{customer.desc}}</p>
+                            <p class="text-muted " v-else>توصیحاتی وجود ندارد</p>
                           </tr>
                         </tbody>
                       </table>
@@ -500,7 +503,7 @@
         <!-- end card -->
       </div>
       <div class="col-xl-8">
-        <div class="card h-100">
+        <div class="card "  style="min-height:100vh">
           <div class="card-body">
             <!-- <div class="table-responsive mb-0"> -->
             <div class="">
@@ -570,7 +573,7 @@
                                           <span v-else>{{ transaction.finance_account.account_name}}</span>
                                         </td>
                                         <td>{{transaction.desc}}</td>
-                                        <td>{{transaction.user_id}}</td>
+                                        <td>{{transaction.user?.name}}</td>
                                         <td>
                                           <button class="btn btn-xs">
                                             <i class="fas fa-pencil-alt text-success me-1" @click="editTransactionFunc(transaction.id)"></i>
@@ -638,7 +641,7 @@
                                       <td v-if="transaction.bank_account!=null">{{transaction.bank_account.account_name}}</td>
                                       <td v-else>{{ transaction.finance_account.account_name}}</td>
                                       <td>{{transaction.desc}}</td>
-                                      <td>{{transaction.user_id}}</td>
+                                      <td>{{transaction.user?.name}}</td>
                                       <td>
                                         <b-dropdown class="card-drop" variant="white" right toggle-class="p-0" menu-class="dropdown-menu-end">
                                           <template v-slot:button-content>

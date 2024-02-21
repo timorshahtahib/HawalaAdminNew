@@ -232,14 +232,14 @@
         },
 
         async searchData() {
-            // const response = await api.post('/searchUser', {
-            //     query: this.searchQuery
-            // });
-            // // this.users = response.data.users.data;
+            const response = await api.post('/searchUser', {
+                query: this.searchQuery
+            });
+            // this.users = response.data.users.data;
             // this.users = response.data;
             // console.log(this.searchQuery);
-            // // this.totalPages = response.data.users.last_page;
-            // // this.currentPage = page;
+            // this.totalPages = response.data.users.last_page;
+            // this.currentPage = page;
 
             console.log("search");
         },
@@ -305,7 +305,7 @@
 
 <!-- add new user -->
       <div class="col-xl-12">
-          <div class="card">
+          <div class="card" style="min-height:100vh">
 
               <div class="card-body">
               
