@@ -57,6 +57,8 @@ Route::middleware('auth:api')->group(function(){
     Route::post('/searchuser', [UserController::class,'searchUsers']);
     
     Route::apiResource('customer',CustomerController::class);
+    // Route::get('/customer/{$id}', [CustomerController::class, 'show']);
+
     Route::post('/updatecustomer', [CustomerController::class, 'updateCustomer']);
     Route::post('/searchCustomer', [CustomerController::class, 'searchCustomer']);
     Route::post('/changeusername/{id}', [CustomerController::class, 'ChangeUsernameFunc']);

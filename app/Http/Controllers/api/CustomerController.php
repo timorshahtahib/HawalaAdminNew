@@ -123,7 +123,47 @@ class CustomerController extends Controller
         
     }
     
+    public function show(Customer $customer)
+    {
+        return response()->json($customer,200);
+    }
     
+
+    public function updateCustomer(Request $request,Customer $customer)
+    {
+      try {
+        $validator = Validator::make($request->all(),[
+            'name' => 'required',
+            // 'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:50',
+            'phone' => 'required',
+            'address'=>'',
+            'desc'=>'',
+    ],
+    [
+        'name' =>'نام ضروری است',
+        'phone.required'=>'شماره تماس ضروری است',
+    ]);
+        if(!$validator->passes()){
+            return response()->json([
+                'status'=>false,
+                'error'=>$validator->errors()->toArray(),
+            ]);
+        }
+  
+    $customer = Customer::findOrFail($request->id);
+        $customer->update([
+            'name' => $request->name,
+            // 'image' => $request->image,
+            'phone' => $request->phone,
+            'address'=>$request->address,
+            'desc'=>$request->desc,
+        ]);
+        return response()->json([ 'status'=>true,'message' => 'User update successfully!', 'Customer' => $customer], 200);
+      } catch (Throwable $e) {
+        return response()->json([ 'status'=>false,'message' => $e->getMessage()], 500);
+
+      }
+    }
     public function ChangeUsernameFunc(Request $request, $id){
     $customer =  Customer::where('id', $id)->where('status', 1)->first();
     if (!$customer) {
@@ -227,6 +267,7 @@ class CustomerController extends Controller
             ->where('ref_id', $customerId)
             ->get();
     
+           
         $balances = [];
     
         foreach ($transactions as $transaction) {
@@ -242,7 +283,7 @@ class CustomerController extends Controller
                     'balance' => 0,
                 ];
             }
-    
+           
             if ($type === 'rasid') {
                 $balances[$currencyName]['rasid'] += $amount;
             } elseif ($type === 'bord') {

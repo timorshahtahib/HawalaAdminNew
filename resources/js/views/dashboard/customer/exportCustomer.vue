@@ -69,7 +69,7 @@ export default {
         this.totalPages = response.data.customers?.last_page();
         this.currentPage = page;
 
-        console.log("this.transactionslist",this.transactionslist);
+        // console.log("this.transactionslist",this.transactionslist);
 
         this.customerbalances = response.data.customerBalance
 

@@ -16,9 +16,9 @@ class Customer extends Authenticatable
     protected $table="users";
     protected $fillable=
     [
-            'id', 'name', 'last_name', 'cu_number',
+            'id', 'name', 'cu_number',
             'phone', 'username', 'password', 'image', 
-            'address', 'token', 'type', 'acount_currency',
+            'address', 'token', 'type', 
             'desc', 'status',
             'created_at', 'updated_at'
 

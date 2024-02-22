@@ -240,7 +240,7 @@ class ReportFinanceController extends Controller
     
 
 
-       
+                                                                                                                                                                                                                                                                                                                                
             
 
             public function getRooznamcha(Request $request){

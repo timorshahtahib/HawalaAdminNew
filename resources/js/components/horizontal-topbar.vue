@@ -20,23 +20,23 @@ export default {
   data() {
     return {
       logoDarkLg, logoDarkSm, logoLightLg, logoLightSm, avatar2 ,
-      languages: [
-        {
-          flag: us,
-          language: "en",
-          title: "English",
-        },
-        {
-          flag: fr,
-          language: "fr",
-          title: "French",
-        },
-        {
-          flag: ar,
-          language: "ar",
-          title: "Arabic",
-        },
-      ],
+      // languages: [
+      //   {
+      //     flag: us,
+      //     language: "en",
+      //     title: "English",
+      //   },
+      //   {
+      //     flag: fr,
+      //     language: "fr",
+      //     title: "French",
+      //   },
+      //   {
+      //     flag: ar,
+      //     language: "ar",
+      //     title: "Arabic",
+      //   },
+      // ],
       lan: this.$i18n.locale,
       text: null,
       flag: null,

@@ -97,9 +97,9 @@ export default {
         };
     },
     mounted() {
-        this.getCurrency();
+        // this.getCurrency();
         this.getTransaction();
-        this.getCustomers();
+        // this.getCustomers();
 
     },
 
@@ -120,6 +120,8 @@ export default {
                     this.transactions = response.data.transactions.data;
                     this.totalPages = response.data.transactions.last_page;
                     this.currentPage = page; 
+                    this.currencies = response.data.currencies;
+                    this.customers = response.data.customers;
                 } catch (error) {
                     console.log(error.message);
                 }finally{
@@ -166,27 +168,8 @@ export default {
             });
         },
 
-        async getCustomers() {
-            try {
-                const response = await api.get('/customer');
-                this.customers = response.data.customers.data;
-            } catch (error) {
-                console.error('Error fetching data: ', error.message);
-            }
-        },
-        async getCurrency() {
-            try {
-                await api.get('/currencies').then((response) => {
-                        this.currencies = response.data.currencies.data;
-                    })
-                    .catch((error) => {
-                        console.error('Error fetching currencies:', error);
-                    });
-
-            } catch (error) {
-                console.error('Error fetching data: ', error.message);
-            }
-        },
+    
+    
         // for adding new Transaction  
         async storeTransaction() {
             try {
@@ -225,7 +208,7 @@ export default {
                         this.errors = {}
                         this.rasid_bord = ''
                         this.selectedCustomer = null,
-                            this.currencyModel = ''
+                        this.currencyModel = ''
                         this.selectedDakhl = ''
                         this.amount = 0,
                         this.currency_rate = 0.00
@@ -673,7 +656,7 @@ export default {
                                                 <span v-else>{{ transaction.finance_account?.account_name}}</span> </td>
                                             
                                             <td>{{transaction.desc}}</td>
-                                            <td>{{transaction?.user.name}}</td>
+                                            <td>{{transaction?.user?.name}}</td>
 
                                             <td>
 

@@ -241,6 +241,7 @@ export default {
             desc: '',
             errors: {},
             // edit modal
+            editCust:{},
             editshowModal: false,
             editname: '',
             editemail: '',
@@ -332,7 +333,7 @@ export default {
                     desc: this.desc,
                 });
 
-                console.log("response",response);
+                // console.log("response",response);
                 if (response.data != null) {
                     if (response.data.status === false) {
                         if (response.data.message != null) {
@@ -365,15 +366,16 @@ export default {
             }
         },
         async editCustomer(id) {
+            // console.log("id",id);
             const response = await api.get(`/customer/${id}`);
-            this.editCust = response.data.customer;
+            this.editCust = response.data;
+            // console.log("response",response);
             this.openEditModal();
             this.editname = this.editCust.name;
             this.editPhone = this.editCust.phone;
             this.editImage = this.editCust.image;
             this.editAddress = this.editCust.address;
             this.editDesc = this.editCust.desc;
-            //    console.log("inside editcustomer ", this.editDesc);
         },
         async editSubmitCustomerForm() {
             // console.log("id",id);

@@ -80,14 +80,15 @@
       this.isLoading = true;
       try {
         const response = await api.get(`/customer/${this.$route.params.id}`);
-        this.customer = response.data.customer;
-        this.customerbalances = response.data.balances
-        console.log("cutomBalances",this.customerbalances);
+        this.customer = response.data;
+        // this.customerbalances = response.customerBalance
       } catch (error) {
         console.error(error.message);
       } finally {
         this.isLoading = false;
       }
+
+   
     },
     methods: {
 
@@ -117,21 +118,26 @@
         })
       },
       async getTransactionbycid(page = 1) {
+      
         try {
-          const response = await api.post(`/customerinfo`, {
-            id: this.$route.params.id
-          });
-          this.transactionslist = response.data.transactions?.data;
-          this.orderslist = response.data?.orders;
-          this.rasid = response.data.rasid;
-          this.bord = response.data.bord;
-          this.totalAmount = response.data.total_amount;
-          this.totalPages = response.data.customers?.last_page();
-          this.currentPage = page;
-          // console.log("Customers",this.transactionslist);
-        } catch (error) {
-          console.log(error.message);
-        }
+        this.isLoading=true;
+        const response = await api.post(`/customerinfo`, {
+          id: this.$route.params.id,
+        });
+        this.transactionslist = response.data.transactions?.data;
+        this.orderslist = response.data?.orders;
+        this.rasid = response.data.rasid;
+        this.bord = response.data.bord;
+        this.totalAmount = response.data.total_amount;
+        this.totalPages = response.data.customers?.last_page();
+        this.currentPage = page;
+        this.customerbalances = response.data.customerBalance
+
+      } catch (error) {
+        console.log(error.message);
+      }finally{
+        this.isLoading=false;
+      }
       },
       prevPage() {
         if (this.currentPage > 1) {
@@ -429,13 +435,12 @@
                         <tbody>
                           <tr>
                             <th scope="row">نام کامل :</th>
-                            <td>{{customer.name}} {{customer.last_name}}</td>
+                            <td>{{customer.name}}</td>
                           </tr>
                           <tr>
                             <th scope="row">شماره تماس :</th>
                             <td v-if="customer.phone">{{customer.phone}}</td>
                             <p class="text-muted mb-4" v-else>شماره تماس وجود ندارد</p>
-
                           </tr>
                           <tr>
                             <th>آدرس :</th>
@@ -490,7 +495,7 @@
                           <span class="badge  font-size-13" :class="currency.bord > 0 ? 'bg-success' : 'bg-danger'">{{ currency.bord }}</span>
                         </td>
                         <td>
-                          <span class="badge  font-size-13" :class="currency.balance > 0 ? 'bg-success' : 'bg-danger'">{{ currency.balance }}</span>
+                          <span class="badge  font-size-13" :class="currency.balance > 0 ? 'bg-success' : 'bg-danger text-left'">{{ currency.balance }}</span>
                         </td>
                       </tr>
                     </tbody>

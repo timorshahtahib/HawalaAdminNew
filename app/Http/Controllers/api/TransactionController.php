@@ -54,8 +54,10 @@ class TransactionController extends Controller
             if ($transaction->isEmpty()) {
                 return response()->json(['error' => 'Transaction not found'], 404);
             }
+            $currency = Currency::where('status', '=', '1')->get();
+            $customers = Customer::where('status', '=', '1')->where('role','customer')->orderBy('id', 'desc')->get();
             $total_pages= $transaction->lastPage();
-            return response()->json(['transactions' =>$transaction,'total_pages'=>$transaction]);
+            return response()->json(['transactions' =>$transaction,'currencies' => $currency,'customers' => $customers,'total_pages'=>$transaction]);
         }
         catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -128,7 +130,7 @@ class TransactionController extends Controller
             try{
                 ////transaction chek number generate
                 $check_number = TransactionController::new_check_number();
-                // dd($check_number);
+            
           
                 $transaction_values = [
                     'rasid_bord'=> $request->rasid_bord,
