@@ -65,13 +65,13 @@
                     <td>{{ order.sub_category_id }}</td>
                     <td>{{ order.qtt }}</td>
                     <td>{{ order.amount }}</td>
-                    <td>{{ order.final_amount }}</td>
+                    <td>{{ order.final_amount.toLocaleString() }}</td>
                     <td>{{ order.profit_percentage }}</td>
-                    <td>{{ order.profit_amount }}</td>
+                    <td>{{ order.profit_amount.toLocaleString() }}</td>
                     <td>{{ order.currency }}</td>
                     <td>{{ order.buy_currency_id }}</td>
                     <td>{{ order.currency_rate }}</td>
-                    <td>{{ order.buy_price }}</td>
+                    <td>{{ order.buy_price.toLocaleString() }}</td>
                     <td>{{ order.user_id }}</td>
                     <td>{{ order.product_id }}</td>
                     <td>{{ order.supplier_id }}</td>

@@ -409,7 +409,7 @@ export default {
                                             <td v-else>{{ transaction.finance_account?.account_name}}</td>
                                         
                                            
-                                            <td >{{transaction.amount}} {{transaction.tr_currency?.name}}
+                                            <td >{{transaction.amount.toLocaleString()}} {{transaction.tr_currency?.name}}
                                             {{transaction.rasid_bord ==='rasid'? 'به': 'از' }}
                                                 <span v-if="transaction?.bank_account!=null">{{transaction.bank_account?.account_name}}</span>
                                                 <span v-else>{{ transaction.finance_account?.account_name}}</span>

@@ -88,7 +88,7 @@ export default {
 
 
     <div class="row">
-      <div class="col-xl-4">
+      <div class="col-xl-4 col-sm-12">
         <div class="card">
           <div class="card-body">
             <h4 class="card-title mb-4"> مشتریان و کابران</h4>
@@ -157,16 +157,16 @@ export default {
         </div>
       </div>
       <!-- end col -->
-      <div class="col-xl-4">
+      <div class="col-xl-4 col-sm-12">
         <div class="card">
           <div class="card-body">
             <h4 class="card-title mb-4">سفارشات</h4>
            
             <div class="text-center">
               <div class="avatar-sm mx-auto mb-4">
-                <router-link to="/dashboard/order" class="avatar-title rounded-circle bg-primary font-size-18">
+                <span  class="avatar-title rounded-circle bg-primary font-size-18">
                   {{ all_orders }}
-                </router-link>
+                </span>
               </div>
             </div>
             <div class="row mt-4">
@@ -327,7 +327,7 @@ export default {
                         <td>{{ transaction.date }}</td>
                         <td>
                           <span
-                            class="badge badge-pill badge-soft-success font-bold p-2"
+                            class="badge badge-pill  font-bold p-2"
                             :class="{
                               'badge-soft-success': `${transaction.rasid_bord}` === 'rasid',
                               'badge-soft-warning': `${transaction.rasid_bord}` === 'bord',
@@ -337,7 +337,7 @@ export default {
                         </td>
                         <td v-if="transaction.customer!=null">{{ transaction.customer?.name}}</td>
                         <td v-else>{{ transaction.finance_account?.account_name}}</td>
-                        <td>{{transaction.amount}} {{transaction.tr_currency?.name}}
+                        <td>{{transaction.amount.toLocaleString()}} {{transaction.tr_currency?.name}}
                           {{transaction.rasid_bord ==='rasid'? 'به': 'از' }}
                               <span v-if="transaction?.bank_account!=null">{{transaction.bank_account?.account_name}}</span>
                               <span v-else>{{ transaction.finance_account?.account_name}}</span>

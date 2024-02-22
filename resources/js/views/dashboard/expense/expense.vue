@@ -554,7 +554,7 @@ export default {
                                                     <td>{{expenesel.date}}</td>
                                                     <td>{{expenesel.expense_acount?.account_name}}</td>
                                                     <td>{{expenesel.type ? "مصرف" :""}}</td>
-                                                    <td>{{expenesel.amount}} {{expenesel.expense_currency.name}} به {{expenesel.expense_bank?.account_name}}</td>
+                                                    <td>{{expenesel.amount.toLocaleString()}} {{expenesel.expense_currency.name}} به {{expenesel.expense_bank?.account_name}}</td>
                                                     <td>{{expenesel.desc}}</td>
                                                     <td>{{expenesel.user.name}}</td>
         

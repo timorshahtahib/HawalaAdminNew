@@ -719,12 +719,12 @@ export default {
 
                                             <td>{{transaction?.check_number}}</td>
                                             <td>
-                                                <span class="badge  font-size-12" :class="transaction?.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">
+                                                <span class="badge badge-pill  font-bold p-2 " :class="transaction?.rasid_bord === 'rasid' ? 'badge-soft-success' :'badge-soft-warning'">
                                                     {{transaction?.rasid_bord}}
                                                 </span>
                                             </td>
 
-                                            <td>{{transaction?.amount}} {{transaction?.tr_currency.name}}
+                                            <td>{{transaction?.amount.toLocaleString()}} {{transaction?.tr_currency.name}}
                                                 به
                                                 <span v-if="transaction?.bank_account!=null">{{transaction.bank_account?.account_name}}</span>
                                                 <span v-else>{{ transaction?.finance_account?.account_name}}</span>

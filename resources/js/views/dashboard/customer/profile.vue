@@ -488,14 +488,14 @@
                         <td>{{ key }}</td>
                         <td>
                           <span class="badge  font-size-13" :class="currency.rasid > 0 ? 'bg-success' : 'bg-danger'">
-                            {{ currency.rasid }}
+                            {{ currency.rasid.toLocaleString() }}
                           </span>
                         </td>
                         <td>
-                          <span class="badge  font-size-13" :class="currency.bord > 0 ? 'bg-success' : 'bg-danger'">{{ currency.bord }}</span>
+                          <span class="badge  font-size-13" :class="currency.bord > 0 ? 'bg-success' : 'bg-danger'">{{ currency.bord.toLocaleString() }}</span>
                         </td>
                         <td>
-                          <span class="badge  font-size-13" :class="currency.balance > 0 ? 'bg-success' : 'bg-danger text-left'">{{ currency.balance }}</span>
+                          <span class="badge  font-size-13" :class="currency.balance > 0 ? 'bg-success' : 'bg-danger text-left'">{{ currency.balance.toLocaleString() }}</span>
                         </td>
                       </tr>
                     </tbody>

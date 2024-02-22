@@ -1,10 +1,6 @@
 <script>
 import simplebar from "simplebar-vue";
-import us from "../../images/flags/us.jpg";
-import fr from "../../images/flags/french.jpg";
-import es from "../../images/flags/spain.jpg";
-import zh from "../../images/flags/chaina.png";
-import ar from "../../images/flags/arabic.png";
+
 
 import logoDarkLg from "../../images/logo-dark.png";
 
@@ -12,17 +8,10 @@ import asialogo from "../../images/mycustom/Asiatelecomlogo.png";
 // import asialogo from '../../images/logo-light.svg';
 
 import avatar1 from "../../images/users/avatar-2.jpg";
-import avatar3 from "../../images/users/avatar-3.jpg";
-import avatar4 from "../../images/users/avatar-4.jpg";
 
-import github from "../../images/brands/github.png";
-import bitbucket from "../../images/brands/bitbucket.png";
-import dribbble from "../../images/brands/dribbble.png";
-import dropbox from "../../images/brands/dropbox.png";
-import mail_chimp from "../../images/brands/mail_chimp.png";
-import slack from "../../images/brands/slack.png";
 
-import megamenu from "../../images/megamenu-img.png";
+
+// import megamenu from "../../images/megamenu-img.png";
 
 /**
  * Nav-bar Component
@@ -34,54 +23,14 @@ export default {
       logoDarkLg,
       asialogo,
       avatar1,
-      avatar3,
-      avatar4,
-      github,
-      bitbucket,
-      dribbble,
-      dropbox,
-      mail_chimp,
-      slack,
-      megamenu,
-      languages: [
-        {
-          flag: us,
-          language: "en",
-          title: "English",
-        },
-        {
-          flag: fr,
-          language: "fr",
-          title: "French",
-        },
-        {
-          flag: es,
-          language: "es",
-          title: "Spanish",
-        },
-        {
-          flag: zh,
-          language: "zh",
-          title: "Chinese",
-        },
-        {
-          flag: ar,
-          language: "fa",
-          title: "Farsi",
-        },
-      ],
-      lan: this.$i18n.locale,
-      text: null,
-      flag: null,
-      value: null,
+  
+  
     };
   },
 
   components: { simplebar },
   mounted() {
-    this.value = this.languages.find((x) => x.language === this.$i18n.locale);
-    this.text = this.value.title;
-    this.flag = this.value.flag;
+
 
     if (localStorage.getItem("user")) {
       this.username = JSON.parse(localStorage.getItem("user")).username;
@@ -99,38 +48,7 @@ export default {
     toggleRightSidebar() {
       this.$parent.toggleRightSidebar();
     },
-    initFullScreen() {
-      document.body.classList.toggle("fullscreen-enable");
-      if (
-        !document.fullscreenElement &&
-        /* alternative standard method */ !document.mozFullScreenElement &&
-        !document.webkitFullscreenElement
-      ) {
-        // current working methods
-        if (document.documentElement.requestFullscreen) {
-          document.documentElement.requestFullscreen();
-        } else if (document.documentElement.mozRequestFullScreen) {
-          document.documentElement.mozRequestFullScreen();
-        } else if (document.documentElement.webkitRequestFullscreen) {
-          document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-        }
-      } else {
-        if (document.cancelFullScreen) {
-          document.cancelFullScreen();
-        } else if (document.mozCancelFullScreen) {
-          document.mozCancelFullScreen();
-        } else if (document.webkitCancelFullScreen) {
-          document.webkitCancelFullScreen();
-        }
-      }
-    },
-    setLanguage(locale, country, flag) {
-      this.lan = locale;
-      this.text = country;
-      this.flag = flag;
-      this.$i18n.locale = locale;
-      localStorage.setItem("locale", locale);
-    },
+  
   },
 };
 </script>
@@ -150,7 +68,7 @@ export default {
             </span>
           </router-link>
 
-          <router-link to="/" class="logo logo-light">
+          <router-link to="/home" class="logo logo-light">
             <span class="logo-sm">
               <img :src="asialogo" alt height="22" />
             </span>

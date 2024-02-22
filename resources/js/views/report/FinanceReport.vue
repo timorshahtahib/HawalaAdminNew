@@ -77,8 +77,6 @@ export default {
 
 <template>
   <Layout>
-
-
     <div class="row">
       <div class="col-xl-12">
         <div class="row">
@@ -92,9 +90,11 @@ export default {
                     </div>
             
                     <div class="mini-stat-icon avatar-sm align-self-center rounded-circle bg-primary">
+                      <router-link to="/dashboard/currency">
                       <span class="avatar-title">
                         <i class="bx bx-copy-alt font-size-24"></i>
                       </span>
+                    </router-link>
                     </div>
                   </div>
                 </div>
@@ -111,9 +111,11 @@ export default {
                     </div>
             
                     <div class="mini-stat-icon avatar-sm align-self-center rounded-circle bg-primary">
+                      <router-link to="/dashboard/currency">
                       <span class="avatar-title">
                         <i class="bx bx-archive-in font-size-24"></i>
                       </span>
+                    </router-link>
                     </div>
                   </div>
                 </div>
@@ -147,9 +149,9 @@ export default {
                                   
                                   <tr v-for="(item, index) in allbalances" :key="index">
                                     <td>{{ item.currency }}</td>
-                                    <td><span class="badge  font-size-11" :class="item.rasid > 0 ? 'bg-success' : 'bg-danger'">{{ item.rasid }} </span></td>
-                                    <td> <span class="badge font-size-11" :class="item.bord > 0 ? 'bg-success' : 'bg-danger'"> {{ item.bord }}</span></td>
-                                    <td><span class="badge font-size-11" :class="item.balance > 0 ? 'bg-success': 'bg-danger'"> {{ item.balance }}</span></td>
+                                    <td><span class="badge  font-size-11" :class="item.rasid > 0 ? 'bg-success' : 'bg-danger'">{{ item.rasid.toLocaleString() }} </span></td>
+                                    <td> <span class="badge font-size-11" :class="item.bord > 0 ? 'bg-success' : 'bg-danger'"> {{ item.bord.toLocaleString() }}</span></td>
+                                    <td><span class="badge font-size-11" :class="item.balance > 0 ? 'bg-success': 'bg-danger'"> {{ item.balance.toLocaleString() }}</span></td>
                                   </tr>
                                 </tbody>
                               </table>
@@ -202,11 +204,11 @@ export default {
                       <td>{{bank.id}}</td>
                       <td>{{bank.account_name}}</td>
                       <td>{{bank.currencyname}}</td>
-                      <td> <span class="badge  font-size-13" :class="bank.total_rasid > 0 ? 'bg-success' : 'bg-warning' "> {{bank.total_rasid}}</span></td>
-                      <td><span class="badge  font-size-13" :class="bank.total_bord > 0 ? 'bg-danger' :  'bg-warning' "> {{bank.total_bord}}</span></td>
+                      <td> <span class="badge  font-size-13" :class="bank.total_rasid > 0 ? 'bg-success' : 'bg-warning' "> {{bank.total_rasid.toLocaleString()}}</span></td>
+                      <td><span class="badge  font-size-13" :class="bank.total_bord > 0 ? 'bg-danger' :  'bg-warning' "> {{bank.total_bord.toLocaleString()}}</span></td>
                       <td style="direction:rtl !important">
                         <span class="badge  font-size-13" :class="bank.blance > 0 ? 'bg-success' : bank.blance === 0 ? 'bg-warning' : 'bg-danger'">
-                          {{bank.blance}}
+                          {{bank.blance.toLocaleString()}}
                         </span>
                       </td>
                       <td>

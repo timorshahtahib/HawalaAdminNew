@@ -102,7 +102,6 @@ export default {
         },
 
         async searchbankTransaction(){
-
             try {
                 const response = await api.post('/filterBankTransactions', {
                     tr_type: this.rasid_bord_type,
@@ -338,7 +337,7 @@ export default {
                               </div>
                             <div v-else>
                                 <div class="table-responsive" v-if="transactions.length">
-                                    <table class="table table-centered table-nowrap">
+                                    <table class="table table-nowrap">
                                         <thead>
                                             <tr>
                                                 <th class="text-center">آیدی</th>
@@ -361,12 +360,13 @@ export default {
                                                 <td v-if="transaction.customer!=null">{{ transaction.customer?.name}}</td>
                                                 <td v-else>{{ transaction.finance_account?.account_name}}</td>
                                                 <td>
-                                                    <span class="badge  font-size-12" :class="transaction.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">
-                                                    {{transaction.rasid_bord}}
+                                                    <span class="badge badge-pill  font-bold font-size-12 p-2" :class="transaction.rasid_bord === 'rasid' ? 'badge-soft-success' :'badge-soft-warning'">
+                                                        {{transaction.rasid_bord==='rasid' ? 'رسید' : 'برد' }}
                                                     </span>
+                                                
                                                 </td>
                                                 <td>{{transaction.check_number}}</td>
-                                                <td>{{transaction.amount}}</td>
+                                                <td>{{transaction.amount.toLocaleString()}}</td>
                                                 <td>{{transaction.tr_currency.name}}</td>
                                                 <td v-if="transaction.bank_account!=null">{{transaction.bank_account?.account_name}}</td>
 
