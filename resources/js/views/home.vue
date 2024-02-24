@@ -103,9 +103,9 @@ export default {
                 <div class="social-source text-center mt-3">
                   <div class="avatar-xs mx-auto mb-3">
                     <span class="avatar-title rounded-circle bg-white  font-size-16">
-                
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M304 128a80 80 0 1 0 -160 0 80 80 0 1 0 160 0zM96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM49.3 464H398.7c-8.9-63.3-63.3-112-129-112H178.3c-65.7 0-120.1 48.7-129 112zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3z"/></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="0 0 48 48" id="user"><path fill="#42c3cf" d="M31.64,27.72a13.94,13.94,0,0,1-15.28,0A18,18,0,0,0,6.05,42.94a1,1,0,0,0,.27.75,1,1,0,0,0,.73.31H41a1,1,0,0,0,.73-.31,1,1,0,0,0,.27-.75A18,18,0,0,0,31.64,27.72Z"></path><circle cx="24" cy="16" r="12" fill="#42c3cf"></circle></svg>
                       
+                                                    
                     </span>
                   </div>
                   <h5 class="font-size-15">تعداد کاربران</h5>
@@ -120,7 +120,10 @@ export default {
                 <div class="social-source text-center mt-3">
                   <div class="avatar-xs mx-auto mb-3">
                     <span class="avatar-title rounded-circle bg-white font-size-16 cover">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M160 96a40 40 0 1 0 0-80 40 40 0 1 0 0 80zm0-96a56 56 0 1 1 0 112A56 56 0 1 1 160 0zM141.1 144c-21.5 0-41.1 12.3-50.4 31.7L23.2 315.5c-1.9 4-6.7 5.6-10.7 3.7s-5.6-6.7-3.7-10.7L76.3 168.7c12-24.9 37.2-40.7 64.8-40.7h37.8c27.6 0 52.8 15.8 64.8 40.7l67.5 139.8c1.9 4 .3 8.8-3.7 10.7s-8.8 .3-10.7-3.7L229.3 175.7C220 156.3 200.4 144 178.9 144H141.1zM104 248V480c0 8.8 7.2 16 16 16s16-7.2 16-16V360c0-13.3 10.7-24 24-24s24 10.7 24 24V480c0 8.8 7.2 16 16 16s16-7.2 16-16V248c0-4.4 3.6-8 8-8s8 3.6 8 8V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V360c0-4.4-3.6-8-8-8s-8 3.6-8 8V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V248c0-4.4 3.6-8 8-8s8 3.6 8 8z"/></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                        <path fill="blue" d="M160 96a40 40 0 1 0 0-80 40 40 0 1 0 0 80zm0-96a56 56 0 1 1 0 112A56 56 0 1 1 160 0zM141.1 144c-21.5 0-41.1 12.3-50.4 31.7L23.2 315.5c-1.9 4-6.7 5.6-10.7 3.7s-5.6-6.7-3.7-10.7L76.3 168.7c12-24.9 37.2-40.7 64.8-40.7h37.8c27.6 0 52.8 15.8 64.8 40.7l67.5 139.8c1.9 4 .3 8.8-3.7 10.7s-8.8 .3-10.7-3.7L229.3 175.7C220 156.3 200.4 144 178.9 144H141.1zM104 248V480c0 8.8 7.2 16 16 16s16-7.2 16-16V360c0-13.3 10.7-24 24-24s24 10.7 24 24V480c0 8.8 7.2 16 16 16s16-7.2 16-16V248c0-4.4 3.6-8 8-8s8 3.6 8 8V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V360c0-4.4-3.6-8-8-8s-8 3.6-8 8V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V248c0-4.4 3.6-8 8-8s8 3.6 8 8z"/>
+                    </svg>
+                    
                     </span>
                   </div>
                   <h5 class="font-size-15">تعداد مشتریان</h5>
@@ -143,9 +146,11 @@ export default {
                   </div>
                   <h5 class="font-size-15">مشتریان حذف شده</h5>
                   <div class="avatar-xs mx-auto mb-3">
-                    <span class="avatar-title rounded-circle bg-danger font-size-16 cover">
-                      {{deleted_customers}}
-                    </span>
+                    <router-link to="/dashboard/customerdeleted" class="avatar-title rounded-circle bg-success font-size-16 cover">
+                      <span class="avatar-title rounded-circle bg-danger font-size-16 cover">
+                        {{deleted_customers}}
+                      </span>
+                    </router-link>
                   </div>
                 </div>
               </div>
@@ -173,8 +178,15 @@ export default {
                   <div class="avatar-xs mx-auto mb-3">
                     <span class="avatar-title rounded-circle bg-white  font-size-16">
                       <!-- <i class="mdi mdi-facebook text-white"></i> -->
-                      <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0,0,256,256">
+                      <!-- <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0,0,256,256">
                         <g fill="#339af0" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(5.12,5.12)"><path d="M25,2c-12.683,0 -23,10.317 -23,23c0,12.683 10.317,23 23,23c12.683,0 23,-10.317 23,-23c0,-4.56 -1.33972,-8.81067 -3.63672,-12.38867l-1.36914,1.61719c1.895,3.154 3.00586,6.83148 3.00586,10.77148c0,11.579 -9.421,21 -21,21c-11.579,0 -21,-9.421 -21,-21c0,-11.579 9.421,-21 21,-21c5.443,0 10.39391,2.09977 14.12891,5.50977l1.30859,-1.54492c-4.085,-3.705 -9.5025,-5.96484 -15.4375,-5.96484zM43.23633,7.75391l-19.32227,22.80078l-8.13281,-7.58594l-1.36328,1.46289l9.66602,9.01563l20.67969,-24.40039z"></path></g></g>
+                        </svg> -->
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0,0,256,256">
+                          <g fill="#339af0" fill-rule="nonzero">
+                            <g transform="scale(5.12,5.12)">
+                              <path d="M25,2c-12.683,0 -23,10.317 -23,23c0,12.683 10.317,23 23,23c12.683,0 23,-10.317 23,-23c0,-4.56 -1.33972,-8.81067 -3.63672,-12.38867l-1.36914,1.61719c1.895,3.154 3.00586,6.83148 3.00586,10.77148c0,11.579 -9.421,21 -21,21c-11.579,0 -21,-9.421 -21,-21c0,-11.579 9.421,-21 21,-21c5.443,0 10.39391,2.09977 14.12891,5.50977l1.30859,-1.54492c-4.085,-3.705 -9.5025,-5.96484 -15.4375,-5.96484zM43.23633,7.75391l-19.32227,22.80078l-8.13281,-7.58594l-1.36328,1.46289l9.66602,9.01563l20.67969,-24.40039z"></path>
+                            </g>
+                          </g>
                         </svg>
                     </span>
                   </div>

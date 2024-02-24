@@ -46,7 +46,6 @@ export default {
   },
   mounted() {
     this.getTransactionbycid();
-    this.getCurrency();
 
     this.filter_rasid_bord='all';
     this.typeOfExchange = 'all';
@@ -68,12 +67,9 @@ export default {
         this.totalAmount = response.data.total_amount;
         this.totalPages = response.data.customers?.last_page();
         this.currentPage = page;
-
-        // console.log("this.transactionslist",this.transactionslist);
-
         this.customerbalances = response.data.customerBalance
-
         this.customerName = response.data?.customer?.data[0].name;
+        this.currencies = response.data.currencies;
       } catch (error) {
         console.log(error.message);
       }finally{
@@ -81,11 +77,7 @@ export default {
       }
     },
  
-    async getCurrency(){
-      const response = await api.get('/currencies');
-      this.currencies = response.data.currencies.data;
  
-    },
     change_currency() {
       this.getBanks(this.currencyModel);
         },

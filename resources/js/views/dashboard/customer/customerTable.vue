@@ -219,6 +219,7 @@ import Swal from 'sweetalert2'
 import Loader from '../../loader/loader.vue';
 export default {
     name: 'customerTable',
+    components: { Loader },
     data() {
         return {
             customers: [],
@@ -465,6 +466,6 @@ export default {
             }
         }
     },
-    components: { Loader }
+  
 }
 </script>

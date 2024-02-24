@@ -79,7 +79,6 @@ export default {
         };
     },
     mounted() {
-    
         this.getTransaction();
 
     },
@@ -212,19 +211,19 @@ export default {
         change_currency() {
             this.getBanks(this.bord_currency_Model);
         },
+        change_rasid_currency() {
+            this.getrasidBanks(this.buy_currency_model);
+        },
         edit_change_currency() {
             // this.getBanks(this.edit_bord_currency_Model);
             this.edit_getBanks(this.edit_bord_currency_Model);
         },
-        change_rasid_currency() {
-            this.getrasidBanks(this.buy_currency_model);
-        },
+      
         edit_change_rasid_currency() {
             this.edit_getrasidBanks(this.edit_buy_currency_model);
             
         },
 
-   
 
         async edit_buy_func(id,type) {
             const response = await api.post(`/getexchangesaleforedit/`,{id: id,rasid_bord:type});
@@ -245,8 +244,6 @@ export default {
             this.edit_buy_date = bord_list.date;
         },
      
-   
-    
         async submiteditBuyTransaction() {
             
             const response = await api.post(`/updatebuyexchange`, {

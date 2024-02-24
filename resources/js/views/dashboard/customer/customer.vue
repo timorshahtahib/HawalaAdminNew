@@ -23,8 +23,6 @@
 import Layout from "../../../layouts/main.vue";
 import PageHeader from "../../../components/page-header.vue";
 import customerTable from './customerTable.vue'
-import axios from 'axios';
-import Swal from 'sweetalert2'
 /**
  * Customers component
  */

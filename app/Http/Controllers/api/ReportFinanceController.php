@@ -11,6 +11,7 @@ use App\Models\IncomeExp;
 use App\Models\Transaction;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Morilog\Jalali\Jalalian;
@@ -35,7 +36,7 @@ class ReportFinanceController extends Controller
             $bankBalance = BankBalance::paginate($limit);
             $currency_count= Currency::where('status',1)->count();
             $financeAcc_count= FinanceAccount::where('status',1)->count();
-
+            
             if($bankBalance->isEmpty()){
                 return response()->json([]);
             }
@@ -53,8 +54,7 @@ class ReportFinanceController extends Controller
 
         public function getBanksTransaction(Request $request){
             $id = $request->id;
-            $bankTransaction = Transaction::where('bank_acount_id',$id)->where('status',1)->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')->get();
-            
+            $bankTransaction = Transaction::where('bank_acount_id',$id)->where('status',1)->with(['financeAccount','customer','tr_currency','bank_account','user'])->orderBy('id','desc')->get();
             return response()->json(['banksTransaction'=>$bankTransaction]);
         }
 

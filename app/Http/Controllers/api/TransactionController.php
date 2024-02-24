@@ -87,9 +87,10 @@ class TransactionController extends Controller
                     if($transaction_rasid_bord->isEmpty()){
                         return response()->json([]);
                     }
-                   
+                    $currency = Currency::where('status', '=', '1')->get();
+               
                     $total_pages= $transaction_rasid_bord->lastPage();
-                    return response()->json(['customer'=>$customer,'transactions'=>$transaction_rasid_bord,'orders'=>$transaction_order,'rasid'=> $rasid,'bord'=>$bord,'total_amount'=>$totalAmount,'total_pages'=>$total_pages,'customerBalance'=>$customBalance]);
+                    return response()->json(['customer'=>$customer,'transactions'=>$transaction_rasid_bord,'orders'=>$transaction_order,'rasid'=> $rasid,'bord'=>$bord,'total_amount'=>$totalAmount,'total_pages'=>$total_pages,'customerBalance'=>$customBalance,'currencies' => $currency,]);
                       
                 } catch (Throwable $e) {
                   return response()->json(['message'=>$e->getMessage()]);

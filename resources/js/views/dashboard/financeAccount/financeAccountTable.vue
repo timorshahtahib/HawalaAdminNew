@@ -197,7 +197,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import Swal from 'sweetalert2'
 import DatePicker from '@alireza-ab/vue3-persian-datepicker';
 import Loader from '../../loader/loader.vue';
@@ -249,6 +248,7 @@ export default {
                 this.financeAccounts = response.data.financeAccounts.data;
                 this.totalPages = response.data.financeAccounts.last_page;
                 this.currentPage = page; // Update the current page
+                // this.currencies = response.data.currencies;
             } catch (error) {
                 console.error('Error fetching finance Account:', error);
             }finally{
@@ -275,20 +275,7 @@ export default {
                 this.getFinanceAccount(this.currentPage + 1); // Update the page parameter
             }
         },
-        async getcurrencies() {
-            try {
-                await api.get('/currencies').then((response) => {
-                        this.currencies = response.data.currencies;
-                    
-                    })
-                    .catch((error) => {
-                        console.error('Error fetching currencies:', error);
-                    });
-
-            } catch (error) {
-                console.error('Error fetching data: ', error.message);
-            }
-        },
+       
         async get_edit_currencies() {
            try {
             const response = await api.get('/currencies');

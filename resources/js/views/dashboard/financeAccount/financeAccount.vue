@@ -1,7 +1,7 @@
 <script>
 import Layout from "../../../layouts/main.vue";
 import PageHeader from "../../../components/page-header.vue";
-import axios from 'axios';
+import api from '../../../services/api';
 import Swal from 'sweetalert2'
 import financeAccountTable from "./financeAccountTable.vue";
 import DatePicker from '@alireza-ab/vue3-persian-datepicker';
@@ -62,7 +62,7 @@ export default {
         async searchBanksByType(){
 
                 try {
-                const response = await axios.post('/api/searchbanksbytype', {
+                const response = await api.post('/searchbanksbytype', {
                 tr_type: this.type_of_banks,
                 bank_type: this.$route.params.id,
                 start_date: this.start_date,
@@ -97,7 +97,7 @@ export default {
       
         async getFinanceAccounts() {
             try {
-                await axios.get('/api/finance_account', {
+                await api.get('/finance_account', {
                         params: {
                             limit: this.limit,
                             offset: this.offset,
@@ -116,7 +116,7 @@ export default {
         },
         async getcurrencies() {
             try {
-                await axios.get('/api/currencies').then((response) => {
+                await api.get('/currencies').then((response) => {
                         this.currencies = response.data.currencies.data;
                         // console.log('tag', response.data.currencies)
                         this.currency=this.currencies[0].id
@@ -135,7 +135,7 @@ export default {
         // eslint-disable-next-line no-unused-vars
         async submitForm() {
             try {
-                const response = await axios.post('/api/finance_account', {
+                const response = await api.post('/finance_account', {
                     account_name: this.account_name,
                     type: this.type,
                     currency: this.currency,

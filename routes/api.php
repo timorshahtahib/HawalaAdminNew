@@ -102,7 +102,6 @@ Route::middleware('auth:api')->group(function(){
     // select transaction that the ref_id equal to customer id
     Route::post('/customerinfo',[TransactionController::class,'getCustomerInfo']);
     
-    // Route::get('/transactionbyorderid/{id}',[TransactionController::class,'transactionByOrderId']);
     
     
     

@@ -84,7 +84,7 @@ export default {
         };
     },
     mounted() {
-        this.getCurrency();
+        // this.getCurrency();
         this.getTransaction();
         this.getCustomers();
         this.rasid_bord_type='all'
@@ -153,7 +153,9 @@ export default {
             try {
                 const response = await api.get(`/customer?page=${page}&limit=${this.limit}`);
                 this.customers = response.data.customers.data;
-              
+                
+                // const response1 = await api.get(`/currencies`);
+                // this.currencies = response.data.currencies.data;
                 this.totalPages = response.data.customers.last_page;
                 this.currentPage = page; // Update the current page
                 // console.log(this.customers);
@@ -340,22 +342,19 @@ export default {
                                     <table class="table table-nowrap">
                                         <thead>
                                             <tr>
-                                                <th class="text-center">آیدی</th>
-                                                <th class="text-center">تاریخ</th>
-                                                <th class="text-center">نام مشتری</th>
-                                                <th class="text-center">رسید برد</th>
-                                                <th class="text-center">نمبر چک</th>
-                                                <th class="text-center">مقدار پول</th>
-                                                <th class="text-center">واحد</th>
-                                                <th class="text-center">دخل</th>
-                                                <th class="text-center">تفصیلات</th>
-                                                <th class="text-center">توسط</th>
+                                                <th class="">نمبر چک</th>
+                                                <th class="">تاریخ</th>
+                                                <th class="">نام مشتری</th>
+                                                <th class="">رسید برد</th>
+                                                <th class="">مقدار پول</th>
+                                                <th class="">تفصیلات</th>
+                                                <th class="">توسط</th>
     
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr v-for="transaction in transactions" :key="transaction?.id">
-                                                <td>{{transaction?.id}}</td>
+                                                <td>{{transaction.check_number}}</td>
                                                 <td>{{transaction?.date}}</td>
                                                 <td v-if="transaction.customer!=null">{{ transaction.customer?.name}}</td>
                                                 <td v-else>{{ transaction.finance_account?.account_name}}</td>
@@ -365,14 +364,17 @@ export default {
                                                     </span>
                                                 
                                                 </td>
-                                                <td>{{transaction.check_number}}</td>
-                                                <td>{{transaction.amount.toLocaleString()}}</td>
-                                                <td>{{transaction.tr_currency.name}}</td>
-                                                <td v-if="transaction.bank_account!=null">{{transaction.bank_account?.account_name}}</td>
+                                             
+                                                <span>{{transaction.amount.toLocaleString()}}  {{transaction.tr_currency.name}}
 
-                                                <td v-else>{{ transaction.finance_account?.account_name}}</td>
+                                                    <span v-if="transaction.bank_account!=null">{{transaction.bank_account?.account_name}}</span>
+
+                                                <span v-else>{{ transaction.finance_account?.account_name}}</span>
+                                                </span>
+                                                <!-- <td>{{transaction.tr_currency.name}}</td> -->
+                                                
                                                 <td>{{transaction.desc}}</td>
-                                                <td>{{transaction.user_id}}</td>
+                                                <td>{{transaction.user.name}}</td>
                                             </tr>
                                         </tbody>
                                     </table>

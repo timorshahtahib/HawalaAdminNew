@@ -91,18 +91,7 @@ export default {
         closeModal() {
             this.showModal = false;
         },
-        async editExpense(id) {
-            const response = await api.get(`/showExpense/${id}`);
-            this.newExpense = response.data;
-            this.openModaledit(this.newExpense);
-            this.editAmount = this.newExpense.amount
-            this.editDate = this.newExpense.date
-            this.editDesc = this.newExpense.desc
-            this.getAccountForEdit(this.newExpense.expense_acount.id);
-            this.getBanksForEdit(this.newExpense.expense_bank.id)
-            this.editExpenseExpenseCurrencyModel = this.newExpense.expense_currency.id;
-            console.log("this.newExpense ",this.newExpense );
-        },
+     
 
         // showing data in the table
         async showExpenses(page = 1) {
@@ -150,10 +139,20 @@ export default {
                 console.log(error.message);
             }
         },
-     
+        async editExpense(id) {
+            const response = await api.get(`/showExpense/${id}`);
+            this.newExpense = response.data;
+            this.openModaledit(this.newExpense);
+            this.editAmount = this.newExpense.amount
+            this.editDate = this.newExpense.date
+            this.editDesc = this.newExpense.desc
+            this.getAccountForEdit(this.newExpense.expense_acount.id);
+            this.getBanksForEdit(this.newExpense.expense_bank.id)
+            this.editExpenseExpenseCurrencyModel = this.newExpense.expense_currency.id;
+            console.log("this.newExpense ",this.newExpense );
+        },
         // for getting the id in modal
         getAccountForEdit(id) {
-
             api.get('/expenses')
                 .then(response => {
                     // Assuming the API response is an array of objects with 'value' and 'label' properties
@@ -239,7 +238,6 @@ export default {
 
                     } else {
                        
-
                         this.errors = {};
                         this.getAccounts();
                         this.ExpenseList.unshift(response.data.new_data);
@@ -288,10 +286,7 @@ export default {
                         }
 
                     } else {
-                        // console.log("else true");
-
-                        // this.errors = {};
-                        // this.getAccounts();
+                
                         this.ExpenseList.push(response.data.new_data);
 
                         this.showalert(response.data.message, "success", "بستن");
@@ -332,9 +327,7 @@ export default {
             const response = await api.post('/searchexpense', {
                 query: this.searchQuery
             });
-
             this.ExpenseList = response.data;
-            // console.log("this.ExpenseList",this.ExpenseList);
         },
     },
 };

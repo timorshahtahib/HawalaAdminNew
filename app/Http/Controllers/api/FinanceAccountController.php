@@ -35,9 +35,11 @@ class FinanceAccountController extends Controller
                 return response()->json([]);
             }
     
+            $currency = Currency::where('status',1)->get();
+
             $totalPages = $financeAccount->lastPage();
     
-            return response()->json(['financeAccounts' => $financeAccount, 'total_pages' => $totalPages]);
+            return response()->json(['financeAccounts' => $financeAccount,'currencies' => $currency, 'total_pages' => $totalPages]);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -64,26 +66,20 @@ class FinanceAccountController extends Controller
             'error'=>$validator->errors()->toArray(),
         ]);
     }else{
-        // $transaction = Transaction::create($request->all());
-        // return response()->json($transaction);
+
         DB::beginTransaction();
         try{
-        
-           
-
-            $transaction_values = [
+    
+            $finance_values = [
                 'account_name' => $request->account_name,
                 'type' =>  $request->type,
                 'currency'=> $request->currency,
                 'description' =>$request->description,
                 'user_id'=>Auth::user()->id,
                 'account'=>$request->account
-                
             ];
 
-            $transaction_id = FinanceAccount::insertGetId($transaction_values);
-
-
+            $transaction_id = FinanceAccount::insertGetId($finance_values);
 
             if($transaction_id){
              
@@ -138,18 +134,47 @@ class FinanceAccountController extends Controller
         'type' => 'in:asset,equity,liablity',
         'currency'=>'nullable|max:20',
         'description' => '',
-        'user_id' => '',
-        'status'=>'',
+        // 'user_id' => ,
         'account'=>''
 ]);
 
-if(!$validator->passes()){
-    return response()->json([
-        'error'=>$validator->errors()->toArray(),
-    ]);
-}else{
-    $financeAccount->update($request->all());
-    return response()->json($financeAccount,201);
+        if(!$validator->passes()){
+                return response()->json([
+                'error'=>$validator->errors()->toArray(),
+            ]);
+        }else{
+
+            $finance_values = [
+                'account_name' => $request->account_name,
+                'type' =>  $request->type,
+                'currency'=> $request->currency,
+                'description' =>$request->description,
+                'account'=>$request->account
+            ];
+
+    $finance_id = FinanceAccount::insertGetId($finance_values);
+    // $financeAccount->update($request->all());
+
+    if($finance_id){
+        $update_values = ['id'=>$finance_id,];
+     
+        $output_data = FinanceAccount::where('id',$finance_id)->first();
+
+        DB::commit();
+        return  response()->json([
+            'status'=>true,
+            'new_data'=>$output_data,
+            'message'=>'عملیات انجام شد',
+        ]);
+
+    }else{
+        DB::rollback();
+        return  response()->json([
+            'status'=>false,
+            'message'=>'عملیات انجام نشد',
+        ]);
+    }
+    // return response()->json($financeAccount,201);
 
 }
     }

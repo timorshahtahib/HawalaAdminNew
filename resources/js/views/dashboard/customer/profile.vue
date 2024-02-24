@@ -92,13 +92,7 @@
     },
     methods: {
 
-      openEditModaltransaction() {
-        this.showModaltransaction = true;
-        this.getCurrency();
-      },
-      closeModal() {
-        this.showModal = false;
-      },
+
       openEditUsernameModal() {
         this.showEditUserModal = true;
         // console.log("object");
@@ -132,7 +126,7 @@
         this.totalPages = response.data.customers?.last_page();
         this.currentPage = page;
         this.customerbalances = response.data.customerBalance
-
+        // this.currencies = response.data.currencies
       } catch (error) {
         console.log(error.message);
       }finally{
@@ -149,30 +143,17 @@
           this.getTransactionbycid(this.currentPage + 1); // Update the page parameter
         }
       },
-      async getCurrency() {
-        try {
-          await api.get('/currencies').then((response) => {
-            this.edit_currencies = response.data.currencies.data;
-            // console.log("this.edit_currencies", this.edit_currencies);
-          }).catch((error) => {
-            console.error('Error fetching currencies:', error);
-          });
-        } catch (error) {
-          console.error('Error fetching data: ', error.message);
-        }
-      },
+  
       async editCustomer(id) {
         try {
           const response = await api.get(`/customer/${id}`);
-          this.editCust = response.data.customer;
-          this.openEditModal(this.editCust);
-          //    console.log("editCustomer",this.editCust);
-          this.editname = this.editCust.name;
-          this.editLastName = this.editCust.last_name;
-          this.editPhone = this.editCust.phone;
-          this.ediPhoto = this.editCust.image;
-          this.editAddress = this.editCust.address;
-          this.editDesc = this.editCust.desc;
+          this.editCust = response.data;
+          this.openEditModal();
+          this.editname = response.data.name;
+          this.editPhone = response.data.phone;
+          // this.ediPhoto = response.data.image;
+          this.editAddress = response.data.address;
+          this.editDesc = response.data.desc;
         } catch (error) {
           console.log(error.message);
         }
@@ -305,10 +286,7 @@
         this.editCurrencyModel = this.editTransaction[0].tr_currency.id;
         this.editEqualcurrencyModel = this.editTransaction[0].eq_currency;
         this.getBanksForEdit(this.editCurrencyModel);
-        // console.log("this.editEqualcurrencyModel",this.editEqualcurrencyModel);
-      
-        // this.getCustomerForEdit(this.editTransaction[0].ref_id);
-        //  console.log("this.editTransaction", this.editTransaction);
+  
       },
       async submitEditTransaction() {
         let id = this.editTransaction[0].id;
@@ -549,7 +527,6 @@
                                     <thead>
                                       <tr>
                                         <th class="text-center">نمبر چک</th>
-                                        <!-- <th class="text-center">نام مشتری</th> -->
                                         <th class="text-center">رسید برد</th>
                                         <th class="text-center">مقدار پول</th>
                                         <th class="text-center">مقدار معادل</th>
