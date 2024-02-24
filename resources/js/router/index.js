@@ -26,6 +26,12 @@ const routes = [
             import ('../views/dashboard/customer/customer.vue')
     },
     {
+        path: '/dashboard/customerdeleted',
+        meta: { authRequired: true, title: 'Dashboard' },
+        component: () =>
+            import ('../views/dashboard/customer/customerDeleted.vue')
+    },
+    {
         path: '/dashboard/customer/:id',
         meta: { authRequired: true, title: 'Dashboard' },
         component: () =>

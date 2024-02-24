@@ -37,7 +37,27 @@ class CustomerController extends Controller
         try {
             $limit = $request->has('limit') ? $request->limit : 10;
     
-            $customers = Customer::where('status', '=', '1')->where('role','customer')
+            $customers = Customer::where('status', 1)->where('role','customer')
+                ->orderBy('id', 'desc')
+                ->paginate($limit);
+    
+            if ($customers->isEmpty()) {
+                return response()->json([]);
+            }
+    
+            $totalPages = $customers->lastPage();
+    
+            return response()->json(['customers' => $customers, 'total_pages' => $totalPages]);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    public function DeletedCustomers(Request $request)
+    {
+        try {
+            $limit = $request->has('limit') ? $request->limit : 10;
+    
+            $customers = Customer::where('status',0)->where('role','customer')
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
     
@@ -256,7 +276,36 @@ class CustomerController extends Controller
     }
 
     // for getting the customer balance
+    public function searchDeletedCustomer(Request $request){
 
+        try {
+            $searchTerm = $request->input('query');
+              $query=Customer::query()->where('status',0)->orderBy('id', 'desc');
+                
+              if($searchTerm){
+                $query->where(function ($query) use ($searchTerm) {
+                    $query->where('name',  'like', '%' . $searchTerm . '%')
+                    ->orWhere('id',  'like', '%' . $searchTerm . '%')
+                        ->orWhere('cu_number',  'like', '%' . $searchTerm . '%')
+                        ->orWhere('phone',  'like', '%' . $searchTerm . '%')
+                        ->orWhere('address',  'like', '%' . $searchTerm . '%')
+                        ->orWhere('type',  'like', '%' . $searchTerm . '%')
+                        ->orWhere('desc',  'like', '%' . $searchTerm . '%')
+                       ->get();
+                });
+    
+              }
+              $customer = $query->get();
+              if ($customer->isEmpty()) {
+                return response()->json([]);
+            }
+              
+              return response()->json($customer);
+            } catch (Throwable $e) {
+                return response()->json(['message'=>$e->getMessage()]);
+            }
+            
+        }
   
 
 

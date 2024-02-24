@@ -86,13 +86,11 @@ export default {
     </div>
     <!-- end page title -->
 
-
     <div class="row">
       <div class="col-xl-4 col-sm-12">
         <div class="card">
           <div class="card-body">
             <h4 class="card-title mb-4"> مشتریان و کابران</h4>
-           
             <div class="text-center">
               <div class="avatar-sm mx-auto mb-4">
                 <span class="avatar-title rounded-circle bg-primary font-size-18">

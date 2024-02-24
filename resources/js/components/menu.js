@@ -20,12 +20,16 @@ export const menuItems = [{
                 parentId: 2
             },
             {
-
                 id: 4,
                 label: "مشتریان",
                 icon: "bx-file",
                 link: "/dashboard/customer",
-
+            },
+            {
+                id: 5,
+                label: "مشتریان حذف شده",
+                icon: "bx-file",
+                link: "/dashboard/customerdeleted",
             },
             {
                 id: 5,
