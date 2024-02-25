@@ -18,9 +18,9 @@ export default {
             <h1 class="display-2 fw-medium">
               4<i class="bx bx-buoy bx-spin text-primary display-3"></i>4
             </h1>
-            <h4 class="text-uppercase">Sorry, page not found</h4>
+            <h4 class="text-uppercase">متاسفانه صفحه مورد نظر یافت نشد😢</h4>
             <div class="mt-5 text-center">
-              <router-link class="btn btn-primary" to="/">Back to Dashboard</router-link>
+              <router-link class="btn btn-primary" to="/home">بازگشت به صفحه اصلی</router-link>
             </div>
           </div>
         </div>

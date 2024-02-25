@@ -32,20 +32,24 @@ export default {
   },
   methods: {
         async getall(){
-            const response = await api.get('/showindex');
-            this.customers = response.data.customers;
-            this.deleted_customers = response.data.deleted_customers;
-            this.users = response.data.users;
-            this.all_transactions = response.data.all_transactions;
-            this.transactions = response.data.transactions;
-            this.today_transactions = response.data.today_transactions;
-            this.deleted_transactions = response.data.deleted_transactions;
-            this.all_orders = response.data.all_orders;
-            this.accepted_orders = response.data.accept_orders;
-            this.pending_orders = response.data.pending_orders;
-            this.rejected_orders = response.data.rejected_orders;
-            this.user_name = response.data.user_name;
-            // console.log(this.user_name);
+              try {
+                const response = await api.get('/showindex');
+                this.customers = response.data.customers;
+                this.deleted_customers = response.data.deleted_customers;
+                this.users = response.data.users;
+                this.all_transactions = response.data.all_transactions;
+                this.transactions = response.data.transactions;
+                this.today_transactions = response.data.today_transactions;
+                this.deleted_transactions = response.data.deleted_transactions;
+                this.all_orders = response.data.all_orders;
+                this.accepted_orders = response.data.accept_orders;
+                this.pending_orders = response.data.pending_orders;
+                this.rejected_orders = response.data.rejected_orders;
+                this.user_name = response.data.user_name;
+              } catch (error) {
+                  console.log("خطائی رخ داده است");
+              }
+            
         }, 
          displayTransactionType(transactionType) {
             if (transactionType === 'rasid_bord') {

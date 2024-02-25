@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import Home from '../views/Home.vue';
 
 const routes = [
     { path: '/', redirect: '/login' },
@@ -10,8 +11,7 @@ const routes = [
             authRequired: true,
             title: 'Dashboard',
         },
-        component: () =>
-            import ('../views/home.vue'),
+        component: Home
     },
     {
         path: '/dashboard/usermangement',
@@ -152,7 +152,20 @@ const routes = [
         component: () =>
             import ('../views/account/register.vue')
     },
-
+    {
+        path: '/serror',
+        name: 'خطائی در شبکه رخ داده است',
+        meta: { title: 'خطا' },
+        component: () =>
+            import ('../views/utility/serverErrror.vue')
+    },
+    {
+        path: '/:catchAll(.*)',
+        name: 'notfound',
+        meta: { title: 'Notfound' },
+        component: () =>
+            import ('../views/utility/notfound.vue')
+    },
 
 
 

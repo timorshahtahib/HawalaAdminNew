@@ -17,11 +17,11 @@ export default {
         <div class="col-lg-12">
           <div class="text-center mb-5">
             <h1 class="display-2 fw-medium">
-              5<i class="bx bx-buoy bx-spin text-primary display-3"></i>0
+              0<i class="bx bx-buoy bx-spin text-primary display-3"></i>5
             </h1>
-            <h4 class="text-uppercase">Internal Server Error</h4>
+            <h4 class="text-uppercase">خطائی در شبکه رخ داده است!</h4>
             <div class="mt-5 text-center">
-              <router-link class="btn btn-primary" to="/">Back to Dashboard</router-link>
+              <router-link class="btn btn-primary" to="/home">بازگشت به صفحه اصلی</router-link>
             </div>
           </div>
         </div>

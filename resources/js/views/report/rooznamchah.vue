@@ -52,7 +52,6 @@ export default {
             // Currency V-Model and arrays
             currencies: [],
     
-            // date: new Date(),
             // pagination
             currentPage: 1,
             totalPages: 1,
@@ -61,7 +60,6 @@ export default {
         };
     },
     mounted() {
-        
         this.getTransaction();
      
         this.transaction_type='all';
@@ -92,21 +90,7 @@ export default {
                 console.error('Error fetching data: ', error.message);
             }
         },
-        async getCurrency() {
-            try {
-                await api.get('/currencies').then((response) => {
-                        this.currencies = response.data.currencies.data;
-                        // console.log(this.currencies);
-
-                    })
-                    .catch((error) => {
-                        console.error('Error fetching currencies:', error);
-                    });
-
-            } catch (error) {
-                console.error('Error fetching data: ', error.message);
-            }
-        },
+      
   
         async getFinanceAccount(page = 1) {
             this.isLoading=true;
@@ -124,13 +108,18 @@ export default {
         },
    
         async getTransaction(page=1) {
-            const response = await api.post(`/getrooznamchah?page=${page}&limit=${this.limit}`,{current_date:'1402/11/25'});
-            this.transactions = response.data.transactions.data;
-            this.currencies=response.data.currencies;
-            this.customers = response.data.customers;
-            this.banks = response.data.financeAccounts;
-            this.totalPages = response.data.transactions.last_page;
-            this.currentPage = page; // Update the current page
+                    try {
+                        const response = await api.post(`/getrooznamchah?page=${page}&limit=${this.limit}`);
+                        this.transactions = response.data.transactions.data;
+                        this.currencies=response.data.currencies;
+                        this.customers = response.data.customers;
+                        this.banks = response.data.financeAccounts;
+                        this.totalPages = response.data.transactions.last_page;
+                        this.currentPage = page; // Update the current page
+                        // this.currencies = response.data.currencies
+                    } catch (error) {
+                        console.log("مشکلی پیش آمده است");
+                    }
         },
         prevPage() {
             if (this.currentPage > 1) {

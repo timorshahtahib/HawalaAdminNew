@@ -68,8 +68,8 @@ export default {
       delete axios.defaults.headers.common['Authorization'];
       this.$router.push('/login'); // Redirect to the login page
     } else {
-      console.error('Error during login:', error);
-      this.authError = "Error during login. Please try again.";
+      console.error('خطا در زمان ورود', error);
+      this.authError = "لطفا دوباره تلاش کنید.";
     }
   } finally {
     this.processing = false;

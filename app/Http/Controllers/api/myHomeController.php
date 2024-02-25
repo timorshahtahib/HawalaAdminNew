@@ -9,6 +9,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Morilog\Jalali\Jalalian;
 
@@ -47,7 +48,7 @@ class myHomeController extends Controller
              'accept_orders'=>$acceptedOrders ,'rejected_orders'=>$rejectedOrders,'pending_orders'=> $pendingOrders,'transactions'=>$lastTenTransactions,'user_name'=>$account_name]);
           
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['error' => "خطائی در شبکه رخداده است"], 500);
       }
     }
 
