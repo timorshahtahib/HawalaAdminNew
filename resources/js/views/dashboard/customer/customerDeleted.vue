@@ -139,6 +139,7 @@ export default {
                                         <th>توضیحات</th>
                                         <th>پروفایل کاربر</th>
                                         <th>وضیعت</th>
+                                        <th>تغیر وضعیت</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -161,7 +162,11 @@ export default {
                                             </span>
                                         </td>
                         
-                        
+                                            <td>
+                                                <input type="checkbox" id="checkbox" v-model="checked" />
+                                                <label for="checkbox">{{ checked }}</label>
+                                              
+                                            </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -191,3 +196,39 @@ export default {
         <!-- end row -->
     </Layout>
 </template>
+
+
+
+<style scoped>
+/* Hide default checkbox */
+.hidden-checkbox {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+  }
+  
+  /* Style for the custom checkbox */
+  .custom-checkbox {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: #ccc;
+    border-radius: 50%;
+    margin-right: 10px;
+    transition: transform 0.3s ease;
+  }
+  
+  /* Style for the checked state */
+  .custom-checkbox.checked {
+    background-color: #007bff;
+    transform: translateX(20px); /* Move to the right when checked */
+  }
+  
+  /* Label style */
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+</style>

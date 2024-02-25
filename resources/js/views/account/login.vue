@@ -67,10 +67,15 @@ export default {
       localStorage.removeItem('user');
       delete axios.defaults.headers.common['Authorization'];
       this.$router.push('/login'); // Redirect to the login page
-    } else {
+    }else if(error.response && error.response.status === 401){
+      console.error('خطا در شبکه رخ داده است', error);
+      this.authError = 'خطا در شبکه رخ داده است';
+    } 
+    else {
       console.error('خطا در زمان ورود', error);
       this.authError = "لطفا دوباره تلاش کنید.";
     }
+
   } finally {
     this.processing = false;
   }
