@@ -53,8 +53,8 @@ export default {
             banks: [],
 
             // does has an error 
-            amount: 0,
-            currency_rate: 1.00,
+            amount: 0.000000,
+            currency_rate: 1.000,
             equal_amount: 0,
          
             // for setting the current date
@@ -73,8 +73,8 @@ export default {
 
             edit_rasid_bord: '',
             // edit amount
-            editAmount: "",
-            editCurrency_rate: 1.00,
+            editAmount: 0.000,
+            editCurrency_rate: 1.000,
             editEqual_amount: 0,
             editDesc: '',
             editDate: '',
@@ -95,6 +95,7 @@ export default {
 
         };
     },
+ 
     mounted() {
         // this.getCurrency();
         this.getTransaction();
@@ -109,6 +110,8 @@ export default {
             this.transaction_date = date.toString();
 
         },
+
+
         editSelect(date) {
             this.editDate = date.toString();
         },
@@ -153,7 +156,8 @@ export default {
 
         // for calculating the Equal to input type
         calculateEqualAmount() {
-            this.equal_amount = this.amount / this.currency_rate;
+            
+            this.equal_amount =Number.parseFloat(this.amount / this.currency_rate).toFixed(4);
         },
         editCalculateEqualAmount() {
             this.editEqual_amount = this.editAmount / this.editCurrency_rate;
@@ -216,6 +220,7 @@ export default {
                         this.currencyModel = ''
                         this.desc = ''
                         this.equalcurrencyModel = ''
+                       
                         this.showalert(response.data.message, "success", "بستن");
                        
                     }
@@ -229,6 +234,7 @@ export default {
         },
         change_currency() {
             this.getBanks(this.currencyModel);
+            this.equalcurrencyModel = this.currencyModel;
         },
 
         editChange_currency() {
@@ -367,6 +373,7 @@ export default {
 
         
     },
+  
 };
 </script>
 
@@ -421,7 +428,7 @@ export default {
                                         </div>
                                         <div class="col-sm-8 col-xs-12">
                                             <label for="name">مقدار پول :‌</label>
-                                            <input type="number"  step="0.01" id="amount" v-model="editAmount" @input="editCalculateEqualAmount" class="form-control required">
+                                            <input type="number"   step="0.000" id="amount" v-model="editAmount" @input="editCalculateEqualAmount" class="form-control required">
                                             <span class="text-danger error-text amount_error"></span>
                                         </div>
                                     </div>
@@ -439,7 +446,7 @@ export default {
                                     <div class="row mb-2">
                                         <div class="col-sm-4 col-xs-12">
                                             <label for="name">نرخ ارز :‌</label>
-                                            <input type="number" step="0.01" id="editCurrency_rate" v-model="editCurrency_rate" @input="editCalculateEqualAmount" class="form-control required">
+                                            <input type="number" step="0.000" id="editCurrency_rate" v-model="editCurrency_rate" @input="editCalculateEqualAmount" class="form-control required">
                                             <span class="text-danger error-text currency_rate_error"></span>
 
                                         </div>
@@ -467,7 +474,7 @@ export default {
                                         </div>
                                         <div class="col-sm-8 col-xs-12">
                                             <label for="name"> مقدار پول رسید:‌</label>
-                                            <input type="number" id="amount" v-model="editEqual_amount" class="form-control required">
+                                            <input type="number" step="0.000" id="amount" v-model="editEqual_amount" class="form-control required">
                                             <span class="text-danger error-text amount_error"></span>
                                         </div>
                                     </div>
@@ -530,7 +537,7 @@ export default {
                                     </div>
                                     <div class="col-sm-8 col-xs-12">
                                         <label for="name">مقدار پول :‌</label>
-                                        <input type="number" id="amount"  v-model="amount" @input="calculateEqualAmount" class="form-control required">
+                                        <input type="number" id="amount" v-model="amount" @input="calculateEqualAmount" class="form-control" step="0.0000001">
                                         <span class="text-danger error-text amount_error"></span>
                                     </div>
                                 </div>
@@ -550,7 +557,7 @@ export default {
                                 <div class="row">
                                     <div class="col-sm-4 col-xs-12">
                                         <label for="name">نرخ ارز :‌</label>
-                                        <input type="number" step="0.01" id="currency_rate" v-model="currency_rate" @input="calculateEqualAmount" class="form-control required">
+                                        <input type="number" step="0.0001" id="currency_rate" v-model="currency_rate" @input="calculateEqualAmount" class="form-control required">
                                         <span class="text-danger error-text currency_rate_error"></span>
                                     </div>
                                     <div class="col-sm-8 col-xs-12">
@@ -558,7 +565,7 @@ export default {
                                         </label>
                                         <div class="input-group ">
                                             <!-- @alireza-ab/vue3-persian-datepicker -->
-                                            <date-picker @select="select" mode="single" type="date" locale="fa" :column="1" clearable required>
+                                            <date-picker @select="select" mode="single" type="date" locale="fa" :column="1" clearable @clear="clear" required>
                                             </date-picker>
 
                                         </div>
@@ -570,7 +577,7 @@ export default {
                                     <!-- <label>رسید به حساب مشتری :‌ </label> -->
                                     <div class="col-sm-4 col-xs-12">
                                         <label for="supplier">واحد پول رسید:</label>
-                                        <select class="form-control form-control-lg select2 required" v-model="equalcurrencyModel" style="width: 100%;" @change="getDefaultCurrency">
+                                        <select class="form-control form-control-lg select2 required" v-model="equalcurrencyModel" style="width: 100%;" >
                                             <option disabled selected> واحد</option>
                                             <option v-for="currency in currencies" :key="currency.id" :value="currency.id">{{currency.name}} {{currency.sign}}</option>
                                         </select>
@@ -579,16 +586,14 @@ export default {
 
                                     <div class="col-sm-8 col-xs-12">
                                         <label for="name"> مقدار پول رسید:‌</label>
-                                        <input type="number" id="amount" step="0.01" v-model="equal_amount" class="form-control required">
+                                        <input type="number" step="0.0000001" id="amount" v-model="equal_amount" class="form-control required">
                                         <span class="text-danger error-text amount_error"></span>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-xs-12" style="padding-right:0px!important">
                                     <br>
-
                                     <textarea id="disc" class="form-control" autocomplete="on" v-model="desc" rows="4" placeholder="توضیحات"></textarea>
                                     <span class="text-danger error-text disc_error"></span>
-
                                 </div>
 
                             </div>
@@ -631,6 +636,7 @@ export default {
                                         <tr>
                                         
                                             <th class="text-center">نمبر چک</th>
+                                            <th class="text-center">نوعیت</th>
                                             <th class="text-center">نام مشتری</th>
                                             <!-- <th class="text-center">رسید برد</th> -->
                                             <th class="text-center">مقدار پول</th>
@@ -644,6 +650,15 @@ export default {
                                     <tbody class="text-center">
                                         <tr v-for="transaction in transactions" :key="transaction?.id">
                                             <td>{{transaction?.check_number}}</td>
+                                
+                                            <td>
+                                                <span
+                                                  class="badge badge-pill  font-bold p-2"
+                                                  :class="
+                                                     transaction.rasid_bord === 'rasid' ?'badge-soft-success':'bg-danger'"
+                                                  >{{transaction?.rasid_bord}}</span
+                                                >
+                                              </td>
                                             <td v-if="transaction.customer!=null">{{ transaction.customer?.name}}</td>
                                             <td v-else>{{ transaction.finance_account?.account_name}}</td>
                                    

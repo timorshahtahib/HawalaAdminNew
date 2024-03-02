@@ -214,6 +214,8 @@ class IncomeExpController extends Controller
                     'type'=>'expense',
                     'amount'=>$request->amount,
                     'currency'=>$expense_acount->currency,
+                    'amount_equal'=>$request->amount,
+                    'currency_equal'=>$expense_acount->currency,
                     'date'=>$request->date,
                     'finance_acount_id'=>$expense_acount->id,
                     'bank_id'=>$request->bank_id,
@@ -236,7 +238,8 @@ class IncomeExpController extends Controller
                     'finance_acount_id'=>$expense_acount->id,
                     'bank_acount_id'=>$request->bank_id,
                     'user_id'=>Auth::user()->id,
-                  
+                    'amount_equal'=>$request->amount,
+                    'currency_equal'=>$expense_acount->currency,
                     'desc'=>$request->desc,
                     'date'=>$request->date,
                     'check_number'=>$check_number,

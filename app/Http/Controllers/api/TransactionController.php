@@ -47,7 +47,7 @@ class TransactionController extends Controller
         try {
             $limit = $request->has('limit') ? $request->limit : 10;
 
-            $transaction = Transaction::where('status', '=', '1')
+            $transaction = Transaction::where('status',1)->where('transaction_type','rasid_bord')
             ->with(['financeAccount','customer','tr_currency','eq_currency','bank_account','referencedTransaction','user'])->orderBy('id','desc')
             ->paginate($limit);
 
@@ -139,7 +139,6 @@ class TransactionController extends Controller
                     'amount'=>$request->amount,
                     'currency'=>$request->currency,
                     'finance_acount_id'=>24,
-                    // 'finance_acount_id'=>$request->finance_acount_id,
                     'bank_acount_id'=>$request->bank_acount_id,
                     'amount_equal'=>$request->amount_equal,
                     'currency_equal'=>$request->currency_equal,
