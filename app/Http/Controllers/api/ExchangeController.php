@@ -45,11 +45,21 @@ class ExchangeController extends Controller
             ->with(['financeAccount','customer','tr_currency','eq_currency','bank_account','referencedTransaction','user'])
             ->orderBy('id','desc')->paginate($limit);
             // for getting transaction in select input
+<<<<<<< HEAD
             $currency = Currency::where('status',1)->get();
             if ($transaction->isEmpty() && $currency->isEmpty()) {
                 return response()->json([]);
             }
             $total_pages = $transaction->lastPage();
+=======
+            $currency = Currency::where('status', '=', '1')->get();
+
+            if ($transaction->isEmpty()) {
+                return response()->json([]);
+            }
+            $total_pages = $transaction->lastPage();
+
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944
             return response()->json(['transactions'=>$transaction,'total_pages'=>$transaction,'currencies' => $currency]);
         }
         catch (Exception $e) {
@@ -64,12 +74,22 @@ class ExchangeController extends Controller
             ->whereNotNull('or_tra')  // Add this condition to filter by non-null or_tra
             ->with(['financeAccount','customer','tr_currency','eq_currency','bank_account','referencedTransaction','user'])
             ->orderBy('id','desc')->paginate($limit);
+<<<<<<< HEAD
             $currency = Currency::where('status',1)->get();
             if ($transaction->isEmpty() && $currency->isEmpty()) {
                 return response()->json([]);
             }
             $total_pages = $transaction->lastPage();
             return response()->json(['transactions'=>$transaction,'currencies' => $currency,'total_pages'=>$total_pages]);
+=======
+            $currency = Currency::where('status', '=', '1')->get();
+            if ($transaction->isEmpty()) {
+                return response()->json([]);
+            }
+            $total_pages = $transaction->lastPage();
+
+            return response()->json(['transactions'=>$transaction,'currencies' => $currency,'total_pages'=>$total_pages,]);
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944
         }
         catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -81,11 +101,19 @@ class ExchangeController extends Controller
             $limit = $request->has('limit') ? $request->limit : 10;
 
             $transaction = Transaction::where('transaction_type','transfer')
+<<<<<<< HEAD
                 ->orWhere('transaction_type','commission')->where('status', 1)
             ->with(['financeAccount','customer','tr_currency','eq_currency','bank_account','referencedTransaction','user'])
             ->orderBy('id','desc')->paginate($limit);
             $currency = Currency::where('status', '=', '1')->get();
             if ($transaction->isEmpty() && $currency->isEmpty()) {
+=======
+                ->orWhere('transaction_type','commission')->where('status', '=', '1')
+            ->with(['financeAccount','customer','tr_currency','eq_currency','bank_account','referencedTransaction','user'])
+            ->orderBy('id','desc')->paginate($limit);
+            $currency = Currency::where('status', '=', '1')->get();
+            if ($transaction->isEmpty()) {
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944
                 return response()->json([]);
             }
             $total_pages = $transaction->lastPage();

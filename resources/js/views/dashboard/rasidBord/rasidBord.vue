@@ -428,7 +428,11 @@ export default {
                                         </div>
                                         <div class="col-sm-8 col-xs-12">
                                             <label for="name">مقدار پول :‌</label>
+<<<<<<< HEAD
                                             <input type="number"   step="0.0001" id="amount" v-model="editAmount" @input="editCalculateEqualAmount" class="form-control required">
+=======
+                                            <input type="number"   step="0.000" id="amount" v-model="editAmount" @input="editCalculateEqualAmount" class="form-control required">
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944
                                             <span class="text-danger error-text amount_error"></span>
                                         </div>
                                     </div>
@@ -446,7 +450,11 @@ export default {
                                     <div class="row mb-2">
                                         <div class="col-sm-4 col-xs-12">
                                             <label for="name">نرخ ارز :‌</label>
+<<<<<<< HEAD
                                             <input type="number" step="0.0001" id="editCurrency_rate" v-model="editCurrency_rate" @input="editCalculateEqualAmount" class="form-control required">
+=======
+                                            <input type="number" step="0.000" id="editCurrency_rate" v-model="editCurrency_rate" @input="editCalculateEqualAmount" class="form-control required">
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944
                                             <span class="text-danger error-text currency_rate_error"></span>
 
                                         </div>
@@ -474,7 +482,11 @@ export default {
                                         </div>
                                         <div class="col-sm-8 col-xs-12">
                                             <label for="name"> مقدار پول رسید:‌</label>
+<<<<<<< HEAD
                                             <input type="number" step="0.0001" id="amount" v-model="editEqual_amount" class="form-control required">
+=======
+                                            <input type="number" step="0.000" id="amount" v-model="editEqual_amount" class="form-control required">
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944
                                             <span class="text-danger error-text amount_error"></span>
                                         </div>
                                     </div>
@@ -650,6 +662,10 @@ export default {
                                     <tbody class="text-center">
                                         <tr v-for="transaction in transactions" :key="transaction?.id">
                                             <td>{{transaction?.check_number}}</td>
+<<<<<<< HEAD
+=======
+                                
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944
                                             <td>
                                                 <span
                                                   class="badge badge-pill  font-bold p-2"

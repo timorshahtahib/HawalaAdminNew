@@ -47,6 +47,14 @@ export default {
     },
 
     methods: {
+<<<<<<< HEAD
+=======
+      
+
+
+    
+
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944
         showalert(title, icon, confirmButtonText) {
             Swal.fire({
                 title: title,
@@ -54,6 +62,7 @@ export default {
                 confirmButtonText: confirmButtonText,
             });
         },
+<<<<<<< HEAD
             async activeCustomer(id){
             if (!window.confirm('آیا میخواهید که مشتری برگشت داده شود؟')) {
                 return;
@@ -74,6 +83,8 @@ export default {
     
 
      
+=======
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944
      
         async getCustomers(page = 1) {
             this.isLoading = true;
@@ -167,17 +178,31 @@ export default {
                                         <td>{{ customer.phone }}</td>
                                         <td>{{ customer.desc }}</td>
                                         <td>
+<<<<<<< HEAD
                                             <router-link class="btn btn-sm btn-primary" :to="`/dashboard/customer/${customer.id}`">پروفایل</router-link>
                                         </td>
                                         <td>
                                             <span class="badge  font-size-12" :class="customer.status === 0 ? 'bg-danger' :'bg-primary'">
+=======
+                                            <router-link class="btn btn-xs btn-primary" :to="`/dashboard/customer/${customer.id}`">پروفایل</router-link>
+                                        </td>
+                                        <td>
+                                            <!-- <span class="badge bg-success font-size-12"> -->
+                                            <span class="badge  font-size-12" :class="customer.status === 0 ? 'bg-warning' :'bg-primary'">
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944
                                                 <i class="mdi mdi-star me-1"></i>
                                                 {{ customer.status }}
                                             </span>
                                         </td>
                         
                                             <td>
+<<<<<<< HEAD
                                                 <button class="btn btn-sm btn-success" @click="activeCustomer(customer.id)">فعال کردن</button>
+=======
+                                                <input type="checkbox" id="checkbox" v-model="checked" />
+                                                <label for="checkbox">{{ checked }}</label>
+                                              
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944
                                             </td>
                                     </tr>
                                 </tbody>
@@ -211,3 +236,39 @@ export default {
 
 
 
+<<<<<<< HEAD
+=======
+<style scoped>
+/* Hide default checkbox */
+.hidden-checkbox {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+  }
+  
+  /* Style for the custom checkbox */
+  .custom-checkbox {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: #ccc;
+    border-radius: 50%;
+    margin-right: 10px;
+    transition: transform 0.3s ease;
+  }
+  
+  /* Style for the checked state */
+  .custom-checkbox.checked {
+    background-color: #007bff;
+    transform: translateX(20px); /* Move to the right when checked */
+  }
+  
+  /* Label style */
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+</style>
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944

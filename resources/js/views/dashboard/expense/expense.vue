@@ -102,7 +102,10 @@ export default {
                 this.totalPages = response.data.total_pages;
                 this.currentPage = page; // Update the current page
                 // console.log("this.ExpenseList",this.ExpenseList);
+<<<<<<< HEAD
                 console.log("username",this.ExpenseList);
+=======
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944
             } catch (error) {
                 console.error('Error fetching IncomeExpenses:', error);
             }finally{
@@ -549,7 +552,11 @@ export default {
                                                     <td>{{expenesel.type ? "مصرف" :""}}</td>
                                                     <td>{{expenesel.amount.toLocaleString()}} {{expenesel.expense_currency.name}} به {{expenesel.expense_bank?.account_name}}</td>
                                                     <td>{{expenesel.desc}}</td>
+<<<<<<< HEAD
                                                     <td>{{expenesel?.user?.name}}</td>
+=======
+                                                    <td>{{expenesel.user.name}}</td>
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944
         
                                                     <td>
                                                             <button class="btn btn-xs">

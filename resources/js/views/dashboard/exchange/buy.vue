@@ -113,12 +113,18 @@ export default {
            try {
             this.isLoading=true;
             const response = await api.get(`/getbuytransaction?page=${page}&limit=${this.limit}`);
+<<<<<<< HEAD
             // console.log("response",response);
+=======
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944
             this.transactions = response.data.transactions.data;
             this.totalPages = response.data.transactions.last_page;
             this.currentPage = page;
             this.currencies = response.data.currencies;
+<<<<<<< HEAD
             // console.log("currencies",this.currencies);
+=======
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944
            } catch (error) {
             console.log(error.message);
            }finally{

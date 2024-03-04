@@ -58,7 +58,10 @@ Route::middleware('auth:api')->group(function(){
     
     Route::apiResource('customer',CustomerController::class);
     Route::get('/deletedcustomer', [CustomerController::class, 'DeletedCustomers']);
+<<<<<<< HEAD
     Route::post('/activecustomer', [CustomerController::class, 'activeCustomer']);
+=======
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944
     Route::post('/searchdeletedcustomer', [CustomerController::class, 'searchDeletedCustomer']);
 
     Route::post('/updatecustomer', [CustomerController::class, 'updateCustomer']);

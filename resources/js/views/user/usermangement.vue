@@ -171,7 +171,11 @@
    
         async submitUpdateUser(id) {
       
+<<<<<<< HEAD
             // console.log("editRole",this.editRole);
+=======
+            console.log("editRole",this.editRole);
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944
             try {
                 const response = await api.post('/updateuser', {
                     id:this.user.id,
@@ -181,7 +185,11 @@
                 });
                     
                 if (response.data != null) {
+<<<<<<< HEAD
                     // console.log('response.data != null')
+=======
+                    console.log('response.data != null')
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944
                     if (response.data.status === false) {
                         if (response.data.message != null) {
                             this.showalert(response.data.message, "error", "error");
@@ -216,7 +224,11 @@
                 return;
             } else {
                 try {
+<<<<<<< HEAD
                     // console.log("inside try");
+=======
+                    console.log("inside try");
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944
                     const response = await api.post('/deleteuser',{id:id});
                     this.financeAccounts = response.data;
                     if (response.status === 204) {
@@ -279,6 +291,10 @@
             <select class="form-control form-control-lg  " v-model="editRole" >
                 <option value="" disabled>انتخاب سطح دسترسی</option>
                 <option value="customer">مشتری</option>
+<<<<<<< HEAD
+=======
+                <option value="user">یوزر</option>
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944
                 <option value="superadmin">سوپرادمین</option>
                 <option value="admin">ادمین</option>
               </select>

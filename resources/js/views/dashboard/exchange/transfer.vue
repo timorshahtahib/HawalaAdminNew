@@ -694,7 +694,11 @@ export default {
 
                                             <td>{{transaction?.check_number}}</td>
                                             <td>
+<<<<<<< HEAD
                                                 <span class="badge badge-pill  font-bold p-2 " :class="transaction?.rasid_bord === 'rasid' ? 'badge-soft-success' :'bg-danger'">
+=======
+                                                <span class="badge badge-pill  font-bold p-2 " :class="transaction?.rasid_bord === 'rasid' ? 'badge-soft-success' :'badge-soft-warning'">
+>>>>>>> fc908c9970f575848d97a1b687135b8e6e6f0944
                                                     {{transaction?.rasid_bord}}
                                                 </span>
                                             </td>
