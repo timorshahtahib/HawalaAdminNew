@@ -18,7 +18,6 @@
             <table class="table table-centered table-nowrap">
               <thead>
                 <tr>
-                    <!-- <th scope="col">#</th> -->
                     <th>آیدی</th>
                     <th>آیدی مشتری</th>
                     <th>آیدی ترانزکشن</th>
@@ -26,10 +25,8 @@
                     <th>تاریخ اجرا</th>
                     <th>حالت</th>
                     <th>شماره سفارش</th>
-                    <!-- <th>آیپی آدرس</th> -->
                     <th>سیستم</th>
                     <th>شماره تماس</th>
-                    <!-- <th>نتورک آیدی</th> -->
                     <th>سب کتگوری آیدی</th>
                     <th>کیو تی تی</th>
                     <th>مقدار</th>
@@ -56,8 +53,8 @@
                   <td>{{ order.transaction_id  }}</td>
                   <td>{{ order.order_date }}</td>
                   <td>{{ order.action_date }}</td>
-                  <td> <span class="badge font-size-12 " :class="order.state ==='done' ? 
-                    'bg-success': order.state ==='pending' ? 'bg-warning': 'bg-danger' ">{{ order.state }}</span> </td>
+                  <td> <span class="badge badge-pill  font-bold p-2 font-size-12 " :class="order.state ==='done' ? 
+                    'badge-soft-success': order.state ==='pending' ? 'badge-soft-warning': 'badge-soft-danger' ">{{ order.state }}</span> </td>
                   <td>{{ order.order_number }}</td>
                   <!-- <td>{{ order.ip_address }}</td> -->
                   <td>{{ order.system }}</td>
@@ -65,10 +62,10 @@
                   <!-- <td>{{ order.network_id }}</td> -->
                   <td>{{ order.sub_category_id }}</td>
                   <td>{{ order.qtt }}</td>
-                  <td>{{ order.amount }}</td>
-                  <td>{{ order.final_amount }}</td>
+                  <td>{{ order.amount.toLocaleString() }}</td>
+                  <td>{{ order.final_amount.toLocaleString() }}</td>
                   <td>{{ order.profit_percentage }}</td>
-                  <td>{{ order.profit_amount }}</td>
+                  <td>{{ order.profit_amount.toLocaleString() }}</td>
                   <td>{{ order.currency }}</td>
                   <td>{{ order.buy_currency_id }}</td>
                   <td>{{ order.currency_rate }}</td>
@@ -122,6 +119,7 @@
 import axios from 'axios'
 import Swal from 'sweetalert2'
 import Loader from '../../loader/loader.vue'
+import api from '../../../services/api';
 export default {
   name:'orderTable',
   components:{Loader},
@@ -153,7 +151,7 @@ export default {
       async getOrders(page = 1) {
         this.isLoading = true;
           try {
-                const response = await axios.get(`/api/orders?page=${page}&limit=${this.limit}`);
+                const response = await api.get(`/orders?page=${page}&limit=${this.limit}`);
                 this.orders = response.data.orders.data;
                 this.totalPages = response.data.orders.last_page;
                 this.currentPage = page; // Update the current page
@@ -181,7 +179,7 @@ export default {
           this.showModal = false;
         },
         async editOrder(id){
-          const response = await axios.get(`/api/orders/${id}`);
+          const response = await api.get(`/orders/${id}`);
           this.editord = response.data;
           this.openEditModal(this.editord);
           this.editOrderState  = this.editord.state;
@@ -199,7 +197,7 @@ export default {
             } else {
                 try {
                     console.log("inside try");
-                    const response = await axios.delete(`/api/orders/${id}`);
+                    const response = await api.delete(`/orders/${id}`);
                     this.orders = response.data;
                     if (response.status === 204) {
                         this.showalert('سفارش با موفقیت حذف شد!', 'ادامه دهید', 'success');
@@ -213,7 +211,7 @@ export default {
             }
         },
         async searchData() {
-            const response = await axios.post('/api/searchorder', {
+            const response = await api.post('/searchorder', {
                 query: this.searchQuery
             });
             // console.log(response.data);

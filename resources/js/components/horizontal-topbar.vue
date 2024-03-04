@@ -1,29 +1,17 @@
 <script>
 import simplebar from "simplebar-vue";
 
-import us from '../../images/flags/us.jpg';
-import fr from '../../images/flags/french.jpg';
-import es from '../../images/flags/spain.jpg';
-import zh from '../../images/flags/chaina.png';
-import ar from '../../images/flags/arabic.png';
+
 
 import logoDarkLg from '../../images/logo-dark.png';
 import logoDarkSm from '../../images/logo.svg';
 import logoLightLg from '../../images/logo-light.png';
 import logoLightSm from '../../images/logo-light.svg';
 
-import avatar1 from '../../images/users/avatar-1.jpg';
-import avatar3 from '../../images/users/avatar-3.jpg';
-import avatar4 from '../../images/users/avatar-4.jpg';
+import avatar2 from '../../images/users/avatar-2.jpg';
 
-import github from '../../images/brands/github.png';
-import bitbucket from '../../images/brands/bitbucket.png';
-import dribbble from '../../images/brands/dribbble.png';
-import dropbox from '../../images/brands/dropbox.png';
-import mail_chimp from '../../images/brands/mail_chimp.png';
-import slack from '../../images/brands/slack.png';
 
-import megamenu from '../../images/megamenu-img.png';
+
 
 export default {
   components: {
@@ -31,34 +19,8 @@ export default {
   },
   data() {
     return {
-      logoDarkLg, logoDarkSm, logoLightLg, logoLightSm, avatar1, avatar3, avatar4, github, bitbucket, dribbble, dropbox, mail_chimp, slack, megamenu,
-      languages: [
-        {
-          flag: us,
-          language: "en",
-          title: "English",
-        },
-        {
-          flag: fr,
-          language: "fr",
-          title: "French",
-        },
-        {
-          flag: es,
-          language: "es",
-          title: "Spanish",
-        },
-        {
-          flag: zh,
-          language: "zh",
-          title: "Chinese",
-        },
-        {
-          flag: ar,
-          language: "ar",
-          title: "Arabic",
-        },
-      ],
+      logoDarkLg, logoDarkSm, logoLightLg, logoLightSm, avatar2 ,
+
       lan: this.$i18n.locale,
       text: null,
       flag: null,
@@ -66,9 +28,7 @@ export default {
     };
   },
   mounted() {
-    this.value = this.languages.find((x) => x.language === this.$i18n.locale);
-    this.text = this.value.title;
-    this.flag = this.value.flag;
+
   },
   methods: {
     toggleRightSidebar() {
@@ -105,13 +65,13 @@ export default {
         }
       }
     },
-    setLanguage(locale, country, flag) {
-      this.lan = locale;
-      this.text = country;
-      this.flag = flag;
-      this.$i18n.locale = locale;
-      localStorage.setItem("locale", locale);
-    },
+    // setLanguage(locale, country, flag) {
+    //   this.lan = locale;
+    //   this.text = country;
+    //   this.flag = flag;
+    //   this.$i18n.locale = locale;
+    //   localStorage.setItem("locale", locale);
+    // },
   },
 };
 </script>
@@ -431,7 +391,7 @@ export default {
           </b-dropdown-item>
         </b-dropdown>
 
-        <b-dropdown
+        <!-- <b-dropdown
           class="d-none d-lg-inline-block noti-icon"
           menu-class="dropdown-menu-lg dropdown-menu-end"
           right
@@ -485,7 +445,7 @@ export default {
               </div>
             </div>
           </div>
-        </b-dropdown>
+        </b-dropdown> -->
 
         <div class="dropdown d-none d-lg-inline-block ml-1">
           <button
@@ -497,7 +457,7 @@ export default {
           </button>
         </div>
 
-        <b-dropdown
+        <!-- <b-dropdown
           right
           menu-class="dropdown-menu-lg p-0 dropdown-menu-end"
           toggle-class="header-item noti-icon"
@@ -633,7 +593,7 @@ export default {
               </span>
             </a>
           </div>
-        </b-dropdown>
+        </b-dropdown> -->
 
         <b-dropdown
           right
@@ -644,33 +604,22 @@ export default {
           <template v-slot:button-content>
             <img
               class="rounded-circle header-profile-user"
-              :src="avatar1"
+              :src="avatar2"
               alt="Header Avatar"
             />
             <span class="d-none d-xl-inline-block ml-1">{{
               $t("navbar.dropdown.henry.text")
             }}</span>
+
+           
             <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
           </template>
           <!-- item-->
-          <b-dropdown-item href="/contacts/profile">
+          <!-- <b-dropdown-item href="/contacts/profile">
             <i class="bx bx-user font-size-16 align-middle me-1"></i>
             {{ $t("navbar.dropdown.henry.list.profile") }}
-          </b-dropdown-item>
-          <b-dropdown-item href="javascript: void(0);">
-            <i class="bx bx-wallet font-size-16 align-middle me-1"></i>
-            {{ $t("navbar.dropdown.henry.list.mywallet") }}
-          </b-dropdown-item>
-          <b-dropdown-item class="d-block" href="javascript: void(0);">
-            <span class="badge bg-success float-end">11</span>
-            <i class="bx bx-wrench font-size-16 align-middle me-1"></i>
-            {{ $t("navbar.dropdown.henry.list.settings") }}
-          </b-dropdown-item>
-          <b-dropdown-item href="javascript: void(0);">
-            <i class="bx bx-lock-open font-size-16 align-middle me-1"></i>
-            {{ $t("navbar.dropdown.henry.list.lockscreen") }}
-          </b-dropdown-item>
-          <b-dropdown-divider></b-dropdown-divider>
+          </b-dropdown-item> -->
+      
           <a href="/logout" class="dropdown-item text-danger">
             <i
               class="bx bx-power-off font-size-16 align-middle me-1 text-danger"

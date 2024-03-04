@@ -19,7 +19,6 @@ class CurrencyController extends Controller
             $limit = $request->has('limit') ? $request->limit : 10;
     
             $currency = Currency::where('status', '=', '1')
-                ->orderBy('id', 'desc')
                 ->paginate($limit);
     
             if ($currency->isEmpty()) {

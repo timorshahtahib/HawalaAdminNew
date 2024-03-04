@@ -10,10 +10,7 @@ class ForDeleteTransactionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function getTransfer2()
-    {
-        dd("Hell");
-    }
+ 
 
     /**
      * Store a newly created resource in storage.

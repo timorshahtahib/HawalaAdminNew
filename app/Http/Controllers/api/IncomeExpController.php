@@ -10,7 +10,8 @@ use App\Models\IncomeExp;
 use App\Models\Transaction;
 use Exception;
 use Response;
-use Auth;
+use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -28,7 +29,7 @@ class IncomeExpController extends Controller
         try {
             $limit = $request->has('limit') ? $request->limit : 10;
 
-            $IncomeExp = IncomeExp::where('status', '=', '1')->limit($limit)->with(['expense_bank','customer','expense_currency'])
+            $IncomeExp = IncomeExp::where('status', '=', '1')->limit($limit)->with(['expense_bank','customer','expense_currency','user'])
             ->orderBy('id','desc')->paginate($limit);
             if ($IncomeExp->isEmpty()) {
                 return response()->json([]);
@@ -48,7 +49,7 @@ class IncomeExpController extends Controller
             $limit = $request->has('limit') ? $request->limit : 10;
           
 
-            $expenses = IncomeExp::where('status', '=', '1')->where('type','expense')->with(['expense_currency','inserted_by_user','expense_acount','expense_bank'])
+            $expenses = IncomeExp::where('status', '=', '1')->where('type','expense')->with(['expense_currency','inserted_by_user','expense_acount','expense_bank','user'])
             ->orderBy('id','desc')->limit($limit)->paginate($limit);
 
             if ($expenses->isEmpty()) {
@@ -64,80 +65,12 @@ class IncomeExpController extends Controller
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    // public function store(Request $request)
-    // {
 
-    //     // $validator = Validator::make($request->all(), [
-    //     //     // 'id' => 'required|max:20',
-    //     //     'type' => 'required|in:expense,income',
-    //     //     'amount' => 'required',
-    //     //     'currency'=>'required|max:20',
-    //     //     'amount_equal' => 'nullable',
-    //     //     'currency_equal' => 'nullable|max:20',
-    //     //     'date'=>'required|max:20',
-    //     //     'transaction_id' => 'nullable|max:20',
-    //     //     'finance_acount_id'=>'required|max:20',
-    //     //     'user_id' => 'required|max:200',
-    //     //     'ref_type'=>'required|max:20',
-    //     //     'desc'=>'nullabel',
-    //     //     'state'=>'reqiured|in:pending,payed,unpaid',
-    //     // ],
-    //     // [
-    //     //     'type.required' =>'نوعیت حساب ضروری میباشد',
-    //     //     'amount.required' =>'لطفا مقداری را وارد نمائید',
-    //     //     'currency.required' =>'انتخاب واحد پولی ضروری میباشد',
-    //     //     'date.required' =>'لطفا تاریخ را انتخاب نمائید',
-    //     //     'finance_acount_id.required' =>'فایننس اکانت آیدی ضروری میباشد',
-    //     //     'user_id.required' =>'آیدی کاربر ضروری میباشد',
-    //     //     'ref_type.required' =>'آیدی ریفرنس ضروری میباشد',
-    //     // ]);
-       
-    //     //     if($validator->fails()){
-    //     //         return response()->json(['error'=>$validator->errors()->toArray(),]);
-    //     //     }
-    //     //     else{
-              
-    //         $IncomeExp_Values = [
-    //         'type' => $request->type,
-    //         'amount' => $request->amount,
-    //         'currency'=>$request->currency,
-    //         'amount_equal' => $request->amount_equal,
-    //         'currency_equal' => $request->currency_equal,
-    //         'date'=>$request->date,
-    //         'transaction_id' => $request->transaction_id,
-    //         'finance_acount_id'=>$request->finance_acount_id,
-    //         'user_id' => $request->user_id,
-    //         'ref_type'=>$request->ref_type,
-    //         'state'=>$request->state,
-    //         'desc'=>$request->desc,
-                
-    //         ];
-
-    //         $incomeEpx_id = IncomeExp::insertGetId($IncomeExp_Values);
-    //             if($incomeEpx_id){
-    //                 $update_values = ['incomeExp_id'=>$incomeEpx_id,];
-    //                 $output_data = Transaction::where('id',$incomeEpx_id)->with(['expense_bank','customer','expense_currency'])->first();
-    //             }
-    //             return response()->json(
-    //                 [
-    //                 'status'=>true,
-    //                 'message' => 'با موفقیت ثبت شد', 'new_data' => $output_data], 201);
-           
-            
-    //                 // }
-    // }
-
-    /**
-     * Display the specified resource.
-     */
     public function showExpens($id)
     {
         // $expense = IncomeExp::find($id);
         $expense = IncomeExp::where('id',$id)->where('status', '=', '1')->where('type','expense')
-        ->with(['expense_currency','expense_acount','expense_bank'])->first();
+        ->with(['expense_currency','expense_acount','expense_bank','user'])->first();
 
 
         // dd($expense);
@@ -199,8 +132,7 @@ class IncomeExpController extends Controller
                 // 'currency_equal' => $request->currency_equal,
                 'date'=>$request->date,
                 'state'=>$request->state,
-                'desc'=>$request->desc,
-                    
+                'desc'=>$request->desc,  
                 ];
              
                 $incomeEpx_id = IncomeExp::insertGetId($IncomeExp_Values);
@@ -213,8 +145,6 @@ class IncomeExpController extends Controller
                         'status'=>true,
                         'message' => 'با موفقیت ویرایش شد', 'new_data' => $output_data], 201);
                
-
-
     }
 
     /**
@@ -284,11 +214,13 @@ class IncomeExpController extends Controller
                     'type'=>'expense',
                     'amount'=>$request->amount,
                     'currency'=>$expense_acount->currency,
+                    'amount_equal'=>$request->amount,
+                    'currency_equal'=>$expense_acount->currency,
                     'date'=>$request->date,
                     'finance_acount_id'=>$expense_acount->id,
                     'bank_id'=>$request->bank_id,
-                    // 'user_id'=>Auth::user()->id,
-                    'user_id'=>1,
+                    'user_id'=>Auth::user()->id,
+                
                     'state'=>'payed',
                     'ref_type'=>'expense',
                     'desc'=>$request->desc,
@@ -305,8 +237,9 @@ class IncomeExpController extends Controller
                     'ref_id'=>$expense_id,
                     'finance_acount_id'=>$expense_acount->id,
                     'bank_acount_id'=>$request->bank_id,
-                    // 'user_id'=>Auth::user()->id,
-                    'user_id'=>1,
+                    'user_id'=>Auth::user()->id,
+                    'amount_equal'=>$request->amount,
+                    'currency_equal'=>$expense_acount->currency,
                     'desc'=>$request->desc,
                     'date'=>$request->date,
                     'check_number'=>$check_number,
@@ -407,8 +340,8 @@ class IncomeExpController extends Controller
                     'date'=>$request->date,
                     'finance_acount_id'=>$expense_acount->id,
                     'bank_id'=>$request->bank_id,
-                    // 'user_id'=>Auth::user()->id,
-                    'user_id'=>1,
+                    'user_id'=>Auth::user()->id,
+                    // 'user_id'=>1,
                     'state'=>'payed',
                     'ref_type'=>'expense',
                     'desc'=>$request->desc,
@@ -423,8 +356,7 @@ class IncomeExpController extends Controller
                     'currency'=>$expense_acount->currency,
                     'finance_acount_id'=>$expense_acount->id,
                     'bank_acount_id'=>$request->bank_id,
-                    // 'user_id'=>Auth::user()->id,
-                    'user_id'=>1,
+                    'user_id'=>Auth::user()->id,
                     'desc'=>$request->desc,
                     'date'=>$request->date,
                 ];

@@ -117,6 +117,7 @@
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import Loader from '../../loader/loader.vue'
+import api from '../../../services/api';
 export default {
     name: 'currencyTable',
     components:{Loader},
@@ -133,7 +134,7 @@ export default {
             editCurrencySignError: '',
             errors: {},
                // pagination
-               currentPage: 1,
+            currentPage: 1,
             totalPages: 1,
             limit: 10,
         }
@@ -158,10 +159,10 @@ export default {
         async getCurrencies(page = 1) {
             this.isLoading=true;
             try {
-                const response = await axios.get(`/api/currencies?page=${page}&limit=${this.limit}`);
+             
+                const response = await api.get(`/currencies?page=${page}&limit=${this.limit}`);
                 this.currencies = response.data.currencies.data;
                 this.totalPages = response.data.currencies.last_page;
-                // console.log("Currency",response.data);
                 this.currentPage = page; // Update the current page
             } catch (error) {
                 console.error('Error fetching Currency:', error);
@@ -184,7 +185,7 @@ export default {
             this.showModal = true;
         },
         async editCurrencyFunction(id) {
-            const response = await axios.get(`/api/currencies/${id}`);
+            const response = await api.get(`/currencies/${id}`);
             this.editCurr = response.data;
             this.openEditModal();
             this.editCurrencyName = this.editCurr.name;
@@ -194,7 +195,7 @@ export default {
      
         async editCucurrencyForm() {
             let id = this.editCurr.id;
-            const response = await axios.post(`/api/updatecurrency`, {
+            const response = await api.post(`/updatecurrency`, {
               name : this.editCurrencyName,
               sign : this.editCurrencySign,
               id:id
@@ -232,7 +233,7 @@ export default {
                 return;
             } else {
                 try {
-                    const response = await axios.delete(`/api/currencies/${id}`);
+                    const response = await api.delete(`/api/currencies/${id}`);
                     this.customerSearch = response.data;
                     if (response.status === 204) {
                         this.showalert('واحد پولی با موفقیت حذف شد!', 'موفقانه', 'success');
@@ -245,7 +246,7 @@ export default {
             }
         },
         async searchData() {
-            const response = await axios.post('/api/searchcurrency', {
+            const response = await api.post('/searchcurrency', {
                 query: this.searchQuery
             });
             // console.log(response.data);

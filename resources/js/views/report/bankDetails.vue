@@ -2,13 +2,15 @@
 import Layout from "../../layouts/main.vue";
 import PageHeader from "../../../js/components/page-header.vue";
 
-import axios from 'axios';
+
 // import SweetAlert from "../../../SweetAlert.vue";
 import Swal from "sweetalert2";
 import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
 import DatePicker from '@alireza-ab/vue3-persian-datepicker';
 import Loader from '../loader/loader.vue'
+
+import api from '../../services/api'
 /**
  * Rasidbord component
  */
@@ -82,7 +84,7 @@ export default {
         };
     },
     mounted() {
-        this.getCurrency();
+        // this.getCurrency();
         this.getTransaction();
         this.getCustomers();
         this.rasid_bord_type='all'
@@ -100,9 +102,8 @@ export default {
         },
 
         async searchbankTransaction(){
-
             try {
-                const response = await axios.post('/api/filterBankTransactions', {
+                const response = await api.post('/filterBankTransactions', {
                     tr_type: this.rasid_bord_type,
                     bank_acount_id: this.$route.params.id,
                     start_date: this.start_date,
@@ -150,9 +151,11 @@ export default {
         async getCustomers(page =1) {
        
             try {
-                const response = await axios.get(`/api/customer?page=${page}&limit=${this.limit}`);
+                const response = await api.get(`/customer?page=${page}&limit=${this.limit}`);
                 this.customers = response.data.customers.data;
-              
+                
+                // const response1 = await api.get(`/currencies`);
+                // this.currencies = response.data.currencies.data;
                 this.totalPages = response.data.customers.last_page;
                 this.currentPage = page; // Update the current page
                 // console.log(this.customers);
@@ -164,7 +167,7 @@ export default {
       
         async getCurrency() {
             try {
-                await axios.get('/api/currencies').then((response) => {
+                await api.get('/currencies').then((response) => {
                         this.currencies = response.data.currencies.data;
                         // console.log(this.currencies);
 
@@ -188,7 +191,7 @@ export default {
             this.isLoading=true;
            try {
             let d= this.$route.params.id
-            const response = await axios.get('/api/bankdetails/'+d);
+            const response = await api.get('/bankdetails/'+d);
             this.transactions = response.data.banksTransaction;
            } catch (error) {
             console.log(error.message);
@@ -207,7 +210,7 @@ export default {
             }
         },
         async searchData() {
-            const response = await axios.post('/api/searchtransactions', {
+            const response = await api.post('/searchtransactions', {
                 query: this.searchQuery
             });
 
@@ -222,10 +225,10 @@ export default {
             } else {
                 try {
 
-                    // const response = await axios.post(`/api/deleteonetransaction`,{id:id});
+                    // const response = await api.post(`/deleteonetransaction`,{id:id});
 
                    
-                    const response = await axios.post(`/api/deleteOneTransaction`,{id:id});
+                    const response = await api.post(`/deleteOneTransaction`,{id:id});
 
                     // this.transactions = response.data;
                     if (response.status === 204) {
@@ -244,7 +247,7 @@ export default {
         },
         async getBanks(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.banks = response.data.banks;
                 this.selectedDakhl = this.banks[0].id;
                 // console.log("selected Dakhl", this.selectedDakhl);
@@ -282,13 +285,13 @@ export default {
                       </div>
                       <div class="mb-3 col-lg-2">
                         <label for="email">تاریخ شروع</label>
-                        <date-picker @select="select_start_date" mode="single" type="date" locale="fa" :column="1" required>
+                        <date-picker @select="select_start_date" mode="single" type="date" locale="fa" :column="1" clearable required>
                         </date-picker>
                       </div>
 
                       <div class="mb-3 col-lg-2">
                         <label for="email">تاریخ ختم</label>
-                        <date-picker @select="select_end_date" mode="single" type="date" locale="fa" :column="1" required>
+                        <date-picker @select="select_end_date" mode="single" type="date" locale="fa" :column="1" clearable required>
                         </date-picker>
                       </div>
 
@@ -336,41 +339,42 @@ export default {
                               </div>
                             <div v-else>
                                 <div class="table-responsive" v-if="transactions.length">
-                                    <table class="table table-centered table-nowrap">
+                                    <table class="table table-nowrap">
                                         <thead>
                                             <tr>
-                                                <th class="text-center">آیدی</th>
-                                                <th class="text-center">تاریخ</th>
-                                                <th class="text-center">نام مشتری</th>
-                                                <th class="text-center">رسید برد</th>
-                                                <th class="text-center">نمبر چک</th>
-                                                <th class="text-center">مقدار پول</th>
-                                                <th class="text-center">واحد</th>
-                                                <th class="text-center">دخل</th>
-                                                <th class="text-center">تفصیلات</th>
-                                                <th class="text-center">توسط</th>
+                                                <th class="">نمبر چک</th>
+                                                <th class="">تاریخ</th>
+                                                <th class="">نام مشتری</th>
+                                                <th class="">رسید برد</th>
+                                                <th class="">مقدار پول</th>
+                                                <th class="">تفصیلات</th>
+                                                <th class="">توسط</th>
     
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr v-for="transaction in transactions" :key="transaction?.id">
-                                                <td>{{transaction?.id}}</td>
+                                                <td>{{transaction.check_number}}</td>
                                                 <td>{{transaction?.date}}</td>
                                                 <td v-if="transaction.customer!=null">{{ transaction.customer?.name}}</td>
                                                 <td v-else>{{ transaction.finance_account?.account_name}}</td>
                                                 <td>
-                                                    <span class="badge  font-size-12" :class="transaction.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">
-                                                    {{transaction.rasid_bord}}
+                                                    <span class="badge badge-pill  font-bold font-size-12 p-2" :class="transaction.rasid_bord === 'rasid' ? 'badge-soft-success' :'badge-soft-warning'">
+                                                        {{transaction.rasid_bord==='rasid' ? 'رسید' : 'برد' }}
                                                     </span>
+                                                
                                                 </td>
-                                                <td>{{transaction.check_number}}</td>
-                                                <td>{{transaction.amount}}</td>
-                                                <td>{{transaction.tr_currency.name}}</td>
-                                                <td v-if="transaction.bank_account!=null">{{transaction.bank_account?.account_name}}</td>
+                                             
+                                                <span>{{transaction.amount.toLocaleString()}}  {{transaction.tr_currency.name}}
 
-                                                <td v-else>{{ transaction.finance_account?.account_name}}</td>
+                                                    <span v-if="transaction.bank_account!=null">{{transaction.bank_account?.account_name}}</span>
+
+                                                <span v-else>{{ transaction.finance_account?.account_name}}</span>
+                                                </span>
+                                                <!-- <td>{{transaction.tr_currency.name}}</td> -->
+                                                
                                                 <td>{{transaction.desc}}</td>
-                                                <td>{{transaction.user_id}}</td>
+                                                <td>{{transaction.user.name}}</td>
                                             </tr>
                                         </tbody>
                                     </table>

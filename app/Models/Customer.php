@@ -1,19 +1,24 @@
 <?php
 
 namespace App\Models;
+use Illuminate\Notifications\Notifiable;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Passport\HasApiTokens;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Customer extends Model
+class Customer extends Authenticatable
 {
     use HasFactory;
-    protected $table="customer";
+    use HasApiTokens;
+    use Notifiable ;
+    protected $table="users";
     protected $fillable=
     [
-            'id', 'name', 'last_name', 'cu_number',
+            'id', 'name', 'cu_number',
             'phone', 'username', 'password', 'image', 
-            'address', 'token', 'type', 'acount_currency',
+            'address', 'token', 'type', 
             'desc', 'status',
             'created_at', 'updated_at'
 

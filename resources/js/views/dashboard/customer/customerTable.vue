@@ -22,15 +22,15 @@
                         <div class="row flex justify-between">
                             <div class="col-md-6 col-sm-12 col-lg-6">
                                 <div class="mb-3">
-                                    <label for="username">نام کاربری</label>
-                                    <input id="username" v-model="username" type="text" class="form-control" placeholder="نام کاربری خود را وارد کنید" required/>
-                                    <span class="text-danger error-text afrad_error" v-if="errors.username">{{errors.username[0]}}</span>
+                                    <label for="email">ایمیل</label>
+                                    <input id="email" v-model="email" type="email" class="form-control" placeholder=" ایمیل خود را وارد کنید" required/>
+                                    <span class="text-danger error-text afrad_error" v-if="errors.email">{{errors.email[0]}}</span>
                                 </div>
                             </div>
                             <div class="col-sm-12 col-md-6 col-lg-6">
                                 <div class="mb-3">
                                     <label for="password">رمز عبور</label>
-                                    <input id="password" v-model="password" type="password" class="form-control" placeholder="رمز خود را وارکنید" required/>
+                                    <input id="password" v-model="password" type="password" class="form-control" placeholder="رمز خود را واردکنید" required/>
                                 </div>
                             </div>
                         </div>
@@ -166,7 +166,7 @@
                     <td>{{ customer.phone }}</td>
                     <td>{{ customer.desc }}</td>
                     <td>
-                        <router-link class="btn btn-xs btn-primary" :to="`/dashboard/customer/${customer.id}`">پروفایل</router-link>
+                        <router-link class="btn btn-sm btn-primary" :to="`/dashboard/customer/${customer.id}`">پروفایل</router-link>
                     </td>
                     <td>
                         <!-- <span class="badge bg-success font-size-12"> -->
@@ -209,18 +209,17 @@
             </li>
         </ul>
     </div>
-  
-
 
 </template>
 
 <script>
 import { createStore } from 'vuex';
-import axios from 'axios';
+import api from '../../../services/api';
 import Swal from 'sweetalert2'
 import Loader from '../../loader/loader.vue';
 export default {
     name: 'customerTable',
+    components: { Loader },
     data() {
         return {
             customers: [],
@@ -234,16 +233,17 @@ export default {
             name: '',
             phoneError: '',
             phone: '',
-            username: '',
+            email: '',
             password: '',
             image: null,
             address: '',
             desc: '',
             errors: {},
             // edit modal
+            editCust:{},
             editshowModal: false,
             editname: '',
-            editUsername: '',
+            editemail: '',
             editPassword: '',
             editPhone: '',
             editImage: null,
@@ -263,7 +263,7 @@ export default {
         async getCustomers(page = 1) {
             this.isLoading = true;
             try {
-                const response = await axios.get(`/api/customer?page=${page}&limit=${this.limit}`);
+                const response = await api.get(`/customer?page=${page}&limit=${this.limit}`);
                 this.customers = response.data.customers.data;
                 this.totalPages = response.data.customers?.last_page;
                 this.currentPage = page; // Update the current page
@@ -296,7 +296,7 @@ export default {
             this.showModal = false;
             this.name = '';
             this.phone = '';
-            this.username = '';
+            this.email = '';
             this.password = '';
             this.image = null;
             this.address = '';
@@ -320,17 +320,19 @@ export default {
         },
         async storeCustomer() {
             this.submitted = true;
-            if (this.name && this.phone && this.username && this.password) {
-                const response = await axios.post("/api/customer", {
+
+            if (this.name && this.phone && this.email && this.password) {
+                const response = await api.post("/customer", {
                     name: this.name,
-                    last_name: this.last_name,
-                    phone: this.phone,
-                    username: this.username,
+                    email: this.email,
                     password: this.password,
+                    phone: this.phone,
                     image: this.image,
                     address: this.address,
                     desc: this.desc,
                 });
+
+                // console.log("response",response);
                 if (response.data != null) {
                     if (response.data.status === false) {
                         if (response.data.message != null) {
@@ -345,7 +347,7 @@ export default {
                         this.errors = {};
                         this.name = '';
                         this.phone = '';
-                        this.username = '';
+                        this.email = '';
                         this.password = '';
                         this.image = null;
                         this.address = '';
@@ -361,22 +363,22 @@ export default {
                 this.isError = true;
                 this.formError = "فیلد ها خالی است";
             }
-            // stop here if form is invalid
         },
         async editCustomer(id) {
-            const response = await axios.get(`/api/customer/${id}`);
-            this.editCust = response.data.customer;
+            // console.log("id",id);
+            const response = await api.get(`/customer/${id}`);
+            this.editCust = response.data;
+            // console.log("response",response);
             this.openEditModal();
             this.editname = this.editCust.name;
             this.editPhone = this.editCust.phone;
             this.editImage = this.editCust.image;
             this.editAddress = this.editCust.address;
             this.editDesc = this.editCust.desc;
-            //    console.log("inside editcustomer ", this.editDesc);
         },
         async editSubmitCustomerForm() {
             // console.log("id",id);
-            const responseUpdate = await axios.post('/api/updatecustomer', {
+            const responseUpdate = await api.post('/updatecustomer', {
                 id: this.editCust.id,
                 name: this.editname,
                 phone: this.editPhone,
@@ -414,7 +416,7 @@ export default {
             }
             else {
                 try {
-                    const response = await axios.delete(`/api/customer/${id}`);
+                    const response = await api.delete(`/customer/${id}`);
                     this.customers = response.data;
                     if (response.status === 204) {
                         this.getCustomers();
@@ -428,7 +430,7 @@ export default {
         },
         async searchData() {
             try {
-                const response = await axios.post('/api/searchCustomer', {
+                const response = await api.post('/searchCustomer', {
                     query: this.searchQuery
                 });
                 this.customers = response.data;
@@ -464,6 +466,6 @@ export default {
             }
         }
     },
-    components: { Loader }
+  
 }
 </script>

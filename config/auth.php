@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Customer;
+
 return [
 
     /*
@@ -44,11 +46,11 @@ return [
         'api' => [
             'driver' => 'passport',
             'provider' => 'users',
-            // 'expire_in' => 60, 
-            // 'expire_in' => [
-            //     'access_token' => 60, // Access token expires in 60 minutes
-            //     'refresh_token' => 1440, // Refresh token expires in 1440 minutes (1 day)
-            // ],
+       
+        ],
+        'customers' => [
+            'driver' => 'passport',
+            'provider' => 'customers',
         ],
     ],
  
@@ -75,10 +77,12 @@ return [
             'model' => App\Models\User::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'customers' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Customer::class,
+        ],
+
+      
     ],
 
     /*
@@ -103,6 +107,8 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
+    
+        
     ],
 
     /*

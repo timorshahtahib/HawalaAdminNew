@@ -65,13 +65,13 @@
                     <td>{{ order.sub_category_id }}</td>
                     <td>{{ order.qtt }}</td>
                     <td>{{ order.amount }}</td>
-                    <td>{{ order.final_amount }}</td>
+                    <td>{{ order.final_amount.toLocaleString() }}</td>
                     <td>{{ order.profit_percentage }}</td>
-                    <td>{{ order.profit_amount }}</td>
+                    <td>{{ order.profit_amount.toLocaleString() }}</td>
                     <td>{{ order.currency }}</td>
                     <td>{{ order.buy_currency_id }}</td>
                     <td>{{ order.currency_rate }}</td>
-                    <td>{{ order.buy_price }}</td>
+                    <td>{{ order.buy_price.toLocaleString() }}</td>
                     <td>{{ order.user_id }}</td>
                     <td>{{ order.product_id }}</td>
                     <td>{{ order.supplier_id }}</td>
@@ -121,6 +121,7 @@
   import axios from 'axios'
   import Swal from 'sweetalert2'
   import Loader from '../../loader/loader.vue'
+  import api from '../../../services/api';
   export default {
     name:'orderTable',
     components:{Loader},
@@ -145,7 +146,7 @@
         async getOrders(page = 1) {
           this.isLoading = true;
             try {
-                  const response = await axios.get(`/api/rejectedorder?page=${page}&limit=${this.limit}`);
+                  const response = await api.get(`/rejectedorder?page=${page}&limit=${this.limit}`);
                   this.orders = response.data.orders.data;
                   this.totalPages = response.data.orders.last_page;
                   this.currentPage = page; // Update the current page
@@ -168,7 +169,7 @@
    
 
           async searchData() {
-              const response = await axios.post('/api/searchorder', {
+              const response = await api.post('/searchorder', {
                   query: this.searchQuery
               });
               // console.log(response.data);

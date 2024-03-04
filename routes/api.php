@@ -10,6 +10,7 @@ use App\Http\Controllers\api\deleteTransaction;
 use App\Http\Controllers\api\ExchangeController;
 use App\Http\Controllers\api\FinanceAccountController;
 use App\Http\Controllers\api\IncomeExpController;
+use App\Http\Controllers\api\myHomeController;
 use App\Http\Controllers\api\OrderController;
 use App\Http\Controllers\api\ReportFinanceController;
 use App\Http\Controllers\api\TestController;
@@ -33,22 +34,33 @@ use App\Http\Controllers\api\UserController;
 
 
 Route::post('/login', [APIController::class, 'login']);
-Route::post('/register', [APIController::class, 'register']);
+// Route::post('/loginCustomer', [APIController::class, 'loginCustomer']);
+
 Route::post('/forget-password', [APIController::class, 'forget_pass']);
 Route::post('/reset-password', [APIController::class, 'reset_pass']);
+Route::post('/register', [APIController::class, 'register']);
 
 
 
 
-   
-Route::group([
-    "middleware"=>["auth:api"]
-],function(){
-// for logout user
+Route::middleware('auth:api')->group(function(){
+
+    // default page or index(myHomeController) page controller 
+    Route::get('/showindex', [myHomeController::class, 'showIndexPage']);
+
+    
+
     Route::post('/logout', [APIController::class, 'logout']);
     Route::apiResource('user', UserController::class);
+    Route::post('/updateuser', [UserController::class,'updateUser']);
+    Route::post('/deleteuser', [UserController::class,'deleteOneUser']);
+    Route::post('/searchuser', [UserController::class,'searchUsers']);
     
     Route::apiResource('customer',CustomerController::class);
+    Route::get('/deletedcustomer', [CustomerController::class, 'DeletedCustomers']);
+    Route::post('/activecustomer', [CustomerController::class, 'activeCustomer']);
+    Route::post('/searchdeletedcustomer', [CustomerController::class, 'searchDeletedCustomer']);
+
     Route::post('/updatecustomer', [CustomerController::class, 'updateCustomer']);
     Route::post('/searchCustomer', [CustomerController::class, 'searchCustomer']);
     Route::post('/changeusername/{id}', [CustomerController::class, 'ChangeUsernameFunc']);
@@ -91,7 +103,6 @@ Route::group([
     // select transaction that the ref_id equal to customer id
     Route::post('/customerinfo',[TransactionController::class,'getCustomerInfo']);
     
-    // Route::get('/transactionbyorderid/{id}',[TransactionController::class,'transactionByOrderId']);
     
     
     
@@ -160,6 +171,7 @@ Route::group([
     // for exporting the customer transaction table
     Route::get('/transactions/pdf', [TransactionController::class, 'exportTransactionsToPDF'])->name('transactions.pdf');
     // rooznacha 
+    Route::post('/getrooznamchah',[ReportFinanceController::class, 'getRooznamcha']);
     Route::post('/filterrooznamchah',[ReportFinanceController::class, 'filterRooznachah']);
 });
 

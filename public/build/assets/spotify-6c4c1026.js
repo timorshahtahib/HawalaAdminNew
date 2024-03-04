@@ -1,1 +1,0 @@
-const s="/build/icons/airbnb.svg",i="/build/icons/mailchimp.svg",o="/build/icons/reddit.svg",n="/build/icons/amazon.svg",a="/build/icons/line.svg",c="/build/icons/sass.svg",t="/build/icons/adobe.svg",b="/build/icons/flutter.svg",d="/build/icons/spotify.svg";export{s as a,n as b,t as c,d,b as f,a as l,i as m,o as r,c as s};

@@ -5,12 +5,16 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\BankBalance;
 use App\Models\Currency;
+use App\Models\Customer;
 use App\Models\FinanceAccount;
 use App\Models\IncomeExp;
 use App\Models\Transaction;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Morilog\Jalali\Jalalian;
 use Throwable;
 
 class ReportFinanceController extends Controller
@@ -32,7 +36,7 @@ class ReportFinanceController extends Controller
             $bankBalance = BankBalance::paginate($limit);
             $currency_count= Currency::where('status',1)->count();
             $financeAcc_count= FinanceAccount::where('status',1)->count();
-
+            
             if($bankBalance->isEmpty()){
                 return response()->json([]);
             }
@@ -50,8 +54,7 @@ class ReportFinanceController extends Controller
 
         public function getBanksTransaction(Request $request){
             $id = $request->id;
-            $bankTransaction = Transaction::where('bank_acount_id',$id)->where('status',1)->with(['financeAccount','customer','tr_currency','bank_account'])->orderBy('id','desc')->get();
-            
+            $bankTransaction = Transaction::where('bank_acount_id',$id)->where('status',1)->with(['financeAccount','customer','tr_currency','bank_account','user'])->orderBy('id','desc')->get();
             return response()->json(['banksTransaction'=>$bankTransaction]);
         }
 
@@ -237,9 +240,39 @@ class ReportFinanceController extends Controller
     
 
 
-       
+                                                                                                                                                                                                                                                                                                                                
             
 
+            public function getRooznamcha(Request $request){
+                try {
+                    $date = Jalalian::now();
+                     $today_date = $date->getYear() ."/" .$date->getMonth() ."/" .$date->getDay();
+
+                    $limit = $request->has('limit') ? $request->limit : 10;
+        
+                    $transaction = Transaction::where('status', '1')->whereDate('date', $today_date)
+                   ->with(['financeAccount','customer','tr_currency','eq_currency','bank_account','referencedTransaction'])->orderBy('id','desc')
+                    ->paginate($limit);
+        
+                    if ($transaction->isEmpty()) {
+                        return response()->json([], 404);
+                    }
+                    $total_pages= $transaction->lastPage();
+
+                    $currency = Currency::where('status', '=', '1')->get();
+                    $customers = Customer::where('status', '=', '1')->get();
+                    $financeAccount = FinanceAccount::where('status', '=', '1')->where('account','bank')->with(['finance_currency'])->get();
+                    return response()->json(['transactions' =>$transaction,'total_pages'=>$transaction,'currencies' => $currency,'customers' => $customers,'financeAccounts' => $financeAccount ]);
+                }
+                catch (Exception $e) {
+                    return response()->json(['error' => $e->getMessage()], 500);
+                }
+            }
+
+           
+           
+
+    
            
            
           

@@ -2,11 +2,12 @@
 import Layout from "../../../layouts/main.vue";
 import PageHeader from "../../../components/page-header.vue";
 
-import axios from 'axios';
+// import api from 'api';
 import SweetAlert from "../../../SweetAlert.vue";
 import Swal from "sweetalert2";
 import DatePicker from '@alireza-ab/vue3-persian-datepicker';
 import Loader from '../../loader/loader.vue'
+import api from '../../../services/api';
 /**
  * Expense component
  */
@@ -63,7 +64,7 @@ export default {
             editselectedDakhls: [],
             editselectedDakhl: '',
 
-            editAmount: '',
+            editAmount: 0.0000001,
             editDate: '',
             editDesc: '',
 
@@ -90,27 +91,18 @@ export default {
         closeModal() {
             this.showModal = false;
         },
-        async editExpense(id) {
-            const response = await axios.get(`/api/showExpense/${id}`);
-            this.newExpense = response.data;
-            this.openModaledit(this.newExpense);
-            this.editAmount = this.newExpense.amount
-            this.editDate = this.newExpense.date
-            this.editDesc = this.newExpense.desc
-            this.getAccountForEdit(this.newExpense.expense_acount.id);
-            this.getBanksForEdit(this.newExpense.expense_bank.id)
-            this.editExpenseExpenseCurrencyModel = this.newExpense.expense_currency.id;
-            console.log("this.newExpense ",this.newExpense );
-        },
+     
 
         // showing data in the table
         async showExpenses(page = 1) {
                     this.isLoading=true;
             try {
-                const response = await axios.get(`/api/showExpenses?page=${page}&limit=${this.limit}`);
+                const response = await api.get(`/showExpenses?page=${page}&limit=${this.limit}`);
                 this.ExpenseList = response.data.expenses.data;
                 this.totalPages = response.data.total_pages;
                 this.currentPage = page; // Update the current page
+                // console.log("this.ExpenseList",this.ExpenseList);
+                console.log("username",this.ExpenseList);
             } catch (error) {
                 console.error('Error fetching IncomeExpenses:', error);
             }finally{
@@ -141,18 +133,28 @@ export default {
         // for selecting the FinanceAccounts in insert form
         async getAccounts() {
             try {
-                const response = await axios.get('/api/expenses');
+                const response = await api.get('/expenses');
                 this.financeAccounts = response.data.financeAccounts;
                 // console.log("this.financeAccounts",this.financeAccounts);
             } catch (error) {
                 console.log(error.message);
             }
         },
-     
+        async editExpense(id) {
+            const response = await api.get(`/showExpense/${id}`);
+            this.newExpense = response.data;
+            this.openModaledit(this.newExpense);
+            this.editAmount = this.newExpense.amount
+            this.editDate = this.newExpense.date
+            this.editDesc = this.newExpense.desc
+            this.getAccountForEdit(this.newExpense.expense_acount.id);
+            this.getBanksForEdit(this.newExpense.expense_bank.id)
+            this.editExpenseExpenseCurrencyModel = this.newExpense.expense_currency.id;
+            console.log("this.newExpense ",this.newExpense );
+        },
         // for getting the id in modal
         getAccountForEdit(id) {
-
-            axios.get('/api/expenses')
+            api.get('/expenses')
                 .then(response => {
                     // Assuming the API response is an array of objects with 'value' and 'label' properties
                     this.editFinanceAccounts = response.data.financeAccounts;
@@ -166,7 +168,7 @@ export default {
         // for selecting the bank in modal
         async getBanksForEdit(selectedUserid) {
             // console.log("In getAccountForEidt: ",this.editfinmodel);
-            const response = await axios.get('/api/financeAccWithCurrency/' + selectedUserid);
+            const response = await api.get('/financeAccWithCurrency/' + selectedUserid);
             this.editselectedDakhls = response.data.banks;
             this.editselectedDakhl = this.editselectedDakhls.length > 0 ? this.editselectedDakhls.find(bank => bank.id == selectedUserid).id : '';
         },
@@ -175,7 +177,7 @@ export default {
         async updateEditedAccount() {
             try {
              
-                const response = await axios.get('/api/financeAccWithCurrency/' + this.editfinmodel);
+                const response = await api.get('/financeAccWithCurrency/' + this.editfinmodel);
                 this.editExpenseCurrecies = response.data.financeAccCurrencies;
                 this.newExpense.expense_currency.id = this.editExpenseCurrecies.id;
                 this.newExpense.expense_currency.name = this.editExpenseCurrecies.name;
@@ -192,7 +194,7 @@ export default {
         // it's for selecting the currency automatically from the finAccount
         async updateCurrencySelect() {
             try {
-                const response = await axios.get('/api/financeAccWithCurrency/' + this.selectedFinanceAccount);
+                const response = await api.get('/financeAccWithCurrency/' + this.selectedFinanceAccount);
                 this.gettedFinanceCurrencyId = response.data.financeAccCurrencies;
                 this.selectedCurrency = this.gettedFinanceCurrencyId.id;
                 this.banks = response.data.banks;
@@ -208,7 +210,7 @@ export default {
         async storeExpense() {
 
             try {
-                const response = await axios.post('/api/storeExpense', {
+                const response = await api.post('/storeExpense', {
                     amount: this.amount,
                     currency: this.selectedCurrency,
                     amount_equal: this.amount,
@@ -237,7 +239,6 @@ export default {
 
                     } else {
                        
-
                         this.errors = {};
                         this.getAccounts();
                         this.ExpenseList.unshift(response.data.new_data);
@@ -262,7 +263,7 @@ export default {
         async submitEditedForm(id) {
 
             try {
-                const response = await axios.post('/api/updateExpense', {
+                const response = await api.post('/updateExpense', {
                     id: this.newExpense.id,
                     amount: this.editAmount,
                     currency: this.editExpenseExpenseCurrencyModel,
@@ -286,10 +287,7 @@ export default {
                         }
 
                     } else {
-                        // console.log("else true");
-
-                        // this.errors = {};
-                        // this.getAccounts();
+                
                         this.ExpenseList.push(response.data.new_data);
 
                         this.showalert(response.data.message, "success", "بستن");
@@ -310,7 +308,7 @@ export default {
                 return;
             } else {
                 try {
-                    const response = await axios.post(`/api/deleteExpense`, {
+                    const response = await api.post(`/deleteExpense`, {
                         id: id
                     });
                     this.expenseSearch = response.data;
@@ -327,12 +325,10 @@ export default {
         },
 
         async searchData() {
-            const response = await axios.post('/api/searchexpense', {
+            const response = await api.post('/searchexpense', {
                 query: this.searchQuery
             });
-
             this.ExpenseList = response.data;
-            // console.log("this.ExpenseList",this.ExpenseList);
         },
     },
 };
@@ -343,9 +339,8 @@ export default {
     <PageHeader :title="title" :items="items" />
     <div class="row">
         <div class="col-xl-4">
-            <div class="card">
-          
-           
+            <div class="card" style="min-height:100vh">
+        
                 <!-- edit modal start -->
                 <div class="col-sm-8">
                     <div class="text-sm-end">
@@ -369,7 +364,7 @@ export default {
                                   <div class="row">
                                     <div class="col-sm-5 col-xs-12">
                                         <label for="name">مبلغ :‌</label>
-                                        <input type="number" v-model="editAmount" class="form-control" required>
+                                        <input type="number" step="0.0001" v-model="editAmount" class="form-control" required>
                                         <span class="text-danger error-text afrad_error" v-if="errors.amount">{{errors.amount[0]}}</span>
                                     </div>
                                     <div class="col-sm-7 col-xs-12">
@@ -404,7 +399,7 @@ export default {
 
                                             <!-- @alireza-ab/vue3-persian-datepicker -->
                                             
-                                            <date-picker @select="editSelect" mode="single" type="date" locale="fa" :column="1" required></date-picker>
+                                            <date-picker @select="editSelect" mode="single" type="date" locale="fa" :column="1" clearable required ></date-picker>
                                             <span class="text-center" v-if="editDate">{{editDate}}</span>
                                         </div>
                                         <span class="text-danger error-text afrad_error" v-if="errors.date">{{errors.date[0]}}</span>
@@ -454,19 +449,17 @@ export default {
                               <div class="row">
                                 <div class="col-sm-6 col-xs-12">
                                     <label for="name">مبلغ :‌</label>
-                                    <input type="number" id="amount" v-model="amount" class="form-control" required>
+                                    <input type="number" id="amount" v-model="amount" class="form-control" required step="0.00001">
                                     <span class="text-danger error-text afrad_error" v-if="errors.amount">{{errors.amount[0]}}</span>
                                 </div>
                                 <div class="col-sm-6 col-xs-12">
                                     <label for="supplier">واحد پول :
                                     </label>
                                     <select class="form-control form-control-lg required" v-model="selectedCurrency" style="width: 100%;" required>
-                                        <!-- <option disabled>واحد</option> -->
                                         <option :key="gettedFinanceCurrencyId.id" :value="gettedFinanceCurrencyId.id">
                                             {{ gettedFinanceCurrencyId.name }}
                                         </option>
                                     </select>
-                                    <!-- <span class="text-danger error-text afrad_error" v-if="errors.bank_id">{{errors.bank_id}}</span> -->
                                 </div>
                               </div>
 
@@ -488,7 +481,7 @@ export default {
                                     <div class="input-group ">
 
                                         <!-- @alireza-ab/vue3-persian-datepicker -->
-                                        <date-picker @select="select" mode="single" type="date" locale="fa" :column="1" required></date-picker>
+                                        <date-picker @select="select" mode="single" type="date" locale="fa" :column="1" clearable required></date-picker>
                                     </div>
                                     <span class="text-danger error-text afrad_error" v-if="errors.date">{{errors.date[0]}}</span>
 
@@ -515,7 +508,7 @@ export default {
         <!-- end col -->
 
         <div class="col-xl-8">
-            <div class="card">
+            <div class="card" style="min-height:100vh">
                 
                 <div class="card-body">
                     <div class="col-sm-4">
@@ -542,12 +535,9 @@ export default {
                                                     <th class="text-center">حساب</th>
                                                     <th class="text-center">نوع</th>
                                                     <th class="text-center">مقدار پول</th>
-                                                    <!-- <th class="text-center">واحد</th>
-                                                    <th class="text-center">دخل</th> -->
                                                     <th class="text-center">تفصیلات</th>
                                                     <th class="text-center">توسط</th>
                                                     <th class="text-center">عملیه</th>
-        
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -557,14 +547,11 @@ export default {
                                                     <td>{{expenesel.date}}</td>
                                                     <td>{{expenesel.expense_acount?.account_name}}</td>
                                                     <td>{{expenesel.type ? "مصرف" :""}}</td>
-                                                    <td>{{expenesel.amount}} {{expenesel.expense_currency.name}} به {{expenesel.expense_bank?.account_name}}</td>
-                                            
+                                                    <td>{{expenesel.amount.toLocaleString()}} {{expenesel.expense_currency.name}} به {{expenesel.expense_bank?.account_name}}</td>
                                                     <td>{{expenesel.desc}}</td>
-                                                    <td>{{expenesel.user_id}}</td>
+                                                    <td>{{expenesel?.user?.name}}</td>
         
                                                     <td>
-                                                     
-        
                                                             <button class="btn btn-xs">
                                                                 <i class="fas fa-pencil-alt text-success me-1" @click="editExpense(expenesel.id)"></i>
                                                             </button>

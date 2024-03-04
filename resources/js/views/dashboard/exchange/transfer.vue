@@ -2,12 +2,11 @@
 import Layout from "../../../layouts/main.vue";
 import PageHeader from "../../../components/page-header.vue";
 
-import axios from 'axios';
 import SweetAlert from "../../../SweetAlert.vue";
 import Swal from "sweetalert2";
 import DatePicker from '@alireza-ab/vue3-persian-datepicker';
 import Loader from '../../loader/loader.vue'
-
+import api from '../../../services/api';
 /**
  * Rasidbord component
  */
@@ -33,10 +32,10 @@ export default {
             showModal: false,
             searchQuery: '',
             isLoading:false,
-            transfer_amount: '',
+            transfer_amount: 0,
             transfer_currency_model: '',
             commission: 'darad',
-            commission_amount: '',
+            commission_amount: 0,
             commission_currency_model: '',
             transfer_date: null,
             transfer_desc: '',
@@ -52,9 +51,9 @@ export default {
 
             //    for edit
 
-            edit_transfer_amount: '',
+            edit_transfer_amount: 0,
             edit_transfer_currency_model: '',
-            edit_commission: null,
+            edit_commission: 0,
             edit_commission_currency_model: '',
             edit_transfer_date: null,
             edit_transfer_desc: '',
@@ -66,7 +65,7 @@ export default {
             edit_sourcebanks: [],
             edit_destinationbanks: [],
             edit_commissionbanks: [],
-            edit_commission_amount: '',
+            edit_commission_amount: 0,
             rasid_id: 0,
             bord_id: 0,
             commission_id: 0,
@@ -83,7 +82,7 @@ export default {
         };
     },
     mounted() {
-        this.getCurrency();
+        // this.getCurrency();
         this.getTransferTransaction();
 
     },
@@ -102,9 +101,7 @@ export default {
             this.showModal = true;
             this.get_edit_Currency();
         },
-        // closeModaledit() {
-        //     this.showModal = false;
-        // },
+
         closeModal() {
             this.showModal = false;
         },
@@ -119,10 +116,11 @@ export default {
         async getTransferTransaction(page=1) {
                 try {
                     this.isLoading=true;
-                    const response = await axios.get(`/api/gettransfers?page=${page}&limit=${this.limit}`);
+                    const response = await api.get(`/gettransfers?page=${page}&limit=${this.limit}`);
                     this.transfers = response.data.transactions.data;
                     this.totalPages = response.data.transactions.last_page;
                     this.currentPage = page;
+                     this.currencies = response.data.currencies;
                 } catch (error) {
                     console.log(error.message);
                 }finally{
@@ -141,26 +139,13 @@ export default {
                 this.getTransferTransaction(this.currentPage + 1); // Update the page parameter
             }
         },
-        async getCurrency() {
-            try {
-                await axios.get('/api/currencies').then((response) => {
-                        this.currencies = response.data.currencies.data;
-
-                    })
-                    .catch((error) => {
-                        console.error('Error fetching currencies:', error);
-                    });
-
-            } catch (error) {
-                console.error('Error fetching data: ', error.message);
-            }
-        },
+       
 
         // for adding new Transaction  
         async storeTransferTransaction() {
 
             try {
-                const response = await axios.post('/api/storetransfer', {
+                const response = await api.post('/storetransfer', {
                     transfer_amount: this.transfer_amount,
                     currency: this.transfer_currency_model,
                     source_bank_acount_id: this.source_selectedDakhl,
@@ -223,7 +208,7 @@ export default {
 
         async getBanksByCID(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.sourcebanks = response.data.banks;
 
                 this.destinationbanks = response.data.banks;
@@ -242,7 +227,7 @@ export default {
 
         async getBanksByCIDforComision(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.commissionbanks = response.data.banks;
                 this.commission_selectedDakhl = this.commissionbanks[0].id;
             } catch (error) {
@@ -253,7 +238,7 @@ export default {
         // for edit
         async get_edit_Currency() {
             try {
-                await axios.get('/api/currencies').then((response) => {
+                await api.get('/currencies').then((response) => {
                         this.edit_currencies = response.data.currencies.data;
                     })
                     .catch((error) => {
@@ -274,7 +259,7 @@ export default {
 
         async edit_getBanksByCID(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.edit_sourcebanks = response.data.banks;
                 this.edit_destinationbanks = response.data.banks;
 
@@ -288,7 +273,7 @@ export default {
         async edit_getBanksByCIDforComision(id) {
             try {
                 // get bank by currency id
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.edit_commissionbanks = response.data.banks;
                 this.edit_commission_selectedDakhl = this.edit_commissionbanks[0].id;
 
@@ -299,7 +284,7 @@ export default {
 
         async edit_transfer_func(id, type) {
             
-            const response = await axios.post('/api/gettransferforedit', {
+            const response = await api.post('/gettransferforedit', {
                 id: id,
                 rasid_bord: type
             });
@@ -335,19 +320,16 @@ export default {
 
         hideCommission(){
             this.showCommission = !this.showCommission;
-            console.log("hideCommission");
+            // console.log("hideCommission");
         },
         editHideCommission(){
             // this.edit_showCommission = !this.showCommission;
             this.edit_showCommission = !this.edit_showCommission;
-            console.log("this.edit_showCommission",this.edit_showCommission);
-        }
-
-,   
+            // console.log("this.edit_showCommission",this.edit_showCommission);
+        } ,   
     async editSubmitTransfer() {
-
             try {
-                const response = await axios.post('/api/updateTransferTransaction', {
+                const response = await api.post('/updateTransferTransaction', {
                     rasid_id: this.rasid_id,
                     bord_id: this.rasid_id,
                     commmission_id: this.commission_id,
@@ -362,23 +344,20 @@ export default {
                     date: this.edit_transfer_date,
                     desc: this.edit_transfer_desc,
                 });
-                console.log("this.edit_transfer_desc",this.edit_transfer_desc);
+                // console.log("this.edit_transfer_desc",this.edit_transfer_desc);
                 if (response.data != null) {
 
                     // console.log("in data!=null", response.data);
                     if (response.data.status === false) {
 
                         if (response.data.message != null) {
-                            console.log("response.data.status === false");
+                            // console.log("response.data.status === false");
                             this.showalert(response.data.message, "error", "error!");
                         } else {
                             this.errors = response.data.error;
-
                         }
-
                     } else {
 
-                
                         this.edit_transfer_amount = ''
                         this.edit_transfer_currency_model = ''
                         this.edit_source_selectedDakhl = ''
@@ -407,7 +386,7 @@ export default {
                 return;
             } else {
                 try {
-                    const response = await axios.post('/api/deletetransfer', {
+                    const response = await api.post('/deletetransfer', {
                         rasid_id:this.rasid_id,
                         bord_id:this.bord_id,
                         commission_id:this.commission_id,
@@ -428,7 +407,7 @@ export default {
         },
 
         async searchData() {
-            const response = await axios.post('/api/searchtransfer', {
+            const response = await api.post('/searchtransfer', {
                 query: this.searchQuery
             });
             this.transfers = response.data;
@@ -463,7 +442,7 @@ export default {
 
                                     <div class="col-sm-6 col-xs-12">
                                         <label for="name"> مقدار پول انتقالی:‌</label>
-                                        <input type="number" id="edit_transfer_amount" v-model="edit_transfer_amount" class="form-control" required>
+                                        <input type="number" id="edit_transfer_amount" step="0.000001" v-model="edit_transfer_amount" class="form-control" required>
                                         <span class="text-danger error-text transfer_amount_error"></span>
                                     </div>
 
@@ -491,17 +470,8 @@ export default {
                           
                                 <div class="row mt-3">
                                    <div class="col-sm-12">
-                                        <!--  <span class="">
-                                            <label for="Commission" class="mx-1">کمیشن دارد:‌</label>
-                                            <input class="form-check-input" type="radio" id="Commission" v-model="edit_commission" value="darad" name="Commission" />
-                                        </span>
-                                        <span>
-                                            <label for="nocommission" class="mx-1">کمیشن ندارد:‌</label>
-                                            <input class="form-check-input" type="radio" id="nocommission" v-model="edit_commission" name="Commission" value="nadarad" />
-                                        </span>-->
-                                    
+
                                     <select class="form-control form-control-lg select2 required" v-model="edit_commission" @change="editHideCommission">
-                                       <!-- {{ transaction.commission_list ? `<option value="darad" selected>کمیشن دارد</option> :<option value="naDarad">کمیشن ندارد</option>` }}  -->
                                         
                                     </select>
                                 </div> 
@@ -518,7 +488,7 @@ export default {
                                     </div>
                                     <div class="col-sm-6 col-xs-12">
                                         <label for="name">مقدار پول کمیشن :‌</label>
-                                        <input type="number" id="commission_amount" v-model="edit_commission_amount" class="form-control">
+                                        <input type="number" step="0.000001" id="commission_amount" v-model="edit_commission_amount" class="form-control">
                                         <span class="text-danger error-text amount_error"></span>
                                     </div>
                                 </div>
@@ -542,7 +512,7 @@ export default {
                                     </label>
                                     <div class="input-group ">
                                         <!-- @alireza-ab/vue3-persian-datepicker -->
-                                        <date-picker @select="edit_select" mode="single" type="date" locale="fa" :column="1" required>
+                                        <date-picker @select="edit_select" mode="single" type="date" locale="fa" :column="1" clearable required>
                                         </date-picker>
                                     </div>
                                     <span class="text-danger error-text afrad_error" v-if="errors.date">{{errors.date[0]}}</span>
@@ -552,7 +522,6 @@ export default {
 
                                 <div class="col-sm-12 col-xs-12" style="padding-right:0px!important">
                                     <br>
-
                                     <textarea id="disc" class="form-control" autocomplete="on" v-model="edit_transfer_desc" rows="4" placeholder="توضیحات"></textarea>
                                     <span class="text-danger error-text disc_error"></span>
                                 </div>
@@ -590,7 +559,7 @@ export default {
 
                                     <div class="col-sm-6 col-xs-12">
                                         <label for="name"> مقدار پول انتقالی:‌</label>
-                                        <input type="number" id="transfer_amount" v-model="transfer_amount" class="form-control required" required>
+                                        <input type="number" id="transfer_amount" step="0.000001"  v-model="transfer_amount" class="form-control required" required>
                                         <span class="text-danger error-text transfer_amount_error"></span>
                                     </div>
 
@@ -611,22 +580,10 @@ export default {
                                     <select class="form-control form-control-lg select2 required" v-model="destination_Dakhl" style="width: 100%;" required>
                                         <option disabled selected>ابتدا واحد پول را انتخاب کنید.</option>
                                         <option v-for="bank in destinationbanks" :key="bank.id" :value="bank.id">{{bank.account_name}}</option>
-
                                     </select>
                                     <span class="text-danger error-text dakhl_error"></span>
                                 </div>
-                                <div class="row mt-3 ">
-                                    <!-- <div class="col-sm-12">
-                                        <span class="">
-                                            <label for="Commission" class="mx-1">کمیشن دارد:‌</label>
-                                            <input class="form-check-input" type="radio" id="Commission" v-model="commission" checked="true" value="darad" name="Commission" />
-                                        </span>
-                                        <span>
-                                            <label for="Commission" class="mx-1">کمیشن ندارد:‌</label>
-                                            <input class="form-check-input" type="radio" id="Commission_darad" v-model="commission" name="Commission" value="nadarad" />
-                                        </span>
-                                    </div> -->
-
+                                <div class="row mt-3">
                                     <div class="col-sm-12">
                                     <select class="form-control form-control-lg select2 required" v-model="commission" @change="hideCommission">
                                         <option value="darad" selected>کمیشن دارد</option>
@@ -634,7 +591,6 @@ export default {
                                     </select>
                                 </div>
                                 </div>
-                                    <!-- if doesn't commission don't show the bellow inputs -->
                                 <span v-show="showCommission">
                                 <div class="row">
                                     <div class="col-sm-6 col-xs-12">
@@ -647,7 +603,7 @@ export default {
                                     </div>
                                     <div class="col-sm-6 col-xs-12">
                                         <label for="name">مقدار پول کمیشن :‌</label>
-                                        <input type="number" id="rasid_amount" v-model="commission_amount" class="form-control">
+                                        <input type="number" step="0.000001" id="rasid_amount" v-model="commission_amount" class="form-control">
                                         <span class="text-danger error-text amount_error"></span>
                                     </div>
                                 </div>
@@ -670,7 +626,7 @@ export default {
                                     </label>
                                     <div class="input-group ">
                                         <!-- @alireza-ab/vue3-persian-datepicker -->
-                                        <date-picker @select="select" mode="single" type="date" locale="fa" :column="1" required>
+                                        <date-picker @select="select" mode="single" type="date" locale="fa" :column="1" clearable required>
                                         </date-picker>
                                     </div>
                                     <span class="text-danger error-text afrad_error" v-if="errors.date">{{errors.date[0]}}</span>
@@ -699,7 +655,7 @@ export default {
         <!-- end col -->
 
         <div class="col-xl-8">
-            <div class="card">
+            <div class="card"  style="min-height:100vh">
 
                 <div class="card-body">
 
@@ -738,12 +694,12 @@ export default {
 
                                             <td>{{transaction?.check_number}}</td>
                                             <td>
-                                                <span class="badge  font-size-12" :class="transaction?.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">
+                                                <span class="badge badge-pill  font-bold p-2 " :class="transaction?.rasid_bord === 'rasid' ? 'badge-soft-success' :'bg-danger'">
                                                     {{transaction?.rasid_bord}}
                                                 </span>
                                             </td>
 
-                                            <td>{{transaction?.amount}} {{transaction?.tr_currency.name}}
+                                            <td>{{transaction?.amount.toLocaleString()}} {{transaction?.tr_currency.name}}
                                                 به
                                                 <span v-if="transaction?.bank_account!=null">{{transaction.bank_account?.account_name}}</span>
                                                 <span v-else>{{ transaction?.finance_account?.account_name}}</span>
@@ -752,7 +708,7 @@ export default {
                                            
                                             <td>{{transaction?.commission}}</td>
                                             <td>{{transaction?.desc}}</td>
-                                            <td>{{transaction?.user_id}}</td>
+                                            <td>{{transaction?.user.name}}</td>
 
                                             <td>
 

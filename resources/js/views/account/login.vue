@@ -26,75 +26,62 @@ export default {
       this.$router.push('/');
     }
   },
+
   methods: {
 
-        async login0() {
-            this.processing = true;
-          
-          try {
-            const response = await axios.post('/api/login',{email:this.email,password:this.password});
-            
-            if (response.data.status===true) {
-              const logged_user = {
-                status: response.data.status,
-                token: response.data.access_token
-              };
-
-              localStorage.setItem('user', JSON.stringify(logged_user.token));
-              // Set the token in the axios defaults for future requests
-              axios.defaults.headers.common['Authorization'] = 'Bearer ' + logged_user.token;
-              
-              this.$router.push('/');
-            } else {
-              this.authError = response.data.error;
-              console.log(response.data.error);
-              this.emailError = response.data.error.email;
-              this.passwordError = response.data.error.password;
-            
-            }
-          } catch (error) {
-            this.showAlert=true;
-            // console.error('Error during login:', error);
-            this.authError = 'در جریان ورود خطائی رخ داد!';
-         
-          } finally {
-            this.processing = false;
-          }
-        },
+      
+       
 
         async login() {
-      try {
-        const response = await axios.post('/api/login', {
-          email: this.email,
-          password: this.password
-        });
+          this.processing = true;
 
-        if (response.data.status === true) {
-          const token = response.data.access_token;
-          localStorage.setItem('user', token);
-          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-          this.$router.push('/');
-        } else {
-          console.log(response.data.error);
-          // Handle error messages
-        }
-      } catch (error) {
-        if (error.response.status === 401) {
-          console.error('Unauthorized. Logging out user.');
-          // Clear user data and redirect to login page
-          localStorage.removeItem('user');
-          delete axios.defaults.headers.common['Authorization'];
-          Router.push('/login'); // Redirect to the login page
-        } else {
-          console.error('Error during login:', error);
-        }
-      }
-    },
+  try {
+    const response = await axios.post('/api/login', {
+      email: this.email,
+      password: this.password
+    });
 
+    if (response.data.status === true && response.data.access_token) {
+      const token = response.data.access_token;
+      const user_name = response.data.user_name;
 
+      // Store user data including token
+      localStorage.setItem('user', JSON.stringify({
+        token: token,
+        username:user_name
+      }));
+
+      // Set the token in the axios defaults for future requests
+      axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+
+      // Redirect to the desired route after successful login
+      this.$router.push('/home');
+    } else {
+      // Handle authentication errors
+      this.authError = response.data.error || "Authentication failed.";
+    }
+  } catch (error) {
+    if (error.response && error.response.status === 401) {
+      console.error('Unauthorized. Logging out user.');
+      // Clear user data and redirect to login page
+      localStorage.removeItem('user');
+      delete axios.defaults.headers.common['Authorization'];
+      this.$router.push('/login'); // Redirect to the login page
+    }else if(error.response && error.response.status === 401){
+      console.error('خطا در شبکه رخ داده است', error);
+      this.authError = 'خطا در شبکه رخ داده است';
+    } 
+    else {
+      console.error('خطا در زمان ورود', error);
+      this.authError = "لطفا دوباره تلاش کنید.";
+    }
+
+  } finally {
+    this.processing = false;
   }
-  
-};
+}
+  }
+  }
 </script>
 
 <template>
@@ -118,7 +105,7 @@ export default {
                 <router-link to="/">
                   <div class="avatar-md profile-user-wid mb-4">
                     <span class="avatar-title rounded-circle bg-light">
-                      <img :src="logo" alt height="80" />
+                      <img :src="logo" alt width="80" height="80" />
                     </span>
                   </div>
                 </router-link>
@@ -127,7 +114,6 @@ export default {
 
               <div class="alert alert-warning alert-dismissible fade show" role="alert" v-if="authError">
                 <strong> {{ authError }}</strong> 
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>
 
               <form class="p-2" action="javascript:void(0)" method="POST" @submit.prevent="login">
@@ -153,12 +139,7 @@ export default {
                     {{ processing ? "لطفا صبر نمائید..." : "ورود" }}
                   </button>
                 </div>
-           
-                <!-- <div class="mt-4 text-center">
-                  <router-link to="/forget-password" class="text-muted">
-                    <i class="mdi mdi-lock mr-1"></i> رمز عبور خود را فراموش کرده اید؟
-                  </router-link>
-                </div> -->
+
               </form>
             </div>
             <!-- end card-body -->
@@ -168,7 +149,7 @@ export default {
           <div class="mt-5 text-center">
             <p>
               آیا حساب ندارید؟
-              <router-link to="/auth/register" class="fw-medium text-primary">حالا ثبت نام نمائید</router-link>
+              <router-link to="/register" class="fw-medium text-primary">حالا ثبت نام نمائید</router-link>
             </p>
             <p>
               © {{ new Date().getFullYear() }}

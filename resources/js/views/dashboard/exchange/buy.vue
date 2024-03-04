@@ -2,11 +2,11 @@
 import Layout from "../../../layouts/main.vue";
 import PageHeader from "../../../components/page-header.vue";
 
-import axios from 'axios';
 import SweetAlert from "../../../SweetAlert.vue";
 import Swal from "sweetalert2";
 import DatePicker from '@alireza-ab/vue3-persian-datepicker';
 import Loader from '../../loader/loader.vue'
+import api from '../../../services/api';
 /**
  * Rasidbord component
  */
@@ -35,7 +35,7 @@ export default {
             buy_amount: 0,
             buy_currency_model: '',
             rasid_selectedDakhl: '',
-            currency_rate: 0.00,
+            currency_rate: 0,
             bord_amount: '',
             bord_currency_Model: '',
             buy_date: null,
@@ -51,7 +51,7 @@ export default {
             edit_buy_amount: 0,
             edit_buy_currency_model: '',
             edit_rasid_selectedDakhl: '',
-            edit_currency_rate: 0.00,
+            edit_currency_rate: 0,
             edit_bord_amount: '',
             edit_bord_currency_Model: '',
             edit_buy_date: null,
@@ -79,7 +79,6 @@ export default {
         };
     },
     mounted() {
-        this.getCurrency();
         this.getTransaction();
 
     },
@@ -89,7 +88,6 @@ export default {
         //   this is for getting the jalali date value 
         select(date) {
             this.buy_date = date.toString();
-
         },
         edit_select(date) {
             this.edit_buy_date = date.toString();
@@ -114,10 +112,13 @@ export default {
         async getTransaction(page=1) {
            try {
             this.isLoading=true;
-            const response = await axios.get(`/api/getbuytransaction?page=${page}&limit=${this.limit}`);
+            const response = await api.get(`/getbuytransaction?page=${page}&limit=${this.limit}`);
+            // console.log("response",response);
             this.transactions = response.data.transactions.data;
             this.totalPages = response.data.transactions.last_page;
             this.currentPage = page;
+            this.currencies = response.data.currencies;
+            // console.log("currencies",this.currencies);
            } catch (error) {
             console.log(error.message);
            }finally{
@@ -136,24 +137,10 @@ export default {
                 this.getTransaction(this.currentPage + 1); // Update the page parameter
             }
         },
-        async getCurrency() {
-            try {
-                await axios.get('/api/currencies').then((response) => {
-                        this.currencies = response.data.currencies.data;
-                        // console.log(this.currencies);
-
-                    })
-                    .catch((error) => {
-                        console.error('Error fetching currencies:', error);
-                    });
-
-            } catch (error) {
-                console.error('Error fetching data: ', error.message);
-            }
-        },
+    
         async get_edite_Currency() {
             try {
-                await axios.get('/api/currencies').then((response) => {
+                await api.get('/currencies').then((response) => {
                         this.edit_currencies = response.data.currencies.data;
                         // console.log(this.currencies);
 
@@ -170,7 +157,7 @@ export default {
         async storeBuyTransaction() {
 
             try {
-                const response = await axios.post('/api/buystoretransaction', {
+                const response = await api.post('/buystoretransaction', {
                     rasid_amount: this.buy_amount,
                     rasid_currency: this.buy_currency_model,
                     rasid_bank_acount_id: this.rasid_selectedDakhl,
@@ -202,12 +189,12 @@ export default {
                         // this.transactions.push(response.data.new_data2);
 
                         this.errors = {}
+                        this.buy_amount = 0;
                         this.buy_currency_model = '';
                         this.bord_selectedDakhl = '';
-                        this.buy_amount = 0;
+                        this.rasid_selectedDakhl ='';
                         this.bord_amount = 0;
-                        this.currency_rate=0;
-                        this.buy_currency_model = '';
+                        this.currency_rate=0.00;
                         this.rasid_desc = '';
                         this.bord_currency_Model = '';
                         this.buy_date = {};
@@ -225,22 +212,22 @@ export default {
         change_currency() {
             this.getBanks(this.bord_currency_Model);
         },
+        change_rasid_currency() {
+            this.getrasidBanks(this.buy_currency_model);
+        },
         edit_change_currency() {
             // this.getBanks(this.edit_bord_currency_Model);
             this.edit_getBanks(this.edit_bord_currency_Model);
         },
-        change_rasid_currency() {
-            this.getrasidBanks(this.buy_currency_model);
-        },
+      
         edit_change_rasid_currency() {
             this.edit_getrasidBanks(this.edit_buy_currency_model);
             
         },
 
-   
 
         async edit_buy_func(id,type) {
-            const response = await axios.post(`/api/getexchangesaleforedit/`,{id: id,rasid_bord:type});
+            const response = await api.post(`/getexchangesaleforedit/`,{id: id,rasid_bord:type});
             let rasid_list = response.data.rasid;
             let bord_list = response.data.bord;
             this.openModaledit();
@@ -258,11 +245,9 @@ export default {
             this.edit_buy_date = bord_list.date;
         },
      
-   
-    
         async submiteditBuyTransaction() {
             
-            const response = await axios.post(`/api/updatebuyexchange`, {
+            const response = await api.post(`/updatebuyexchange`, {
                 rasid_id: this.rasid_id,
                 rasid_amount: this.edit_buy_amount,
 
@@ -308,7 +293,7 @@ export default {
                 return;
             } else {
                 try {
-                    const response = await axios.post(`/api/deleteexchangesale`,{
+                    const response = await api.post(`/deleteexchangesale`,{
                         id:id,
                     });
                    
@@ -326,7 +311,7 @@ export default {
         },
         async getBanks(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.banks = response.data.banks;
                 this.bord_selectedDakhl = this.banks[0].id;
                 // console.log("selected Dakhl", this.selectedDakhl);
@@ -338,7 +323,7 @@ export default {
     
         async edit_getBanks(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.edit_banks = response.data.banks;
                 this.edit_bord_selectedDakhl = this.edit_banks[0].id;
                 // console.log("selected Dakhl", this.selectedDakhl);
@@ -349,7 +334,7 @@ export default {
         },
         async getrasidBanks(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.rasidbanks = response.data.banks;
                 this.rasid_selectedDakhl = this.rasidbanks[0].id;
                 // console.log("selected Dakhl", this.selectedDakhl);
@@ -361,7 +346,7 @@ export default {
       
         async edit_getrasidBanks(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.edit_rasidbanks = response.data.banks;
                 this.edit_rasid_selectedDakhl = this.edit_rasidbanks[0].id;
                 // console.log("selected Dakhl", this.selectedDakhl);
@@ -372,7 +357,7 @@ export default {
         },
         async edit_getRasidBanks(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.edit_banks = response.data.banks;
                 this.edit_bord_selectedDakhl = this.edit_banks[0].id;
                 // console.log("selected Dakhl", this.selectedDakhl);
@@ -382,7 +367,7 @@ export default {
             }
         },
         async searchData() {
-            const response = await axios.post('/api/searchexchange', {
+            const response = await api.post('/searchexchange', {
                 query: this.searchQuery
             });
 
@@ -398,7 +383,7 @@ export default {
     <PageHeader :title="title" :items="items" />
     <div class="row">
         <div class="col-xl-4">
-            <div class="card">
+            <div class="card" style="min-height:100vh;">
 
                 <!-- edit modal start -->
                 <div class="col-sm-8">
@@ -419,7 +404,7 @@ export default {
     
                                         <div class="col-sm-6 col-xs-12 mb-2">
                                             <label for="name"> مقدار پول خرید:‌</label>
-                                            <input type="number" id="buy_amount" v-model="edit_buy_amount" class="form-control required">
+                                            <input type="number" id="buy_amount" v-model="edit_buy_amount" step="0.0000001" class="form-control required">
                                             <span class="text-danger error-text buy_amount_error"></span>
                                         </div>
                                     </div>
@@ -459,12 +444,12 @@ export default {
                                    <div class="row">
                                     <div class="col-sm-6 col-xs-12">
                                         <label for="name">مقدار پول وارد شده :‌</label>
-                                        <input type="number" id="edit_bord_amount" v-model="edit_bord_amount" @input="edit_calculatePayAmount" class="form-control required">
+                                        <input type="number" id="edit_bord_amount" v-model="edit_bord_amount" step="0.0000001" @input="edit_calculatePayAmount" class="form-control required">
                                         <span class="text-danger error-text amount_error"></span>
                                     </div>
                                     <div class="col-sm-6 col-xs-12">
                                         <label for="name">نرخ ارز :‌</label>
-                                        <input type="number" step="0.01" id="edit_currency_rate" v-model="edit_currency_rate" @input="calculatePayAmount" class="form-control required">
+                                        <input type="number" step="0.0000001" id="edit_currency_rate" v-model="edit_currency_rate" @input="calculatePayAmount" class="form-control required">
                                         <span class="text-danger error-text currency_rate_error"></span>
                                     </div>
                                 </div>
@@ -474,7 +459,7 @@ export default {
                                         </label>
                                         <div class="input-group ">
                                             <!-- @alireza-ab/vue3-persian-datepicker -->
-                                            <date-picker @select="edit_select" mode="single" type="date" locale="fa" :column="1" required>
+                                            <date-picker @select="edit_select" mode="single" type="date" locale="fa" :column="1" clearable required>
                                             </date-picker>
                                         </div>
                                         <span class="text-center">{{edit_buy_date}}</span>
@@ -524,7 +509,7 @@ export default {
 
                                     <div class="col-sm-6 col-xs-12 mb-2">
                                         <label for="name"> مقدار پول خرید:‌</label>
-                                        <input type="number" id="buy_amount" v-model="buy_amount" class="form-control required">
+                                        <input type="number" id="buy_amount" step="0.0000001" v-model="buy_amount" class="form-control required">
                                         <span class="text-danger error-text buy_amount_error"></span>
                                     </div>
                                 </div>
@@ -538,6 +523,7 @@ export default {
                                     </select>
                                     <span class="text-danger error-text dakhl_error"></span>
                                 </div>
+                                
                                <div class="row">
                                     <span class="border-bottom w-100 font-size-16">
                                         پول خارج شده از دخل
@@ -564,12 +550,12 @@ export default {
                                <div class="row">
                                 <div class="col-sm-6 col-xs-12">
                                     <label for="name">مقدار پول وارد شده :‌</label>
-                                    <input type="number" id="bord_amount" v-model="bord_amount" @input="calculatePayAmount" class="form-control required">
+                                    <input type="number" id="bord_amount" step="0.0000001" v-model="bord_amount" @input="calculatePayAmount" class="form-control required">
                                     <span class="text-danger error-text amount_error"></span>
                                 </div>
                                 <div class="col-sm-6 col-xs-12">
                                     <label for="name">نرخ ارز :‌</label>
-                                    <input type="number" step="0.01" id="currency_rate" v-model="currency_rate" @input="calculatePayAmount" class="form-control required">
+                                    <input type="number" step="0.0000001" id="currency_rate" v-model="currency_rate" @input="calculatePayAmount" class="form-control required">
                                     <span class="text-danger error-text currency_rate_error"></span>
                                 </div>
                             </div>
@@ -579,7 +565,7 @@ export default {
                                     </label>
                                     <div class="input-group ">
                                         <!-- @alireza-ab/vue3-persian-datepicker -->
-                                        <date-picker @select="select" mode="single" type="date" locale="fa" :column="1" required>
+                                        <date-picker @select="select" mode="single" type="date" locale="fa" :column="1" clearable required>
                                         </date-picker>
                                     </div>
                                     <span class="text-danger error-text afrad_error" v-if="errors.date">{{errors.date[0]}}</span>
@@ -607,7 +593,7 @@ export default {
         <!-- end col -->
 
         <div class="col-xl-8">
-            <div class="card">
+            <div class="card"  style="min-height:100vh">
 
                 <div class="card-body">
 
@@ -645,19 +631,19 @@ export default {
                                         <tr v-for="transaction in transactions" :key="transaction?.id">
                                             <td>{{transaction?.check_number}}</td>
                                         
-                                            <td>{{transaction?.amount}} {{transaction?.tr_currency.name}}
+                                            <td>{{transaction?.amount.toLocaleString()}} {{transaction?.tr_currency.name}}
                                                 به
                                                 <span v-if="transaction?.bank_account!=null">{{transaction?.bank_account.account_name}}</span>
                                                 <span v-else>{{ transaction?.finance_account.account_name}}</span>
                                             </td>
 
 
-                                            <td>{{transaction?.referenced_transaction.amount}} {{transaction?.eq_currency.name}}
+                                            <td>{{transaction?.referenced_transaction.amount.toLocaleString()}} {{transaction?.eq_currency.name}}
                            
                                             </td>
 
                                             <td>{{transaction?.desc}}</td>
-                                            <td>{{transaction?.user_id}}</td>
+                                            <td>{{transaction?.user.name}}</td>
 
                                             <td>
                                                 <button class="btn btn-xs">

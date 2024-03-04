@@ -2,13 +2,13 @@
 import Layout from "../../../layouts/main.vue";
 import PageHeader from "../../../components/page-header.vue";
 
-import axios from 'axios';
 import SweetAlert from "../../../SweetAlert.vue";
 import Swal from "sweetalert2";
 import DatePicker from '@alireza-ab/vue3-persian-datepicker';
 import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
 import Loader from '../../loader/loader.vue'
+import api from '../../../services/api';
 /**
  * Rasidbord component
  */
@@ -53,8 +53,8 @@ export default {
             banks: [],
 
             // does has an error 
-            amount: 0,
-            currency_rate: 1.00,
+            amount: 0.000000,
+            currency_rate: 1.000,
             equal_amount: 0,
          
             // for setting the current date
@@ -73,8 +73,8 @@ export default {
 
             edit_rasid_bord: '',
             // edit amount
-            editAmount: "",
-            editCurrency_rate: 1.00,
+            editAmount: 0.000,
+            editCurrency_rate: 1.000,
             editEqual_amount: 0,
             editDesc: '',
             editDate: '',
@@ -95,10 +95,11 @@ export default {
 
         };
     },
+ 
     mounted() {
-        this.getCurrency();
+        // this.getCurrency();
         this.getTransaction();
-        this.getCustomers();
+        // this.getCustomers();
 
     },
 
@@ -109,16 +110,20 @@ export default {
             this.transaction_date = date.toString();
 
         },
+
+
         editSelect(date) {
             this.editDate = date.toString();
         },
         async getTransaction(page=1) {
             this.isLoading=true;
                 try {
-                    const response = await axios.get(`/api/transaction?page=${page}&limit=${this.limit}`);
+                    const response = await api.get(`/transaction?page=${page}&limit=${this.limit}`);
                     this.transactions = response.data.transactions.data;
                     this.totalPages = response.data.transactions.last_page;
                     this.currentPage = page; 
+                    this.currencies = response.data.currencies;
+                    this.customers = response.data.customers;
                 } catch (error) {
                     console.log(error.message);
                 }finally{
@@ -151,7 +156,8 @@ export default {
 
         // for calculating the Equal to input type
         calculateEqualAmount() {
-            this.equal_amount = this.amount / this.currency_rate;
+            
+            this.equal_amount =Number.parseFloat(this.amount / this.currency_rate).toFixed(4);
         },
         editCalculateEqualAmount() {
             this.editEqual_amount = this.editAmount / this.editCurrency_rate;
@@ -165,31 +171,12 @@ export default {
             });
         },
 
-        async getCustomers() {
-            try {
-                const response = await axios.get('/api/customer');
-                this.customers = response.data.customers.data;
-            } catch (error) {
-                console.error('Error fetching data: ', error.message);
-            }
-        },
-        async getCurrency() {
-            try {
-                await axios.get('/api/currencies').then((response) => {
-                        this.currencies = response.data.currencies.data;
-                    })
-                    .catch((error) => {
-                        console.error('Error fetching currencies:', error);
-                    });
-
-            } catch (error) {
-                console.error('Error fetching data: ', error.message);
-            }
-        },
+    
+    
         // for adding new Transaction  
         async storeTransaction() {
             try {
-                const response = await axios.post('/api/transaction', {
+                const response = await api.post('/transaction', {
                     rasid_bord: this.rasid_bord,
                     transaction_type: this.rasid_bord,
                     ref_id: this.selectedCustomer.id,
@@ -224,15 +211,16 @@ export default {
                         this.errors = {}
                         this.rasid_bord = ''
                         this.selectedCustomer = null,
-                            this.currencyModel = ''
+                        this.currencyModel = ''
                         this.selectedDakhl = ''
                         this.amount = 0,
-                            this.currency_rate = 1
+                        this.currency_rate = 0.00
                         this.equal_amount = 0
                         this.transaction_date =''
                         this.currencyModel = ''
                         this.desc = ''
                         this.equalcurrencyModel = ''
+                       
                         this.showalert(response.data.message, "success", "بستن");
                        
                     }
@@ -246,6 +234,7 @@ export default {
         },
         change_currency() {
             this.getBanks(this.currencyModel);
+            this.equalcurrencyModel = this.currencyModel;
         },
 
         editChange_currency() {
@@ -254,7 +243,7 @@ export default {
 
     
         async searchData() {
-            const response = await axios.post('/api/searchtransactions', {
+            const response = await api.post('/searchtransactions', {
                 query: this.searchQuery
             });
             this.transactions = response.data;
@@ -262,7 +251,7 @@ export default {
         },
 
         async editTransactionFunc(id) {
-            const response = await axios.get(`/api/transaction/${id}`);
+            const response = await api.get(`/transaction/${id}`);
             this.editTransaction = response.data;
             this.openModaledit(this.editTransaction[0]);
             this.edit_rasid_bord = this.editTransaction[0].rasid_bord
@@ -281,7 +270,7 @@ export default {
         },
         async submitEditTransaction() {
             let id = this.editTransaction[0].id;
-            const response = await axios.post(`/api/updateTransaction`, {
+            const response = await api.post(`/updateTransaction`, {
                 id: this.editTransaction[0].id,
                 rasid_bord: this.edit_rasid_bord,
                 transaction_type: this.edit_rasid_bord,
@@ -328,7 +317,7 @@ export default {
 
         async getBanksForEdit(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.editbanks = response.data.banks;
                 // console.log("getNBanks",this.editbanks);
                 this.editSelectedDakhl = this.editbanks[0].id;
@@ -340,7 +329,7 @@ export default {
         async getCustomerForEdit(id) {
         
             try {
-                const response = await axios.get('/api/customer');
+                const response = await api.get('/customer');
                 this.editCustomers = response.data.customers.data;
                 this.editSelectedCustomer = this.editCustomers.length > 0 ? this.editCustomers.find(custom => custom.id === id) : '';
                 
@@ -354,7 +343,7 @@ export default {
             } else {
                 try {
 
-                    const response = await axios.post(`/api/deleteonetransaction`,{id:id});
+                    const response = await api.post(`/deleteonetransaction`,{id:id});
 
                     // const response = await axios.get(`/api/transactiondelete/${id}`);
 
@@ -373,7 +362,7 @@ export default {
         },
         async getBanks(id) {
             try {
-                const response = await axios.get('/api/getbankbyid/' + id);
+                const response = await api.get('/getbankbyid/' + id);
                 this.banks = response.data.banks;
                 this.selectedDakhl = this.banks[0].id;
 
@@ -381,7 +370,10 @@ export default {
                 console.log(error.message);
             }
         },
+
+        
     },
+  
 };
 </script>
 
@@ -436,7 +428,7 @@ export default {
                                         </div>
                                         <div class="col-sm-8 col-xs-12">
                                             <label for="name">مقدار پول :‌</label>
-                                            <input type="number"  step="0.01" id="amount" v-model="editAmount" @input="editCalculateEqualAmount" class="form-control required">
+                                            <input type="number"   step="0.0001" id="amount" v-model="editAmount" @input="editCalculateEqualAmount" class="form-control required">
                                             <span class="text-danger error-text amount_error"></span>
                                         </div>
                                     </div>
@@ -454,7 +446,7 @@ export default {
                                     <div class="row mb-2">
                                         <div class="col-sm-4 col-xs-12">
                                             <label for="name">نرخ ارز :‌</label>
-                                            <input type="number" step="0.01" id="editCurrency_rate" v-model="editCurrency_rate" @input="editCalculateEqualAmount" class="form-control required">
+                                            <input type="number" step="0.0001" id="editCurrency_rate" v-model="editCurrency_rate" @input="editCalculateEqualAmount" class="form-control required">
                                             <span class="text-danger error-text currency_rate_error"></span>
 
                                         </div>
@@ -463,7 +455,7 @@ export default {
                                             </label>
                                             <div class="input-group ">
                                                 <!-- @alireza-ab/vue3-persian-datepicker -->
-                                                <date-picker @select="editSelect" mode="single" type="date" locale="fa" :column="1">
+                                                <date-picker @select="editSelect" mode="single" type="date" locale="fa" clearable :column="1">
                                                 </date-picker>
                                                 <span class="">{{editDate}}</span>
                                             </div>
@@ -482,7 +474,7 @@ export default {
                                         </div>
                                         <div class="col-sm-8 col-xs-12">
                                             <label for="name"> مقدار پول رسید:‌</label>
-                                            <input type="number" id="amount" v-model="editEqual_amount" class="form-control required">
+                                            <input type="number" step="0.0001" id="amount" v-model="editEqual_amount" class="form-control required">
                                             <span class="text-danger error-text amount_error"></span>
                                         </div>
                                     </div>
@@ -545,7 +537,7 @@ export default {
                                     </div>
                                     <div class="col-sm-8 col-xs-12">
                                         <label for="name">مقدار پول :‌</label>
-                                        <input type="number" id="amount"  v-model="amount" @input="calculateEqualAmount" class="form-control required">
+                                        <input type="number" id="amount" v-model="amount" @input="calculateEqualAmount" class="form-control" step="0.0000001">
                                         <span class="text-danger error-text amount_error"></span>
                                     </div>
                                 </div>
@@ -565,7 +557,7 @@ export default {
                                 <div class="row">
                                     <div class="col-sm-4 col-xs-12">
                                         <label for="name">نرخ ارز :‌</label>
-                                        <input type="number" step="0.01" id="currency_rate" v-model="currency_rate" @input="calculateEqualAmount" class="form-control required">
+                                        <input type="number" step="0.0001" id="currency_rate" v-model="currency_rate" @input="calculateEqualAmount" class="form-control required">
                                         <span class="text-danger error-text currency_rate_error"></span>
                                     </div>
                                     <div class="col-sm-8 col-xs-12">
@@ -573,7 +565,7 @@ export default {
                                         </label>
                                         <div class="input-group ">
                                             <!-- @alireza-ab/vue3-persian-datepicker -->
-                                            <date-picker @select="select" mode="single" type="date" locale="fa" :column="1" required>
+                                            <date-picker @select="select" mode="single" type="date" locale="fa" :column="1" clearable @clear="clear" required>
                                             </date-picker>
 
                                         </div>
@@ -585,7 +577,7 @@ export default {
                                     <!-- <label>رسید به حساب مشتری :‌ </label> -->
                                     <div class="col-sm-4 col-xs-12">
                                         <label for="supplier">واحد پول رسید:</label>
-                                        <select class="form-control form-control-lg select2 required" v-model="equalcurrencyModel" style="width: 100%;" @change="getDefaultCurrency">
+                                        <select class="form-control form-control-lg select2 required" v-model="equalcurrencyModel" style="width: 100%;" >
                                             <option disabled selected> واحد</option>
                                             <option v-for="currency in currencies" :key="currency.id" :value="currency.id">{{currency.name}} {{currency.sign}}</option>
                                         </select>
@@ -594,16 +586,14 @@ export default {
 
                                     <div class="col-sm-8 col-xs-12">
                                         <label for="name"> مقدار پول رسید:‌</label>
-                                        <input type="number" id="amount" v-model="equal_amount" class="form-control required">
+                                        <input type="number" step="0.0000001" id="amount" v-model="equal_amount" class="form-control required">
                                         <span class="text-danger error-text amount_error"></span>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-xs-12" style="padding-right:0px!important">
                                     <br>
-
                                     <textarea id="disc" class="form-control" autocomplete="on" v-model="desc" rows="4" placeholder="توضیحات"></textarea>
                                     <span class="text-danger error-text disc_error"></span>
-
                                 </div>
 
                             </div>
@@ -620,7 +610,7 @@ export default {
         <!-- end col -->
 
         <div class="col-xl-8">
-            <div class="card">
+            <div class="card" style="min-height:100vh">
 
                 <div class="card-body">
 
@@ -646,6 +636,7 @@ export default {
                                         <tr>
                                         
                                             <th class="text-center">نمبر چک</th>
+                                            <th class="text-center">نوعیت</th>
                                             <th class="text-center">نام مشتری</th>
                                             <!-- <th class="text-center">رسید برد</th> -->
                                             <th class="text-center">مقدار پول</th>
@@ -658,23 +649,27 @@ export default {
                                     </thead>
                                     <tbody class="text-center">
                                         <tr v-for="transaction in transactions" :key="transaction?.id">
-                                            <td>{{transaction.check_number}}</td>
+                                            <td>{{transaction?.check_number}}</td>
+                                            <td>
+                                                <span
+                                                  class="badge badge-pill  font-bold p-2"
+                                                  :class="
+                                                     transaction.rasid_bord === 'rasid' ?'badge-soft-success':'bg-danger'"
+                                                  >{{transaction?.rasid_bord}}</span
+                                                >
+                                              </td>
                                             <td v-if="transaction.customer!=null">{{ transaction.customer?.name}}</td>
                                             <td v-else>{{ transaction.finance_account?.account_name}}</td>
-                                            <!-- <td>
-                                                <span class="badge  font-size-12" :class="transaction.rasid_bord === 'rasid' ? 'bg-success' :'bg-danger'">
-                                                {{transaction.rasid_bord}}
-                                            </span>
-                                        </td> -->
+                                   
                                             
-                                            <td>{{transaction.amount}} {{transaction.tr_currency.name}} به <span v-if="transaction.bank_account!=null">{{transaction.bank_account?.account_name}}</span>
+                                            <td>{{transaction.amount.toLocaleString()}} {{transaction.tr_currency.name}} از <span v-if="transaction.bank_account!=null">{{transaction.bank_account?.account_name}}</span>
                                                 <span v-else>{{ transaction.finance_account?.account_name}}</span> </td>
 
-                                            <td>{{transaction.amount_equal}} {{transaction.eq_currency.name}} به <span v-if="transaction.bank_account!=null">{{transaction.bank_account?.account_name}}</span>
+                                            <td>{{transaction?.amount_equal.toLocaleString()}} {{transaction?.eq_currency?.name}} به <span v-if="transaction.bank_account!=null">{{transaction.bank_account?.account_name}}</span>
                                                 <span v-else>{{ transaction.finance_account?.account_name}}</span> </td>
                                             
                                             <td>{{transaction.desc}}</td>
-                                            <td>{{transaction.user_id}}</td>
+                                            <td>{{transaction?.user?.name}}</td>
 
                                             <td>
 

@@ -1,20 +1,35 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import Home from '../views/Home.vue';
 
-const routes = [{
-        path: '/',
+const routes = [
+    { path: '/', redirect: '/login' },
+
+    {
+        path: '/home',
         name: 'dashboard',
         meta: {
             authRequired: true,
             title: 'Dashboard',
         },
+        component: Home
+    },
+    {
+        path: '/dashboard/usermangement',
+        meta: { authRequired: true, title: 'Dashboard' },
         component: () =>
-            import ('../views/home.vue'),
+            import ('../views/user/usermangement.vue')
     },
     {
         path: '/dashboard/customer',
         meta: { authRequired: true, title: 'Dashboard' },
         component: () =>
             import ('../views/dashboard/customer/customer.vue')
+    },
+    {
+        path: '/dashboard/customerdeleted',
+        meta: { authRequired: true, title: 'Dashboard' },
+        component: () =>
+            import ('../views/dashboard/customer/customerDeleted.vue')
     },
     {
         path: '/dashboard/customer/:id',
@@ -26,7 +41,7 @@ const routes = [{
         path: '/dashboard/customer/:id/export',
         meta: { authRequired: true, title: 'Dashboard' },
         component: () =>
-            import ('../views/dashboard/customer/exportCustomer.vue')
+            import ('../views/dashboard/customer/exportCustomer.vue'),
     },
     {
         path: '/dashboard/finance_account',
@@ -96,10 +111,10 @@ const routes = [{
             import ('../views/report/bankDetails.vue')
     },
     {
-        path: '/report/rooznachah',
+        path: '/report/rooznamchah',
         meta: { authRequired: true, title: 'روزنامچه' },
         component: () =>
-            import ('../views/report/rooznachah.vue')
+            import ('../views/report/rooznamchah.vue')
     },
     {
         path: '/exchange/buy',
@@ -122,12 +137,7 @@ const routes = [{
         component: () =>
             import ('../views/dashboard/exchange/transfer.vue')
     },
-    {
-        path: '/auth/login-1',
-        meta: { authRequired: true, title: 'Login' },
-        component: () =>
-            import ('../views/sample-pages/login-sample.vue')
-    },
+
     {
         path: '/login',
         name: 'login',
@@ -136,54 +146,28 @@ const routes = [{
             import ('../views/account/login.vue')
     },
     {
-        path: '/auth/register',
+        path: '/register',
         name: 'register',
         meta: { title: 'Register' },
         component: () =>
             import ('../views/account/register.vue')
     },
     {
-        path: '/forget-password',
-        meta: { title: 'Forget Password' },
+        path: '/serror',
+        name: 'خطائی در شبکه رخ داده است',
+        meta: { title: 'خطا' },
         component: () =>
-            import ('../views/account/forgot-password.vue')
+            import ('../views/utility/serverErrror.vue')
     },
     {
-        path: '/reset-password/:token',
-        meta: { title: 'Reset Password' },
+        path: '/:catchAll(.*)',
+        name: 'notfound',
+        meta: { title: 'Notfound' },
         component: () =>
-            import ('../views/account/reset-password.vue')
+            import ('../views/utility/notfound.vue')
     },
-    {
-        path: '/auth/recoverpw',
-        meta: { authRequired: true, title: 'Reset Password' },
-        component: () =>
-            import ('../views/sample-pages/recoverpw-sample.vue')
-    },
-    {
-        path: '/auth/recoverpwd-2',
-        meta: { authRequired: true, title: 'Reset Password' },
-        component: () =>
-            import ('../views/sample-pages/recoverpwd-2.vue')
-    },
-    {
-        path: '/auth/confirm-mail',
-        meta: { authRequired: true, title: 'Confirm Mail' },
-        component: () =>
-            import ('../views/sample-pages/confirm-mail.vue')
-    },
-    {
-        path: '/auth/email-verification',
-        meta: { authRequired: true, title: 'Email Verification' },
-        component: () =>
-            import ('../views/sample-pages/email-verification.vue')
-    },
-    {
-        path: '/auth/two-step-verification',
-        meta: { authRequired: true, title: 'Two Step Verification' },
-        component: () =>
-            import ('../views/sample-pages/two-step-verification.vue')
-    },
+
+
 
 
 
